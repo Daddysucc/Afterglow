@@ -770,6 +770,27 @@ public partial class DashboardViewModel : ViewModelBase
         }
     }
 
+    // Parsed ports, re-parsed only when the setting changes
+    private string? _streamingPortsSource;
+    private IReadOnlyList<int> _streamingPorts = [];
+
+    private IReadOnlyList<int> GetStreamingPorts()
+    {
+        if (
+            !string.Equals(
+                _streamingPortsSource,
+                _settingsService.StreamingPorts,
+                StringComparison.Ordinal
+            )
+        )
+        {
+            _streamingPortsSource = _settingsService.StreamingPorts;
+            _streamingPorts = StreamingPortList.Parse(_streamingPortsSource);
+        }
+
+        return _streamingPorts;
+    }
+
     private void UpdateIsPaused()
     {
         var settings = new AutoPauseSettings(
@@ -783,7 +804,7 @@ public partial class DashboardViewModel : ViewModelBase
         // These are only checked when the corresponding setting is enabled, to avoid needless work
         var isRemoteStreamingActive =
             settings.IsStreamingAutoPauseEnabled
-            && _externalApplicationService.IsRemoteStreamingActive();
+            && _externalApplicationService.IsRemoteStreamingActive(GetStreamingPorts());
 
         var isScreenLocked = settings.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked();
 

@@ -257,6 +257,9 @@ public partial class LocalizationManager
             [nameof(StreamingAutoPauseLabel)] = "Pause during remote streaming (Sunshine / RDP)",
             [nameof(StreamingAutoPauseTooltip)] =
                 "Restore normal colors on all displays while this computer is being streamed with Sunshine or accessed with Remote Desktop",
+            [nameof(StreamingPortsLabel)] = "Streaming TCP ports",
+            [nameof(StreamingPortsTooltip)] =
+                "Remote Desktop is detected automatically, on any port. Sunshine and other streaming apps are detected by an active connection on one of these local TCP ports, separated by commas (e.g. 48010 for Sunshine, or 48010, 27036 to also include Steam Remote Play).",
             [nameof(DisplaysCardTitle)] = "Connected Displays",
             [nameof(DisplaysCardSubtitle)] =
                 "Exclude displays or fine-tune their warmth individually. Displays are recognized again when reconnected.",

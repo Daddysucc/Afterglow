@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using Cogwheel;
@@ -64,9 +66,12 @@ public partial class SettingsService()
     [ObservableProperty]
     public partial TimeOnly NightStartTime { get; set; } = new(22, 00);
 
-    [ObservableProperty]
-    public partial TimeSpan ConfigurationTransitionDuration { get; set; } =
-        TimeSpan.FromMinutes(40);
+    // Always kept within 0-3 hours, whether it's set from the UI or loaded from the file
+    public TimeSpan ConfigurationTransitionDuration
+    {
+        get;
+        set => SetProperty(ref field, Cycle.ClampTransitionDuration(value));
+    } = TimeSpan.FromMinutes(40);
 
     [ObservableProperty]
     public partial double ConfigurationTransitionOffset { get; set; }
@@ -121,8 +126,14 @@ public partial class SettingsService()
     public partial bool IsPerMonitorFullscreenPauseEnabled { get; set; } = true;
 
     // Pause on all displays while the computer is being streamed (Sunshine) or accessed remotely (RDP)
+    // Opt-in, so that LightBulb never pauses unexpectedly
     [ObservableProperty]
-    public partial bool IsStreamingAutoPauseEnabled { get; set; } = true;
+    public partial bool IsStreamingAutoPauseEnabled { get; set; }
+
+    // Local TCP ports of streaming hosts (e.g. Sunshine's RTSP port), separated by commas.
+    // Remote Desktop is detected regardless of these.
+    [ObservableProperty]
+    public partial string StreamingPorts { get; set; } = StreamingPortList.Default;
 
     // Displays
 
@@ -208,7 +219,28 @@ public partial class SettingsService()
 
     public override bool Load()
     {
-        var wasLoaded = base.Load();
+        bool wasLoaded;
+
+        try
+        {
+            wasLoaded = base.Load();
+        }
+        catch (Exception ex)
+        {
+            // The file is corrupted (e.g. malformed JSON or invalid values). Rather than crashing
+            // on startup, keep a copy of it for reference and start over with clean defaults.
+            Debug.WriteLine($"Failed to load settings, falling back to defaults: {ex}");
+
+            BackUpCorruptFile();
+            Reset();
+
+            wasLoaded = false;
+        }
+
+        // Also enforced by the property itself, but make it explicit for loaded values
+        ConfigurationTransitionDuration = Cycle.ClampTransitionDuration(
+            ConfigurationTransitionDuration
+        );
 
         // The evening is an intermediate stage, so keep it between the day and night values.
         // This matters for settings files saved before the evening stage existed, where the
@@ -332,6 +364,22 @@ public partial class SettingsService()
                 !string.Equals(p.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase)
             ),
         ];
+
+    // Copies (rather than moves) the corrupt file, so that if LightBulb is closed before the
+    // settings are saved again, the next launch doesn't mistake it for a fresh install
+    private static void BackUpCorruptFile()
+    {
+        try
+        {
+            var filePath = StartOptions.Current.SettingsPath;
+            if (File.Exists(filePath))
+                File.Copy(filePath, filePath + ".bak", true);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to back up the corrupt settings file: {ex}");
+        }
+    }
 
     // Unlike Math.Clamp, this doesn't throw if the bounds are in the wrong order
     private static double ClampBetween(double value, double bound1, double bound2) =>
