@@ -134,41 +134,27 @@ public partial class LocalizationManager
             [nameof(SunriseTransitionPhaseLabel)] = "日出過渡",
             [nameof(SunsetTransitionPhaseLabel)] = "日落過渡",
             [nameof(NightTransitionPhaseLabel)] = "就寢過渡",
-            [nameof(StatusDayPhrases)] = """
-                白天時段。色彩已為工作與精準的對比度調校均衡。
-                完整的日光光譜已啟用，文字清晰，畫面通透。
-                中性白平衡正在運作，與明亮的白天環境相符。
-                標準日間校準已啟用，適合編輯與瀏覽。
-                螢幕色彩已設為純淨、未偏移的日光。
-                午後專注模式。顯示效果已調至最清晰。
-                日光設定檔正在運作，亮度全開，白色自然。
-                """,
-            [nameof(StatusEveningPhrases)] = """
-                太陽已經下山。螢幕眩光正為傍晚逐漸減弱。
-                傍晚時段。在您放鬆時，刺眼的藍光已被調低。
-                暮色已至。螢幕已切換為舒適的傍晚暖色。
-                下班時間。螢幕色調已柔化，適合休閒與瀏覽。
-                傍晚暖色已啟用，讓明亮的白色不再刺眼。
-                已過日落。色彩更暖，方便傍晚舒適觀看。
-                黃昏排程已啟用。暖意均衡，不會過度偏色。
-                """,
-            [nameof(StatusNightPhrases)] = """
-                深夜時段。深度暖色已為昏暗房間啟用。
-                就寢排程正在運作。藍光已降至最低。
-                螢幕已調為柔和的深琥珀色，適合夜間閱讀。
-                安靜時段。螢幕眩光將維持在低水準直到早晨。
-                午夜模式已啟用，在昏暗房間中保護您的眼睛。
-                夜深了。睡前正在使用最暖的色彩設定檔。
-                夜間排程已啟用。刺眼的白色已被柔和的琥珀色取代。
-                """,
-            [nameof(StatusTransitionToDayText)] = "正在過渡到白天色彩...",
-            [nameof(StatusTransitionToEveningText)] = "正在過渡到傍晚暖色...",
-            [nameof(StatusTransitionToNightText)] = "正在過渡到夜間暖色...",
-            [nameof(StatusDisabledText)] = "LightBulb 已暫停。螢幕顯示中性日光。",
-            [nameof(StatusDisabledDayConfigText)] = "LightBulb 已暫停。螢幕顯示您的白天色彩。",
-            [nameof(StatusPausedText)] = "因全螢幕或白名單應用程式而自動暫停。",
+            [nameof(StatusDayScheduleText)] = "白天排程已啟用，色溫 {0} K，亮度 {1}%。",
+            [nameof(StatusEveningScheduleText)] = "傍晚排程已啟用，色溫 {0} K，亮度 {1}%。",
+            [nameof(StatusNightScheduleText)] = "夜間排程已啟用，色溫 {0} K，亮度 {1}%。",
+            [nameof(StatusWarmingText)] = "正在調暖至 {0} K，{2}。",
+            [nameof(StatusCoolingText)] = "正在調冷至 {0} K，{2}。",
+            [nameof(StatusDimmingText)] = "正在調暗至 {1}%，{2}。",
+            [nameof(StatusBrighteningText)] = "正在調亮至 {1}%，{2}。",
+            [nameof(StatusWarmingDimmingText)] = "正在調暖至 {0} K 並調暗至 {1}%，{2}。",
+            [nameof(StatusWarmingBrighteningText)] = "正在調暖至 {0} K 並調亮至 {1}%，{2}。",
+            [nameof(StatusCoolingDimmingText)] = "正在調冷至 {0} K 並調暗至 {1}%，{2}。",
+            [nameof(StatusCoolingBrighteningText)] = "正在調冷至 {0} K 並調亮至 {1}%，{2}。",
+            [nameof(StatusForDayText)] = "迎接白天",
+            [nameof(StatusForEveningText)] = "迎接傍晚",
+            [nameof(StatusForNightText)] = "迎接夜間",
+            [nameof(StatusManualOverrideText)] = "手動調整已生效，色溫 {0} K，亮度 {1}%。",
+            [nameof(StatusPausedRemoteStreamingText)] = "因遠端串流已暫停，已恢復原生色彩。",
+            [nameof(StatusPausedFullScreenText)] = "全螢幕應用程式執行期間已暫停。",
+            [nameof(StatusPausedScreenLockedText)] = "螢幕鎖定期間已暫停。",
+            [nameof(StatusPausedManuallyText)] = "已手動暫停，自動排程已中止。",
+            [nameof(StatusPausedAutomaticallyText)] = "已自動暫停，已恢復原生色彩。",
             [nameof(StatusPreviewText)] = "正在預覽接下來的 24 小時…",
-            [nameof(StatusRemoteStreamingPausedText)] = "遠端串流工作階段進行期間已暫停。",
             [nameof(PausedRemoteStreamingLabel)] = "已暫停（遠端串流）",
             [nameof(PausedScreenLockedLabel)] = "已暫停（螢幕已鎖定）",
             [nameof(PausedFullScreenLabel)] = "已暫停（全螢幕應用程式）",

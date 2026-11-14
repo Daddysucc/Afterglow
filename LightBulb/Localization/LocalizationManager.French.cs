@@ -138,45 +138,36 @@ public partial class LocalizationManager
         [nameof(SunriseTransitionPhaseLabel)] = "Transition du lever",
         [nameof(SunsetTransitionPhaseLabel)] = "Transition du coucher",
         [nameof(NightTransitionPhaseLabel)] = "Transition vers la nuit",
-        [nameof(StatusDayPhrases)] = """
-            Heures de jour. Couleurs équilibrées pour le travail et le contraste.
-            Spectre complet de la lumière du jour pour un texte net et clair.
-            Balance des blancs neutre, adaptée aux pièces lumineuses le jour.
-            Étalonnage standard de jour actif pour l'édition et la navigation.
-            Couleurs de l'écran réglées sur une lumière du jour pure.
-            Concentration de l'après-midi. Écran réglé pour une clarté maximale.
-            Profil lumière du jour actif, pleine luminosité et blancs naturels.
-            """,
-        [nameof(StatusEveningPhrases)] = """
-            Le soleil s'est couché. L'éblouissement de l'écran s'adoucit.
-            Heures du soir. La lumière bleue est atténuée pour vous détendre.
-            Le crépuscule est là. L'écran passe à une chaleur confortable.
-            Après le travail. Teinte de l'écran adoucie pour se détendre.
-            La chaleur du soir adoucit les blancs trop éclatants.
-            Après le coucher du soleil, des couleurs plus chaudes pour le soir.
-            Programme du crépuscule actif. Chaleur équilibrée sans teinte forte.
-            """,
-        [nameof(StatusNightPhrases)] = """
-            Tard dans la nuit. Chaleur profonde pour les pièces sombres.
-            Programme du coucher en cours. Lumière bleue réduite au minimum.
-            Écran réglé sur un ambre tamisé pour la lecture nocturne.
-            Heures calmes. L'éblouissement reste faible jusqu'au matin.
-            Le mode minuit protège vos yeux dans une pièce sombre.
-            Heures tardives. Le profil le plus chaud est actif avant le sommeil.
-            Programme de nuit actif. Les blancs durs cèdent à un ambre doux.
-            """,
-        [nameof(StatusTransitionToDayText)] = "Transition vers les couleurs de jour...",
-        [nameof(StatusTransitionToEveningText)] = "Transition vers la chaleur du soir...",
-        [nameof(StatusTransitionToNightText)] = "Transition vers la chaleur de nuit...",
-        [nameof(StatusDisabledText)] =
-            "LightBulb est en pause. L'écran affiche une lumière du jour neutre.",
-        [nameof(StatusDisabledDayConfigText)] =
-            "LightBulb est en pause. L'écran affiche vos couleurs de jour.",
-        [nameof(StatusPausedText)] =
-            "Mis en pause automatiquement pour une application en plein écran ou sur liste blanche.",
+        [nameof(StatusDayScheduleText)] = "Programme de jour actif à {0} K et {1} % de luminosité.",
+        [nameof(StatusEveningScheduleText)] =
+            "Programme du soir actif à {0} K et {1} % de luminosité.",
+        [nameof(StatusNightScheduleText)] =
+            "Programme de nuit actif à {0} K et {1} % de luminosité.",
+        [nameof(StatusWarmingText)] = "Réchauffement à {0} K {2}.",
+        [nameof(StatusCoolingText)] = "Refroidissement à {0} K {2}.",
+        [nameof(StatusDimmingText)] = "Luminosité réduite à {1} % {2}.",
+        [nameof(StatusBrighteningText)] = "Luminosité augmentée à {1} % {2}.",
+        [nameof(StatusWarmingDimmingText)] =
+            "Réchauffement à {0} K, luminosité réduite à {1} % {2}.",
+        [nameof(StatusWarmingBrighteningText)] =
+            "Réchauffement à {0} K, luminosité augmentée à {1} % {2}.",
+        [nameof(StatusCoolingDimmingText)] =
+            "Refroidissement à {0} K, luminosité réduite à {1} % {2}.",
+        [nameof(StatusCoolingBrighteningText)] =
+            "Refroidissement à {0} K, luminosité augmentée à {1} % {2}.",
+        [nameof(StatusForDayText)] = "pour le jour",
+        [nameof(StatusForEveningText)] = "pour le soir",
+        [nameof(StatusForNightText)] = "pour la nuit",
+        [nameof(StatusManualOverrideText)] = "Réglage manuel actif à {0} K et {1} % de luminosité.",
+        [nameof(StatusPausedRemoteStreamingText)] =
+            "En pause pour le streaming à distance, couleurs d'origine rétablies.",
+        [nameof(StatusPausedFullScreenText)] =
+            "En pause pendant qu'une application est en plein écran.",
+        [nameof(StatusPausedScreenLockedText)] = "En pause tant que l'écran est verrouillé.",
+        [nameof(StatusPausedManuallyText)] = "En pause manuelle, programme automatique suspendu.",
+        [nameof(StatusPausedAutomaticallyText)] =
+            "En pause automatique, couleurs d'origine rétablies.",
         [nameof(StatusPreviewText)] = "Aperçu des 24 prochaines heures…",
-        [nameof(StatusRemoteStreamingPausedText)] =
-            "En pause pendant une session de streaming à distance.",
         [nameof(PausedRemoteStreamingLabel)] = "En pause (streaming à distance)",
         [nameof(PausedScreenLockedLabel)] = "En pause (écran verrouillé)",
         [nameof(PausedFullScreenLabel)] = "En pause (application en plein écran)",

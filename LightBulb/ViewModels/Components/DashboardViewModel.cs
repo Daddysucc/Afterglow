@@ -38,11 +38,6 @@ public partial class DashboardViewModel : ViewModelBase
 
     private IDisposable? _enableAfterDelayRegistration;
     private IDisposable? _pendingSaveRegistration;
-    private readonly PhrasePicker<CycleStage> _statusPhrasePicker = new();
-    private readonly Dictionary<
-        CycleStage,
-        (string Source, IReadOnlyList<string> Phrases)
-    > _stagePhrasesCache = new();
 
     // Smoothing of the overall configuration, and of each display (by GDI device name)
     private readonly ConfigurationSmoother _globalSmoother = new(ColorConfiguration.Default);
@@ -55,7 +50,6 @@ public partial class DashboardViewModel : ViewModelBase
     private bool _isWhitelistedApplicationActive;
 
     private bool _isDashboardVisible = true;
-    private long _lastHiddenStatusMinute = long.MinValue;
 
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
@@ -235,31 +229,21 @@ public partial class DashboardViewModel : ViewModelBase
     partial void OnInstantChanged(DateTimeOffset value)
     {
         if (IsDashboardVisible)
-        {
             NotifyDashboardVisualsChanged();
-            return;
-        }
-
-        // While hidden, still look at the status sentence once a minute, so that its phrase
-        // picker sees every stage change and picks phrases the same way as when it's visible
-        var minute = value.ToUnixTimeSeconds() / 60;
-        if (minute == _lastHiddenStatusMinute)
-            return;
-
-        _lastHiddenStatusMinute = minute;
-        _ = StatusSentence;
     }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOffsetEnabled))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
     [NotifyPropertyChangedFor(nameof(CycleCurve))]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
     public partial double TemperatureOffset { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOffsetEnabled))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
     [NotifyPropertyChangedFor(nameof(CycleCurve))]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
     public partial double BrightnessOffset { get; set; }
 
     [ObservableProperty]
@@ -453,72 +437,24 @@ public partial class DashboardViewModel : ViewModelBase
                 : LocalizationManager.SunsetTransitionPhaseLabel,
         };
 
-    // Each phrase pool is a localized string with one phrase per line
-    private static IReadOnlyList<string> SplitPhrases(string phrases) =>
-        phrases.Split(
-            ['\r', '\n'],
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+    // Plain-language statement of what LightBulb is doing right now
+    // (e.g. "Warming to 4500 K and dimming to 90% for evening.")
+    public string StatusSentence =>
+        StatusSentenceBuilder.Build(
+            new StatusSentenceContext(
+                IsCyclePreviewEnabled,
+                IsEnabled,
+                IsPaused ? PauseReason : PauseReason.None,
+                IsOffsetEnabled,
+                TargetConfiguration,
+                Phase,
+                Schedule.IsEveningIncluded,
+                _settingsService.DayConfiguration,
+                _settingsService.EveningConfiguration,
+                _settingsService.NightConfiguration
+            ),
+            LocalizationManager
         );
-
-    // Split once per language, rather than on every refresh. The cache is keyed by the source
-    // string, so a different language (i.e. a different string) is split again automatically.
-    private IReadOnlyList<string> GetStagePhrases(CycleStage stage)
-    {
-        var source = stage switch
-        {
-            CycleStage.Day => LocalizationManager.StatusDayPhrases,
-            CycleStage.Evening => LocalizationManager.StatusEveningPhrases,
-            _ => LocalizationManager.StatusNightPhrases,
-        };
-
-        if (
-            _stagePhrasesCache.TryGetValue(stage, out var cached)
-            && string.Equals(cached.Source, source, StringComparison.Ordinal)
-        )
-        {
-            return cached.Phrases;
-        }
-
-        var phrases = SplitPhrases(source);
-        _stagePhrasesCache[stage] = (source, phrases);
-
-        return phrases;
-    }
-
-    // Plain-language description of what's going on right now.
-    // A new random phrase is only picked when the stage changes, not on every refresh.
-    public string StatusSentence
-    {
-        get
-        {
-            if (IsCyclePreviewEnabled)
-                return LocalizationManager.StatusPreviewText;
-
-            if (!IsEnabled)
-            {
-                return _settingsService.IsDefaultToDayConfigurationEnabled
-                    ? LocalizationManager.StatusDisabledDayConfigText
-                    : LocalizationManager.StatusDisabledText;
-            }
-
-            if (IsPaused)
-            {
-                return PauseReason == PauseReason.RemoteStreaming
-                    ? LocalizationManager.StatusRemoteStreamingPausedText
-                    : LocalizationManager.StatusPausedText;
-            }
-
-            return Phase switch
-            {
-                { IsTransitioning: true, Stage: CycleStage.Day } =>
-                    LocalizationManager.StatusTransitionToDayText,
-                { IsTransitioning: true, Stage: CycleStage.Evening } =>
-                    LocalizationManager.StatusTransitionToEveningText,
-                { IsTransitioning: true } => LocalizationManager.StatusTransitionToNightText,
-                var phase => _statusPhrasePicker.Get(phase.Stage, GetStagePhrases(phase.Stage)),
-            };
-        }
-    }
 
     private string FormatRelativeTime(string eventName, TimeSpan delta, bool isPast)
     {
