@@ -304,8 +304,6 @@ public partial class LocalizationManager
         [nameof(PauseFor3HoursChip)] = "3 Std.",
         [nameof(PausedStateLabel)] = "Pausiert",
         // Grayscale
-        [nameof(GrayscaleButton)] = "GRAUSTUFEN",
-        [nameof(GrayscaleTooltip)] = "Graustufenmodus ein- oder ausschalten",
         [nameof(TrayGrayscaleMenuItem)] = "Graustufen",
         [nameof(ToggleGrayscaleHotkeyLabel)] = "Graustufen umschalten",
         [nameof(ToggleGrayscaleHotkeyTooltip)] =
@@ -323,7 +321,6 @@ public partial class LocalizationManager
         [nameof(GrayscaleTemperatureShiftTooltip)] =
             "Die Farbtemperatur weiterhin über den Graustufen anwenden, für einen warmen, bernsteinfarbenen Monochrom-Look. Wenn aus, verwenden die Graustufen einen neutralen Weißpunkt, und die Helligkeit gilt weiterhin.",
         [nameof(GrayscaleScheduleOnOption)] = "Ein",
-        [nameof(TrayDisableGrayscaleMenuItem)] = "Graustufen vorübergehend deaktivieren",
         [nameof(PauseFor30MinutesChip)] = "30 Min.",
         [nameof(GrayscaleUntilScheduleChangeChip)] = "Bis zur nächsten Planänderung",
         [nameof(TrayResumeGrayscaleMenuItem)] = "Graustufen fortsetzen",

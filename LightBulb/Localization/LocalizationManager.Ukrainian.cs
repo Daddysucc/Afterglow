@@ -310,8 +310,6 @@ public partial class LocalizationManager
             [nameof(PauseFor3HoursChip)] = "3 год",
             [nameof(PausedStateLabel)] = "Призупинено",
             // Grayscale
-            [nameof(GrayscaleButton)] = "ВІДТІНКИ СІРОГО",
-            [nameof(GrayscaleTooltip)] = "Увімкнути або вимкнути режим відтінків сірого",
             [nameof(TrayGrayscaleMenuItem)] = "Відтінки сірого",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Відтінки сірого",
             [nameof(ToggleGrayscaleHotkeyTooltip)] =
@@ -329,7 +327,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Продовжувати застосовувати колірну температуру поверх відтінків сірого для теплого бурштинового монохромного вигляду. Якщо вимкнено, використовується нейтральна точка білого, а яскравість і далі застосовується.",
             [nameof(GrayscaleScheduleOnOption)] = "Увімк.",
-            [nameof(TrayDisableGrayscaleMenuItem)] = "Тимчасово вимкнути відтінки сірого",
             [nameof(PauseFor30MinutesChip)] = "30 хв",
             [nameof(GrayscaleUntilScheduleChangeChip)] = "До наступної зміни розкладу",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Відновити відтінки сірого",

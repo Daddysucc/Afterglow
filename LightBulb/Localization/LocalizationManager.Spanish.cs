@@ -312,8 +312,6 @@ public partial class LocalizationManager
             [nameof(PauseFor3HoursChip)] = "3 h",
             [nameof(PausedStateLabel)] = "En pausa",
             // Grayscale
-            [nameof(GrayscaleButton)] = "ESCALA DE GRISES",
-            [nameof(GrayscaleTooltip)] = "Activar o desactivar el modo escala de grises",
             [nameof(TrayGrayscaleMenuItem)] = "Escala de grises",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Alternar escala de grises",
             [nameof(ToggleGrayscaleHotkeyTooltip)] =
@@ -332,7 +330,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Seguir aplicando la temperatura de color sobre la escala de grises, para un aspecto monocromo ámbar y cálido. Si está desactivado, la escala de grises usa un punto blanco neutro y el brillo se sigue aplicando.",
             [nameof(GrayscaleScheduleOnOption)] = "Activada",
-            [nameof(TrayDisableGrayscaleMenuItem)] = "Desactivar temporalmente la escala de grises",
             [nameof(PauseFor30MinutesChip)] = "30 min",
             [nameof(GrayscaleUntilScheduleChangeChip)] = "Hasta el próximo cambio de horario",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Reanudar escala de grises",

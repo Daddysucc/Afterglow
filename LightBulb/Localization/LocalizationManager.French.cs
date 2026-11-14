@@ -311,8 +311,6 @@ public partial class LocalizationManager
         [nameof(PauseFor3HoursChip)] = "3 h",
         [nameof(PausedStateLabel)] = "En pause",
         // Grayscale
-        [nameof(GrayscaleButton)] = "NIVEAUX DE GRIS",
-        [nameof(GrayscaleTooltip)] = "Activer ou désactiver le mode niveaux de gris",
         [nameof(TrayGrayscaleMenuItem)] = "Niveaux de gris",
         [nameof(ToggleGrayscaleHotkeyLabel)] = "Basculer les niveaux de gris",
         [nameof(ToggleGrayscaleHotkeyTooltip)] =
@@ -331,7 +329,6 @@ public partial class LocalizationManager
         [nameof(GrayscaleTemperatureShiftTooltip)] =
             "Continuer d'appliquer la température de couleur par-dessus les niveaux de gris, pour un rendu monochrome ambré et chaud. Si désactivé, les niveaux de gris utilisent un point blanc neutre, et la luminosité reste appliquée.",
         [nameof(GrayscaleScheduleOnOption)] = "Activé",
-        [nameof(TrayDisableGrayscaleMenuItem)] = "Désactiver temporairement les niveaux de gris",
         [nameof(PauseFor30MinutesChip)] = "30 min",
         [nameof(GrayscaleUntilScheduleChangeChip)] = "Jusqu'au prochain changement d'horaire",
         [nameof(TrayResumeGrayscaleMenuItem)] = "Reprendre les niveaux de gris",
