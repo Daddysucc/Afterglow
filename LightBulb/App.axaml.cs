@@ -1,8 +1,11 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using LightBulb.Framework;
 using LightBulb.Localization;
@@ -43,6 +46,7 @@ public partial class App : Application, IDisposable
         // Services
         services.AddSingleton<ExternalApplicationService>();
         services.AddSingleton<LocalizationManager>();
+        services.AddSingleton<MonitorService>();
         services.AddSingleton<GammaService>();
         services.AddSingleton<HotKeyService>();
         services.AddSingleton<SettingsService>();
@@ -90,7 +94,7 @@ public partial class App : Application, IDisposable
         theme.Selection = Color.Parse("#3A4660");
         theme.CheckBoxOff = Color.Parse("#9AA4B2");
         theme.CheckBoxDisabled = Color.Parse("#4A525D");
-        theme.ToolTipBackground = Color.Parse("#3A414B");
+        theme.ToolTipBackground = Color.Parse("#1E2226");
         theme.ChipBackground = Color.Parse("#383F48");
         theme.TextBoxBorder = Color.Parse("#4A525D");
         theme.TextAreaBorder = Color.Parse("#4A525D");
@@ -140,17 +144,36 @@ public partial class App : Application, IDisposable
     private void Application_OnActualThemeVariantChanged(object? sender, EventArgs args) =>
         Dispatcher.UIThread.Post(InitializeTheme);
 
+    // Read from the app's own resources, rather than from the executable: when launched through
+    // the dotnet host (e.g. 'dotnet run' or debugging), the executable is dotnet.exe instead
+    private static byte[]? TryReadAppIcon()
+    {
+        try
+        {
+            using var stream = AssetLoader.Open(new Uri("avares://LightBulb/favicon.ico"));
+            using var buffer = new MemoryStream();
+            stream.CopyTo(buffer);
+
+            return buffer.ToArray();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to read the application icon: {ex}");
+            return null;
+        }
+    }
+
     private void InitializeNotifyIcon()
     {
-        _notifyIcon = new NotifyIcon(_mainViewModel.Dashboard.StatusText);
+        _notifyIcon = new NotifyIcon(_mainViewModel.Dashboard.StatusText, TryReadAppIcon());
 
         // Left click toggles the main window
         _notifyIcon.LeftClicked += (_, _) =>
             Dispatcher.UIThread.Post(() => ApplicationLifetime?.TryGetMainWindow()?.Toggle());
 
-        // Right click opens the tray menu at the cursor
-        _notifyIcon.RightClicked += (_, position) =>
-            Dispatcher.UIThread.Post(() => ShowTrayMenu(new PixelPoint(position.X, position.Y)));
+        // Right click opens the tray menu next to the icon
+        _notifyIcon.RightClicked += (_, anchor) =>
+            Dispatcher.UIThread.Post(() => ShowTrayMenu(anchor));
 
         _notifyIconSubscription = _mainViewModel.Dashboard.WatchProperty(
             o => o.StatusText,
@@ -162,7 +185,7 @@ public partial class App : Application, IDisposable
         );
     }
 
-    private void ShowTrayMenu(PixelPoint position)
+    private void ShowTrayMenu(PlatformInterop.Rect anchor)
     {
         _trayMenu?.Close();
 
@@ -174,7 +197,7 @@ public partial class App : Application, IDisposable
         };
 
         _trayMenu = trayMenu;
-        trayMenu.ShowAt(position);
+        trayMenu.ShowAt(anchor);
     }
 
     public void Dispose()

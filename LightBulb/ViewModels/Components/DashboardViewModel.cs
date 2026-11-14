@@ -27,6 +27,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly GammaService _gammaService;
     private readonly HotKeyService _hotKeyService;
     private readonly ExternalApplicationService _externalApplicationService;
+    private readonly MonitorService _monitorService;
 
     private readonly IDisposable _eventSubscription;
 
@@ -36,10 +37,17 @@ public partial class DashboardViewModel : ViewModelBase
 
     private IDisposable? _enableAfterDelayRegistration;
     private IDisposable? _pendingSaveRegistration;
-    private bool _isPausedForLockedScreen;
     private readonly PhrasePicker<CycleStage> _statusPhrasePicker = new();
-    private ColorConfiguration? _configurationSmoothingSource;
-    private ColorConfiguration? _configurationSmoothingTarget;
+
+    // Smoothing of the overall configuration, and of each display (by GDI device name)
+    private readonly ConfigurationSmoother _globalSmoother = new(ColorConfiguration.Default);
+    private readonly Dictionary<string, ConfigurationSmoother> _monitorSmoothers = new(
+        StringComparer.OrdinalIgnoreCase
+    );
+
+    // Last known states, kept while an unidentifiable application (e.g. the taskbar) is in focus
+    private string? _fullScreenMonitor;
+    private bool _isWhitelistedApplicationActive;
 
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
@@ -49,7 +57,8 @@ public partial class DashboardViewModel : ViewModelBase
         LocalizationManager localizationManager,
         GammaService gammaService,
         HotKeyService hotKeyService,
-        ExternalApplicationService externalApplicationService
+        ExternalApplicationService externalApplicationService,
+        MonitorService monitorService
     )
     {
         _settingsService = settingsService;
@@ -57,6 +66,7 @@ public partial class DashboardViewModel : ViewModelBase
         _gammaService = gammaService;
         _hotKeyService = hotKeyService;
         _externalApplicationService = externalApplicationService;
+        _monitorService = monitorService;
 
         _eventSubscription = Disposable.Merge(
             // Invalidate the cached local time zone when the system clock or time zone changes
@@ -136,6 +146,24 @@ public partial class DashboardViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(TrayStatusText))]
     [NotifyPropertyChangedFor(nameof(StatusIndicator))]
     public partial bool IsPaused { get; set; }
+
+    // Why all displays are paused automatically, if they are
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    [NotifyPropertyChangedFor(nameof(ActivePhaseCaption))]
+    [NotifyPropertyChangedFor(nameof(TrayStatusText))]
+    public partial PauseReason PauseReason { get; set; }
+
+    // GDI device name of the display that is paused on its own (running a fullscreen application)
+    [ObservableProperty]
+    public partial string? PausedMonitor { get; set; }
+
+    // Current configuration of each display, by GDI device name
+    [ObservableProperty]
+    public partial IReadOnlyDictionary<
+        string,
+        ColorConfiguration
+    > MonitorConfigurations { get; set; } = new Dictionary<string, ColorConfiguration>();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsActive))]
@@ -272,10 +300,31 @@ public partial class DashboardViewModel : ViewModelBase
                 _settingsService.MaximumBrightness
             );
 
+    // What displays are set to while paused
+    private ColorConfiguration PausedConfiguration =>
+        _settingsService.IsDefaultToDayConfigurationEnabled
+            ? _settingsService.DayConfiguration
+            : ColorConfiguration.Default;
+
     public ColorConfiguration TargetConfiguration =>
-        IsActive ? GetCycleConfiguration(SolarTimes, Instant)
-        : _settingsService.IsDefaultToDayConfigurationEnabled ? _settingsService.DayConfiguration
-        : ColorConfiguration.Default;
+        IsActive ? GetCycleConfiguration(SolarTimes, Instant) : PausedConfiguration;
+
+    // e.g. "Paused (Remote streaming)"
+    private string PausedLabel =>
+        PauseReason switch
+        {
+            PauseReason.RemoteStreaming => LocalizationManager.PausedRemoteStreamingLabel,
+            PauseReason.ScreenLocked => LocalizationManager.PausedScreenLockedLabel,
+            PauseReason.FullScreen => LocalizationManager.PausedFullScreenLabel,
+            PauseReason.Whitelist => LocalizationManager.PausedWhitelistLabel,
+            _ => LocalizationManager.PausedStateLabel,
+        };
+
+    // Gets the current configuration of a display, by its GDI device name
+    public ColorConfiguration? TryGetMonitorConfiguration(string gdiDeviceName) =>
+        MonitorConfigurations.TryGetValue(gdiDeviceName, out var configuration)
+            ? configuration
+            : null;
 
     // Fraction of the day that has passed, rounded down to the minute to avoid redundant redraws
     public double DayProgress => Math.Floor(Instant.TimeOfDay.TotalMinutes) / (24 * 60);
@@ -375,7 +424,11 @@ public partial class DashboardViewModel : ViewModelBase
             }
 
             if (IsPaused)
-                return LocalizationManager.StatusPausedText;
+            {
+                return PauseReason == PauseReason.RemoteStreaming
+                    ? LocalizationManager.StatusRemoteStreamingPausedText
+                    : LocalizationManager.StatusPausedText;
+            }
 
             return Phase switch
             {
@@ -449,8 +502,10 @@ public partial class DashboardViewModel : ViewModelBase
     // e.g. "Active phase: Evening · 4500 K (95% brightness)"
     public string ActivePhaseCaption =>
         string.Format(
-            LocalizationManager.ActivePhaseCaption,
-            GetPhaseName(Phase),
+            IsPaused && !IsCyclePreviewEnabled
+                ? LocalizationManager.PausedCaption
+                : LocalizationManager.ActivePhaseCaption,
+            IsPaused && !IsCyclePreviewEnabled ? PausedLabel : GetPhaseName(Phase),
             CurrentConfiguration.Temperature.ToString("F0", CultureInfo.CurrentCulture),
             CurrentConfiguration.Brightness.ToString("P0", CultureInfo.CurrentCulture)
         );
@@ -459,7 +514,7 @@ public partial class DashboardViewModel : ViewModelBase
     public string TrayStatusText =>
         (
             !IsEnabled ? LocalizationManager.PausedStateLabel
-            : IsPaused ? LocalizationManager.AutoPausedStateLabel
+            : IsPaused ? PausedLabel
             : GetPhaseName(Phase)
         )
         + " · "
@@ -644,112 +699,124 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void UpdateConfiguration()
     {
-        var isSmooth =
-            !IsCyclePreviewEnabled
-            && CurrentConfiguration != TargetConfiguration
-            && _settingsService.IsConfigurationSmoothingEnabled
-            && _settingsService.ConfigurationSmoothingMaxDuration.TotalSeconds >= 0.1;
+        var isSmooth = !IsCyclePreviewEnabled && _settingsService.IsConfigurationSmoothingEnabled;
+        var maxDuration = _settingsService.ConfigurationSmoothingMaxDuration;
+        var interval = _updateConfigurationTimer.Interval;
 
-        if (isSmooth)
+        var targetConfiguration = TargetConfiguration;
+
+        // Overall configuration, as shown on the dashboard and in the tray
+        CurrentConfiguration = _globalSmoother.Step(
+            targetConfiguration,
+            isSmooth,
+            maxDuration,
+            interval
+        );
+
+        // Each display is resolved (and smoothed) separately, to account for its own preferences
+        var context = new MonitorColorContext(
+            targetConfiguration,
+            PausedConfiguration,
+            !IsActive,
+            _settingsService.MinimumTemperature,
+            _settingsService.MaximumTemperature,
+            _settingsService.MinimumBrightness,
+            _settingsService.MaximumBrightness
+        );
+
+        // The cycle preview overrides pauses, including display-specific ones
+        var pausedMonitor = IsCyclePreviewEnabled ? null : PausedMonitor;
+        var isChanged = false;
+
+        _gammaService.SetGamma(gdiDeviceName =>
         {
-            // Check if the target configuration has changed since the last transition started
-            if (
-                _configurationSmoothingTarget != TargetConfiguration
-                || _configurationSmoothingSource is null
-            )
+            var monitor = _monitorService.TryGetByGdiDeviceName(gdiDeviceName);
+            var profile = monitor is not null
+                ? _settingsService.TryGetMonitorProfile(monitor.DevicePath)
+                : null;
+
+            // The primary display is the reference that the others are calibrated against,
+            // so its offsets are ignored
+            var target = MonitorColorResolver.Resolve(
+                context,
+                profile,
+                string.Equals(gdiDeviceName, pausedMonitor, StringComparison.OrdinalIgnoreCase),
+                monitor?.IsPrimary ?? false
+            );
+
+            if (!_monitorSmoothers.TryGetValue(gdiDeviceName, out var smoother))
             {
-                _configurationSmoothingSource = CurrentConfiguration;
-                _configurationSmoothingTarget = TargetConfiguration;
+                smoother = new ConfigurationSmoother(ColorConfiguration.Default);
+                _monitorSmoothers[gdiDeviceName] = smoother;
             }
 
-            var brightnessDelta = Math.Abs(
-                _configurationSmoothingTarget.Value.Brightness
-                    - _configurationSmoothingSource.Value.Brightness
-            );
+            var previous = smoother.Current;
+            var current = smoother.Step(target, isSmooth, maxDuration, interval);
 
-            var brightnessStep = Math.Max(
-                brightnessDelta
-                    / _settingsService.ConfigurationSmoothingMaxDuration.TotalSeconds
-                    * _updateConfigurationTimer.Interval.TotalSeconds,
-                0.08
-            );
+            if (current != previous || !MonitorConfigurations.ContainsKey(gdiDeviceName))
+                isChanged = true;
 
-            var temperatureDelta = Math.Abs(
-                _configurationSmoothingTarget.Value.Temperature
-                    - _configurationSmoothingSource.Value.Temperature
-            );
+            return current;
+        });
 
-            var temperatureStep = Math.Max(
-                temperatureDelta
-                    / _settingsService.ConfigurationSmoothingMaxDuration.TotalSeconds
-                    * _updateConfigurationTimer.Interval.TotalSeconds,
-                30
-            );
-
-            CurrentConfiguration = CurrentConfiguration.StepTo(
-                TargetConfiguration,
-                temperatureStep,
-                brightnessStep
-            );
-        }
-        else
+        // Publish per-display values (e.g. for the settings page) only when something has changed
+        if (isChanged)
         {
-            CurrentConfiguration = TargetConfiguration;
-            _configurationSmoothingSource = null;
-            _configurationSmoothingTarget = null;
+            MonitorConfigurations = _monitorSmoothers.ToDictionary(
+                p => p.Key,
+                p => p.Value.Current,
+                StringComparer.OrdinalIgnoreCase
+            );
         }
-
-        _gammaService.SetGamma(CurrentConfiguration);
     }
 
     private void UpdateIsPaused()
     {
-        // Pause while the screen is locked
-        if (_settingsService.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked())
-        {
-            IsPaused = true;
-            _isPausedForLockedScreen = true;
-            return;
-        }
+        var settings = new AutoPauseSettings(
+            _settingsService.IsStreamingAutoPauseEnabled,
+            _settingsService.IsPauseWhenScreenLockedEnabled,
+            _settingsService.IsPauseWhenFullScreenEnabled,
+            _settingsService.IsPerMonitorFullscreenPauseEnabled,
+            _settingsService.IsApplicationWhitelistEnabled
+        );
 
-        // Resume right after unlocking. The checks below may not change the paused state
-        // on their own (e.g. if the desktop or taskbar is focused right after unlocking).
-        if (_isPausedForLockedScreen)
-        {
-            _isPausedForLockedScreen = false;
-            IsPaused = false;
-        }
+        // These are only checked when the corresponding setting is enabled, to avoid needless work
+        var isRemoteStreamingActive =
+            settings.IsStreamingAutoPauseEnabled
+            && _externalApplicationService.IsRemoteStreamingActive();
 
-        // Pause on fullscreen applications
-        if (
-            _settingsService.IsPauseWhenFullScreenEnabled
-            && _externalApplicationService.IsForegroundApplicationFullScreen()
-        )
-        {
-            IsPaused = true;
-            return;
-        }
+        var isScreenLocked = settings.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked();
 
-        // Ignored or unidentifiable foreground applications should not affect whitelist pausing.
-        // This prevents brief flashes when switching from a fullscreen/whitelisted application
-        // to an ignored application (e.g., taskbar), and back.
+        // Ignored or unidentifiable foreground applications (e.g. the taskbar) should not affect
+        // the fullscreen and whitelist states. This prevents brief flashes when switching from a
+        // fullscreen/whitelisted application to an ignored application, and back.
         // https://github.com/Tyrrrz/LightBulb/issues/451
         var foregroundApplication = _externalApplicationService.TryGetForegroundApplication();
-        if (foregroundApplication is null)
-            return;
-
-        // Pause on whitelisted applications
-        if (
-            _settingsService.IsApplicationWhitelistEnabled
-            && _settingsService.WhitelistedApplications is not null
-            && _settingsService.WhitelistedApplications.Contains(foregroundApplication)
-        )
+        if (foregroundApplication is not null)
         {
-            IsPaused = true;
-            return;
+            _fullScreenMonitor = settings.IsPauseWhenFullScreenEnabled
+                ? _externalApplicationService.TryGetForegroundFullScreenMonitor()
+                : null;
+
+            _isWhitelistedApplicationActive =
+                settings.IsApplicationWhitelistEnabled
+                && _settingsService.WhitelistedApplications is not null
+                && _settingsService.WhitelistedApplications.Contains(foregroundApplication);
         }
 
-        IsPaused = false;
+        var state = AutoPause.Evaluate(
+            new AutoPauseConditions(
+                isRemoteStreamingActive,
+                isScreenLocked,
+                settings.IsPauseWhenFullScreenEnabled ? _fullScreenMonitor : null,
+                settings.IsApplicationWhitelistEnabled && _isWhitelistedApplicationActive
+            ),
+            settings
+        );
+
+        PauseReason = state.Reason;
+        PausedMonitor = state.PausedMonitor;
+        IsPaused = state.IsGloballyPaused;
     }
 
     public override Task InitializeAsync()

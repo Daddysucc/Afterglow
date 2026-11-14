@@ -121,11 +121,42 @@
         </Style>
 
         <!--  Tooltip  -->
+        <!--  Uses its own template so that the Material theme can never turn the text dark on the dark surface  -->
         <Style Selector="ToolTip">
+            <Setter Property="Background" Value="{DynamicResource ToolTipBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToolTipBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="MaxWidth" Value="320" />
             <Setter Property="TextElement.FontSize" Value="13" />
             <Setter Property="TextElement.FontWeight" Value="Normal" />
             <Setter Property="TextElement.FontStyle" Value="Normal" />
             <Setter Property="TextElement.FontStretch" Value="Normal" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Foreground="{TemplateBinding Foreground}"
+                            TextWrapping="Wrap"
+                        />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <!--  Custom tooltip content (e.g. with formatting) wraps too  -->
+            <Style Selector="^ TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
         </Style>
 
         <!--  ==== Shared design system ====  -->
@@ -204,6 +235,14 @@
             <SolidColorBrush x:Key="CurveBrush" Color="#D5DBE0" />
             <SolidColorBrush x:Key="WaveBrush" Opacity="0.05" Color="#FFFFFF" />
             <SolidColorBrush x:Key="TrayMenuBrush" Color="#25292E" />
+
+            <!--  Tooltips (also overrides the brushes the Material theme would use for them)  -->
+            <SolidColorBrush x:Key="ToolTipBackground" Color="#1E2226" />
+            <SolidColorBrush x:Key="ToolTipForeground" Color="#F0F2F5" />
+            <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#3E4651" />
+            <SolidColorBrush x:Key="MaterialToolTipBackground" Color="#1E2226" />
+            <SolidColorBrush x:Key="MaterialToolTipForeground" Color="#F0F2F5" />
+            <SolidColorBrush x:Key="MaterialToolTipBackgroundBrush" Color="#1E2226" />
 
             <!--  Text box  -->
             <ControlTheme

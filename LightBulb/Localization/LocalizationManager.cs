@@ -105,6 +105,12 @@ public partial class LocalizationManager
     public string StatusDisabledDayConfigText => Get();
     public string StatusPausedText => Get();
     public string StatusPreviewText => Get();
+    public string StatusRemoteStreamingPausedText => Get();
+    public string PausedRemoteStreamingLabel => Get();
+    public string PausedScreenLockedLabel => Get();
+    public string PausedFullScreenLabel => Get();
+    public string PausedWhitelistLabel => Get();
+    public string PausedCaption => Get();
     public string SolarEventPastText => Get();
     public string SolarEventFutureText => Get();
     public string SolarEventNowText => Get();
@@ -256,6 +262,28 @@ public partial class LocalizationManager
     public string PauseWhenScreenLockedLabel => Get();
     public string PauseWhenScreenLockedTooltip => Get();
     public string WhitelistCardSubtitle => Get();
+    public string PerMonitorFullscreenPauseLabel => Get();
+    public string PerMonitorFullscreenPauseTooltip => Get();
+    public string StreamingAutoPauseLabel => Get();
+    public string StreamingAutoPauseTooltip => Get();
+    public string DisplaysCardTitle => Get();
+    public string DisplaysCardSubtitle => Get();
+    public string IdentifyButton => Get();
+    public string IdentifyTooltip => Get();
+    public string NoDisplaysText => Get();
+    public string PrimaryBadge => Get();
+    public string DisplayEnabledTooltip => Get();
+    public string MonitorTemperatureOffsetLabel => Get();
+    public string MonitorTemperatureOffsetTooltip => Get();
+    public string MonitorBrightnessOffsetLabel => Get();
+    public string MonitorBrightnessOffsetTooltip => Get();
+    public string ResetOffsetsTooltip => Get();
+    public string ReferenceDisplayNote => Get();
+    public string EffectiveNowText => Get();
+    public string ExcludedNeutralText => Get();
+    public string DisconnectedDisplaysLabel => Get();
+    public string ForgetButton => Get();
+    public string ForgetDisplayTooltip => Get();
 
     // Controls & app
     public string HotkeysCardTitle => Get();
@@ -279,5 +307,4 @@ public partial class LocalizationManager
     public string PauseFor1HourChip => Get();
     public string PauseFor3HoursChip => Get();
     public string PausedStateLabel => Get();
-    public string AutoPausedStateLabel => Get();
 }

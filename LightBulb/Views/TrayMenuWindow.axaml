@@ -18,6 +18,7 @@
     Topmost="True"
     TransparencyLevelHint="Transparent"
     WindowDecorations="None"
+    WindowStartupLocation="Manual"
 >
     <Window.Styles>
         <!--  Menu row  -->
@@ -118,7 +119,7 @@
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource TextPrimaryBrush}"
                         Text="{Binding Dashboard.TrayStatusText}"
-                        TextTrimming="CharacterEllipsis"
+                        TextWrapping="Wrap"
                     />
                     <TextBlock
                         FontSize="11"

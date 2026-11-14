@@ -54,6 +54,13 @@ public partial class LocalizationManager
             [nameof(StatusPausedText)] =
                 "Paused automatically for a fullscreen or whitelisted app.",
             [nameof(StatusPreviewText)] = "Previewing the next 24 hours…",
+            [nameof(StatusRemoteStreamingPausedText)] =
+                "Paused while a remote streaming session is active.",
+            [nameof(PausedRemoteStreamingLabel)] = "Paused (Remote streaming)",
+            [nameof(PausedScreenLockedLabel)] = "Paused (Screen locked)",
+            [nameof(PausedFullScreenLabel)] = "Paused (Fullscreen app)",
+            [nameof(PausedWhitelistLabel)] = "Paused (Whitelisted app)",
+            [nameof(PausedCaption)] = "{0} · {1} K ({2} brightness)",
             [nameof(SolarEventPastText)] = "{0}: {1} ago",
             [nameof(SolarEventFutureText)] = "{0}: in {1}",
             [nameof(SolarEventNowText)] = "{0}: now",
@@ -244,6 +251,35 @@ public partial class LocalizationManager
                 "Pause LightBulb while the workstation is locked",
             [nameof(WhitelistCardSubtitle)] =
                 "Pause LightBulb while any of the selected programs is in the foreground.",
+            [nameof(PerMonitorFullscreenPauseLabel)] = "Pause only the monitor running fullscreen",
+            [nameof(PerMonitorFullscreenPauseTooltip)] =
+                "When a fullscreen application is in the foreground, restore normal colors only on the display that runs it, and keep the other displays on the cycle",
+            [nameof(StreamingAutoPauseLabel)] = "Pause during remote streaming (Sunshine / RDP)",
+            [nameof(StreamingAutoPauseTooltip)] =
+                "Restore normal colors on all displays while this computer is being streamed with Sunshine or accessed with Remote Desktop",
+            [nameof(DisplaysCardTitle)] = "Connected Displays",
+            [nameof(DisplaysCardSubtitle)] =
+                "Exclude displays or fine-tune their warmth individually. Displays are recognized again when reconnected.",
+            [nameof(IdentifyButton)] = "IDENTIFY",
+            [nameof(IdentifyTooltip)] = "Show each display's number on its screen",
+            [nameof(NoDisplaysText)] = "No displays detected.",
+            [nameof(PrimaryBadge)] = "PRIMARY",
+            [nameof(DisplayEnabledTooltip)] =
+                "Apply LightBulb to this display. When excluded, the display is kept at neutral colors.",
+            [nameof(MonitorTemperatureOffsetLabel)] = "Temperature offset",
+            [nameof(MonitorTemperatureOffsetTooltip)] =
+                "Added to the current color temperature on this display only",
+            [nameof(MonitorBrightnessOffsetLabel)] = "Brightness offset",
+            [nameof(MonitorBrightnessOffsetTooltip)] =
+                "Added to the current brightness on this display only",
+            [nameof(ResetOffsetsTooltip)] = "Reset offsets",
+            [nameof(ReferenceDisplayNote)] =
+                "Reference display · Follows main Cycle & Colors schedule",
+            [nameof(EffectiveNowText)] = "Effective now: {0} K · {1}",
+            [nameof(ExcludedNeutralText)] = "Excluded · Neutral 6600 K",
+            [nameof(DisconnectedDisplaysLabel)] = "Saved disconnected displays ({0})",
+            [nameof(ForgetButton)] = "FORGET",
+            [nameof(ForgetDisplayTooltip)] = "Remove the saved preferences for this display",
             // Controls & app
             [nameof(HotkeysCardTitle)] = "Global Hotkeys",
             [nameof(HotkeysCardSubtitle)] =
@@ -268,6 +304,5 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 hr",
             [nameof(PauseFor3HoursChip)] = "3 hrs",
             [nameof(PausedStateLabel)] = "Paused",
-            [nameof(AutoPausedStateLabel)] = "Auto-paused",
         };
 }

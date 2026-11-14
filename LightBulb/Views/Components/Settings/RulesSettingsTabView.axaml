@@ -40,6 +40,41 @@
                     />
                 </Grid>
 
+                <!--  Only pause the display running fullscreen (refines the option above)  -->
+                <Grid
+                    Margin="16,0,0,0"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsPauseWhenFullScreenEnabled}"
+                    ToolTip.ShowOnDisabled="True"
+                    ToolTip.Tip="{Binding LocalizationManager.PerMonitorFullscreenPauseTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.PerMonitorFullscreenPauseLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding IsPerMonitorFullscreenPauseEnabled}"
+                    />
+                </Grid>
+
+                <!--  Remote streaming  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.StreamingAutoPauseTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.StreamingAutoPauseLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding IsStreamingAutoPauseEnabled}"
+                    />
+                </Grid>
+
                 <!--  Screen locked  -->
                 <Grid
                     ColumnDefinitions="*,Auto"
@@ -71,6 +106,297 @@
                         IsChecked="{Binding IsDefaultToDayConfigurationEnabled}"
                     />
                 </Grid>
+            </StackPanel>
+        </Border>
+
+        <!--  Connected displays  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2">
+                        <TextBlock
+                            Classes="card-title"
+                            Text="{Binding LocalizationManager.DisplaysCardTitle}"
+                        />
+                        <TextBlock
+                            Classes="card-subtitle"
+                            Text="{Binding LocalizationManager.DisplaysCardSubtitle}"
+                        />
+                    </StackPanel>
+
+                    <!--  Identify  -->
+                    <Button
+                        Grid.Column="1"
+                        Padding="10,4"
+                        VerticalAlignment="Center"
+                        Click="IdentifyButton_OnClick"
+                        Foreground="{DynamicResource AccentTextBrush}"
+                        IsEnabled="{Binding HasMonitors}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.IdentifyTooltip}"
+                    >
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <materialIcons:MaterialIcon Width="16" Height="16" Kind="MonitorEye" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Text="{Binding LocalizationManager.IdentifyButton}"
+                            />
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <TextBlock
+                    Classes="setting-hint"
+                    IsVisible="{Binding !HasMonitors}"
+                    Text="{Binding LocalizationManager.NoDisplaysText}"
+                />
+
+                <ItemsControl ItemsSource="{Binding Monitors}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" Spacing="8" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="settings:MonitorItemViewModel">
+                            <Border
+                                Padding="12,10"
+                                Background="{DynamicResource AppBackgroundBrush}"
+                                BorderBrush="{DynamicResource CardBorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                            >
+                                <StackPanel Orientation="Vertical" Spacing="8">
+                                    <!--  Name, badges and toggle  -->
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                        <Border
+                                            Grid.Column="0"
+                                            Width="22"
+                                            Height="22"
+                                            VerticalAlignment="Center"
+                                            Background="{DynamicResource AccentSoftBrush}"
+                                            CornerRadius="11"
+                                        >
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="12"
+                                                FontWeight="Bold"
+                                                Foreground="{DynamicResource AccentTextBrush}"
+                                                Text="{Binding Number}"
+                                            />
+                                        </Border>
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Orientation="Vertical"
+                                            Spacing="1"
+                                        >
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock
+                                                    Classes="setting-label"
+                                                    FontWeight="SemiBold"
+                                                    Text="{Binding DisplayName}"
+                                                    ToolTip.Tip="{Binding Monitor.DevicePath}"
+                                                />
+                                                <Border
+                                                    Padding="6,1"
+                                                    VerticalAlignment="Center"
+                                                    Background="{DynamicResource AmberBrush}"
+                                                    CornerRadius="8"
+                                                    IsVisible="{Binding IsPrimary}"
+                                                >
+                                                    <TextBlock
+                                                        FontSize="9.5"
+                                                        FontWeight="Bold"
+                                                        Foreground="#22262A"
+                                                        Text="{Binding LocalizationManager.PrimaryBadge}"
+                                                    />
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock
+                                                Classes="setting-hint"
+                                                Text="{Binding EffectiveText}"
+                                            />
+                                        </StackPanel>
+                                        <ToggleSwitch
+                                            Grid.Column="2"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding IsEnabled}"
+                                            ToolTip.Tip="{Binding LocalizationManager.DisplayEnabledTooltip}"
+                                        />
+                                    </Grid>
+
+                                    <!--  The primary display is the reference that the others are matched to  -->
+                                    <StackPanel
+                                        IsVisible="{Binding IsPrimary}"
+                                        Orientation="Horizontal"
+                                        Spacing="6"
+                                    >
+                                        <materialIcons:MaterialIcon
+                                            Width="14"
+                                            Height="14"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource TextMutedBrush}"
+                                            Kind="Pin"
+                                        />
+                                        <TextBlock
+                                            Classes="setting-hint"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding LocalizationManager.ReferenceDisplayNote}"
+                                        />
+                                    </StackPanel>
+
+                                    <!--  Offsets (only for other displays; dimmed and disabled when the display is excluded)  -->
+                                    <Grid
+                                        ColumnDefinitions="*,*,Auto"
+                                        ColumnSpacing="20"
+                                        IsEnabled="{Binding IsEnabled}"
+                                        IsVisible="{Binding !IsPrimary}"
+                                    >
+                                        <Grid.Styles>
+                                            <Style Selector="Grid:disabled">
+                                                <Setter Property="Opacity" Value="0.4" />
+                                            </Style>
+                                        </Grid.Styles>
+
+                                        <StackPanel
+                                            Grid.Column="0"
+                                            Orientation="Vertical"
+                                            Spacing="4"
+                                            ToolTip.Tip="{Binding LocalizationManager.MonitorTemperatureOffsetTooltip}"
+                                        >
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock
+                                                    Classes="setting-hint"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding LocalizationManager.MonitorTemperatureOffsetLabel}"
+                                                />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    Classes="value"
+                                                    FontSize="12"
+                                                    Text="{Binding TemperatureOffsetText}"
+                                                />
+                                            </Grid>
+                                            <Slider
+                                                IsSnapToTickEnabled="True"
+                                                LargeChange="250"
+                                                Maximum="{Binding MaxTemperatureOffset}"
+                                                Minimum="{Binding MinTemperatureOffset}"
+                                                SmallChange="50"
+                                                TickFrequency="50"
+                                                Value="{Binding TemperatureOffset}"
+                                            />
+                                        </StackPanel>
+
+                                        <StackPanel
+                                            Grid.Column="1"
+                                            Orientation="Vertical"
+                                            Spacing="4"
+                                            ToolTip.Tip="{Binding LocalizationManager.MonitorBrightnessOffsetTooltip}"
+                                        >
+                                            <Grid ColumnDefinitions="*,Auto">
+                                                <TextBlock
+                                                    Classes="setting-hint"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding LocalizationManager.MonitorBrightnessOffsetLabel}"
+                                                />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    Classes="value"
+                                                    FontSize="12"
+                                                    Text="{Binding BrightnessOffsetText}"
+                                                />
+                                            </Grid>
+                                            <Slider
+                                                IsSnapToTickEnabled="True"
+                                                LargeChange="0.05"
+                                                Maximum="{Binding MaxBrightnessOffset}"
+                                                Minimum="{Binding MinBrightnessOffset}"
+                                                SmallChange="0.01"
+                                                TickFrequency="0.01"
+                                                Value="{Binding BrightnessOffset}"
+                                            />
+                                        </StackPanel>
+
+                                        <!--  Reset offsets (only shown when there's something to reset)  -->
+                                        <Button
+                                            Grid.Column="2"
+                                            Width="28"
+                                            Height="28"
+                                            Padding="0"
+                                            VerticalAlignment="Center"
+                                            Command="{Binding ResetOffsetsCommand}"
+                                            Foreground="{DynamicResource TextMutedBrush}"
+                                            IsVisible="{Binding HasOffsets}"
+                                            Theme="{DynamicResource MaterialFlatButton}"
+                                            ToolTip.Tip="{Binding LocalizationManager.ResetOffsetsTooltip}"
+                                        >
+                                            <materialIcons:MaterialIcon
+                                                Width="16"
+                                                Height="16"
+                                                Kind="Restore"
+                                            />
+                                        </Button>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!--  Displays that have saved preferences but aren't connected  -->
+                <Expander
+                    HorizontalAlignment="Stretch"
+                    IsVisible="{Binding HasDisconnectedMonitors}"
+                >
+                    <Expander.Header>
+                        <TextBlock
+                            Classes="setting-label"
+                            Text="{Binding DisconnectedMonitorsHeader}"
+                        />
+                    </Expander.Header>
+                    <ItemsControl ItemsSource="{Binding DisconnectedMonitors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="settings:DisconnectedMonitorItemViewModel">
+                                <Grid
+                                    Margin="0,2"
+                                    ColumnDefinitions="Auto,*,Auto"
+                                    ColumnSpacing="10"
+                                >
+                                    <materialIcons:MaterialIcon
+                                        Grid.Column="0"
+                                        Width="16"
+                                        Height="16"
+                                        Foreground="{DynamicResource TextMutedBrush}"
+                                        Kind="MonitorOff"
+                                    />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        Classes="setting-label"
+                                        Text="{Binding Name}"
+                                        ToolTip.Tip="{Binding DevicePath}"
+                                    />
+                                    <Button
+                                        Grid.Column="2"
+                                        Padding="10,3"
+                                        Command="{Binding ForgetCommand}"
+                                        Foreground="{DynamicResource TextMutedBrush}"
+                                        Theme="{DynamicResource MaterialFlatButton}"
+                                        ToolTip.Tip="{Binding $parent[UserControl].((settings:RulesSettingsTabViewModel)DataContext).LocalizationManager.ForgetDisplayTooltip}"
+                                    >
+                                        <TextBlock
+                                            FontSize="12"
+                                            Text="{Binding $parent[UserControl].((settings:RulesSettingsTabViewModel)DataContext).LocalizationManager.ForgetButton}"
+                                        />
+                                    </Button>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Expander>
             </StackPanel>
         </Border>
 
