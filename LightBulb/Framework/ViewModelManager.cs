@@ -34,6 +34,24 @@ public class ViewModelManager(IServiceProvider services, LocalizationManager loc
     public MessageBoxViewModel GetMessageBoxViewModel(string title, string message) =>
         GetMessageBoxViewModel(title, message, localizationManager.CloseButton, null);
 
-    public SettingsViewModel GetSettingsViewModel() =>
-        services.GetRequiredService<SettingsViewModel>();
+    // Settings (and their tabs) are created anew every time they're opened, so they're created in
+    // their own scope, which the caller disposes once they're closed
+    public Owned<SettingsViewModel> CreateSettingsViewModel() =>
+        CreateOwned<SettingsViewModel>(services);
+
+    internal static Owned<T> CreateOwned<T>(IServiceProvider services)
+        where T : notnull
+    {
+        var scope = services.CreateScope();
+
+        try
+        {
+            return new Owned<T>(scope.ServiceProvider.GetRequiredService<T>(), scope);
+        }
+        catch
+        {
+            scope.Dispose();
+            throw;
+        }
+    }
 }

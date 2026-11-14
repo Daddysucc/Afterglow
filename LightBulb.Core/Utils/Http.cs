@@ -16,7 +16,7 @@ public static class Http
                 UserAgent =
                 {
                     new ProductInfoHeaderValue(
-                        "LightBulb",
+                        "Afterglow",
                         Assembly.GetExecutingAssembly().TryGetVersionString()
                     ),
                 },

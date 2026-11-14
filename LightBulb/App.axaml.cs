@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
@@ -32,7 +33,7 @@ public partial class App : Application, IDisposable
     private NotifyIcon? _notifyIcon;
     private IDisposable? _notifyIconSubscription;
     private TrayMenuWindow? _trayMenu;
-    private bool _isDisposed;
+    private int _isDisposed;
 
     public App()
     {
@@ -127,6 +128,11 @@ public partial class App : Application, IDisposable
             // https://github.com/Tyrrrz/YoutubeDownloader/issues/795
             desktop.Exit += (_, _) => Dispose();
 
+            // Save pending changes and remove the tray icon even if the app goes down abruptly
+            AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
+
             InitializeNotifyIcon();
         }
 
@@ -201,18 +207,57 @@ public partial class App : Application, IDisposable
         trayMenu.ShowAt(anchor);
     }
 
+    private static void TryRun(Action action)
+    {
+        try
+        {
+            action();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Cleanup step failed: {ex}");
+        }
+    }
+
+    // Last-chance cleanup for when the app is crashing or being terminated, in which case the
+    // regular shutdown may be skipped. May run on any thread, so it only does what's safe there.
+    // (Gamma and grayscale are restored by their own services in these cases.)
+    private void OnProcessEnding()
+    {
+        TryRun(_mainViewModel.Dashboard.TryFlushPendingSaveToFile);
+
+        // Otherwise the tray icon lingers until the mouse moves over it
+        TryRun(() => _notifyIcon?.Dispose());
+    }
+
     public void Dispose()
     {
-        if (_isDisposed)
+        // May be called from several places at once (e.g. the exit handler and a crash)
+        if (Interlocked.Exchange(ref _isDisposed, 1) != 0)
             return;
 
-        _isDisposed = true;
+        AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
+        AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+        Dispatcher.UIThread.UnhandledException -= OnDispatcherUnhandledException;
 
-        _trayMenu?.Close();
-        _notifyIconSubscription?.Dispose();
-        _notifyIcon?.Dispose();
-        _services.Dispose();
+        // Each step on its own, so that one failing doesn't skip the others
+        // (in particular, disposing the services is what restores gamma)
+        TryRun(() => _trayMenu?.Close());
+        TryRun(() => _notifyIconSubscription?.Dispose());
+        TryRun(() => _notifyIcon?.Dispose());
+        TryRun(_services.Dispose);
     }
+
+    private void OnProcessExit(object? sender, EventArgs args) => OnProcessEnding();
+
+    private void OnUnhandledException(object? sender, UnhandledExceptionEventArgs args) =>
+        OnProcessEnding();
+
+    // On the UI thread, so pending changes can be saved the regular way before the app goes down
+    private void OnDispatcherUnhandledException(
+        object? sender,
+        DispatcherUnhandledExceptionEventArgs args
+    ) => TryRun(_mainViewModel.Dashboard.FlushPendingSave);
 }
 
 public partial class App

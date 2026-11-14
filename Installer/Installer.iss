@@ -1,18 +1,22 @@
+; The installed files, folder, and identifiers keep LightBulb's names, so that installing Afterglow
+; upgrades an existing LightBulb installation in place, keeping its settings and startup entry
 #define AppName "LightBulb"
+#define AppDisplayName "Afterglow"
+#define AppUrl "https://github.com/Daddysucc/Afterglow"
 #define AppVersion GetEnv("INSTALLER_APP_VERSION")
 
 [Setup]
 AppId={{892F745F-A497-42ED-B503-8D74936D0BEB}
-AppName={#AppName}
+AppName={#AppDisplayName}
 AppVersion={#AppVersion}
-AppVerName={#AppName} {#AppVersion}
-AppPublisher="Tyrrrz"
-AppPublisherURL="https://github.com/Tyrrrz/LightBulb"
-AppSupportURL="https://github.com/Tyrrrz/LightBulb/issues"
-AppUpdatesURL="https://github.com/Tyrrrz/LightBulb/releases"
+AppVerName={#AppDisplayName} {#AppVersion}
+AppPublisher="{#AppDisplayName}"
+AppPublisherURL="{#AppUrl}"
+AppSupportURL="{#AppUrl}/issues"
+AppUpdatesURL="{#AppUrl}/releases"
 AppMutex=LightBulb_Identity
 DefaultDirName={autopf}\{#AppName}
-DefaultGroupName={#AppName}
+DefaultGroupName={#AppDisplayName}
 AllowNoIcons=yes
 DisableWelcomePage=yes
 DisableProgramGroupPage=no
@@ -31,15 +35,15 @@ Source: "..\License.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Source\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\LightBulb.exe"
-Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
-Name: "{group}\{#AppName} on Github"; Filename: "https://github.com/Tyrrrz/LightBulb"
+Name: "{group}\{#AppDisplayName}"; Filename: "{app}\LightBulb.exe"
+Name: "{group}\{cm:UninstallProgram,{#AppDisplayName}}"; Filename: "{uninstallexe}"
+Name: "{group}\{#AppDisplayName} on GitHub"; Filename: "{#AppUrl}"
 
 [Registry]
 Root: HKLM; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\ICM"; ValueType: dword; ValueName: "GdiICMGammaRange"; ValueData: "256"
 
 [Run]
-Filename: "{app}\LightBulb.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\LightBulb.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppDisplayName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
 Name: "{userappdata}\LightBulb"; Type: filesandordirs

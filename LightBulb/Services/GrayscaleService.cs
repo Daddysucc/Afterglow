@@ -58,7 +58,8 @@ public class GrayscaleService : IDisposable
         if (_isHookedToProcess)
         {
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
-            Dispatcher.UIThread.UnhandledException += OnUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
         }
     }
 
@@ -128,8 +129,14 @@ public class GrayscaleService : IDisposable
     // so the effect is reset directly (it's safe to call from any thread)
     private void OnProcessExit(object? sender, EventArgs args) => Disable();
 
-    private void OnUnhandledException(object? sender, DispatcherUnhandledExceptionEventArgs args) =>
+    // A crash on a background thread ends the process without the usual shutdown
+    private void OnUnhandledException(object? sender, UnhandledExceptionEventArgs args) =>
         Disable();
+
+    private void OnDispatcherUnhandledException(
+        object? sender,
+        DispatcherUnhandledExceptionEventArgs args
+    ) => Disable();
 
     public void Dispose()
     {
@@ -141,7 +148,8 @@ public class GrayscaleService : IDisposable
         if (_isHookedToProcess)
         {
             AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
-            Dispatcher.UIThread.UnhandledException -= OnUnhandledException;
+            AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+            Dispatcher.UIThread.UnhandledException -= OnDispatcherUnhandledException;
         }
 
         Disable();

@@ -1,56 +1,58 @@
-# LightBulb
+# Afterglow
 
-[![Status](https://img.shields.io/badge/status-maintenance-ffd700.svg)](https://github.com/Tyrrrz/.github/blob/prime/docs/project-status.md)
-[![Build](https://img.shields.io/github/actions/workflow/status/Tyrrrz/LightBulb/main.yml?branch=prime)](https://github.com/Tyrrrz/LightBulb/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/Tyrrrz/LightBulb/prime)](https://codecov.io/gh/Tyrrrz/LightBulb)
-[![Release](https://img.shields.io/github/release/Tyrrrz/LightBulb.svg)](https://github.com/Tyrrrz/LightBulb/releases)
-[![Downloads](https://img.shields.io/github/downloads/Tyrrrz/LightBulb/total.svg)](https://github.com/Tyrrrz/LightBulb/releases)
-[![Discord](https://img.shields.io/discord/869237470565392384?label=discord)](https://discord.gg/2SUWKFnHSm)
-
-<table>
-    <tr>
-        <td width="99999" align="center">Development of this project is entirely funded by the community. <b><a href="https://tyrrrz.me/donate">Consider donating to support!</a></b></td>
-    </tr>
-</table>
+A fork of [LightBulb](https://github.com/Tyrrrz/LightBulb) by [Oleksii Holub (Tyrrrz)](https://github.com/Tyrrrz), with multi-monitor support, a three-stage day cycle, and a grayscale mode.
 
 <p align="center">
     <img src="favicon.png" alt="Icon" />
 </p>
 
-> **Made in 🇺🇦 Ukraine — [despite Russia's best efforts](https://tyrrrz.me/ukraine)**.
-> Using this project or its source code comes with the implicit agreement that you condemn Russia's war of aggression against Ukraine, recognize Russia as a terrorist state, and support Ukraine's territorial integrity.
+**Afterglow** reduces eye strain from looking at screens late in the day.
+As the day goes on, it adjusts the gamma of your displays, shifting their color temperature from cool daylight to warm amber at night, so that your screens match the light around you.
+It runs quietly in the system tray and has minimal impact on performance.
 
-**LightBulb** is an application that reduces eyestrain produced by staring at a computer screen when working late hours.
-As the day goes on, it continuously adjusts gamma, transitioning the display color temperature from cold blue in the afternoon to warm yellow during the night.
-Its primary objective is to match the color of the screen to the light sources of your surrounding environment — sunlight during the day and artificial light during the night.
-**LightBulb** has minimal impact on performance and offers many customization options.
+## What Afterglow adds
+
+- **Multi-monitor support.** Exclude individual displays, or give each one its own temperature offset (up to ±2000 K) and brightness offset. By default, offsets scale perceptually (in mireds), so that panels matched during the day stay matched at night. The primary display is the reference, and **Identify** shows each display's number on its screen. Saved display settings survive reconnecting the display and graphics driver updates.
+- **Three-stage cycle.** Day, Evening, and Night, with a configurable bedtime, instead of a single switch at sunset.
+- **Grayscale mode.** Remove color from the screen manually, or on a schedule: at night, in the evening and at night, or always. The color temperature can keep tinting it for a warm monochrome look, or it can use a neutral white point.
+- **Smart auto-pause.** Restore normal colors only on the display that runs a fullscreen application, while the screen is locked, during remote streaming (Remote Desktop, or Sunshine and other streaming hosts by port), or while a whitelisted application is in the foreground.
+- **Tray menu with snooze chips.** Pause Afterglow, or temporarily disable grayscale, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
+- **Redesigned interface.** A dashboard with a 24-hour color curve and a plain-language status line, and a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
+
+Also included from LightBulb:
+
+- Location-based or manual sunrise and sunset times
+- Global hotkeys
+- Smooth gamma transitions
+- Works without an internet connection (only searching for a location uses it)
 
 ## Download
 
-- 🟢 [**Stable release**](https://github.com/Tyrrrz/LightBulb/releases)
-- 🟠 [CI build](https://github.com/Tyrrrz/LightBulb/actions/workflows/main.yml)
-- 📦 [WinGet](https://winget.run/pkg/Tyrrrz/LightBulb): `winget install Tyrrrz.LightBulb` (community-maintained)
-- 📦 [Scoop](https://scoop.sh/#/apps?q=LightBulb&p=1&id=9639ce8d7756b4c8a252368ef718c25b5a3b4ce0): `scoop install extras/lightbulb` (community-maintained)
-- 📦 [Chocolatey](https://push.chocolatey.org/packages/lightbulb): `choco install lightbulb` (community-maintained)
+Prebuilt versions are published on the [Releases](https://github.com/Daddysucc/Afterglow/releases) page.
+Afterglow requires Windows 10 or later.
 
-> [!NOTE]
-> Community-maintained packages are published independently from this repository and may not always be up to date with the latest release.
+### Building from source
 
-> [!NOTE]
-> If you're unsure which build is right for your system, consult with [this page](https://useragent.cc) to determine your OS and CPU architecture.
+With the [.NET 10 SDK](https://dotnet.microsoft.com/download) installed, run:
 
-## Features
+```
+dotnet publish LightBulb/LightBulb.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.0.0
+```
 
-- Extensive customization options
-- Location-based sunrise and sunset times
-- Manual sunrise and sunset times
-- Whitelist for color-sensitive applications
-- Global hotkeys for adjusting on the fly
-- Smooth gamma transitions
-- Minimal performance impact
-- Works without internet connection
+This produces a standalone `LightBulb.exe` in `LightBulb/bin/Release/net10.0-windows/win-x64/publish/`.
+
+## Coming from LightBulb
+
+For compatibility, Afterglow keeps LightBulb's executable name (`LightBulb.exe`), settings location, and startup entry, so it picks up your existing LightBulb settings.
+The installer upgrades an existing LightBulb installation in place.
+Only one of the two can run at a time.
 
 ## Screenshots
 
-![dashboard](.assets/dashboard.png)
-![settings](.assets/settings.png)
+![Dashboard](.assets/dashboard.png)
+![Settings](.assets/settings.png)
+![Tray menu](.assets/tray.png)
+
+## License
+
+Afterglow is licensed under the [MIT License](License.txt), like LightBulb, and keeps LightBulb's original copyright notice.

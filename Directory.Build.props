@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <Version>999.9.9-dev</Version>
-    <Company>Tyrrrz</Company>
+    <Company>Afterglow</Company>
     <Copyright>Copyright (C) Oleksii Holub</Copyright>
     <Nullable>enable</Nullable>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>

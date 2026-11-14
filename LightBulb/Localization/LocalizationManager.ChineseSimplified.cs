@@ -17,8 +17,8 @@ public partial class LocalizationManager
             [nameof(OffsetLabel)] = "偏移",
 
             // Main window (主窗口)
-            [nameof(ToggleLightBulbTooltip)] = "开启/关闭 LightBulb",
-            [nameof(HideToTrayTooltip)] = "隐藏 LightBulb 到系统托盘",
+            [nameof(ToggleLightBulbTooltip)] = "开启/关闭 Afterglow",
+            [nameof(HideToTrayTooltip)] = "隐藏 Afterglow 到系统托盘",
             [nameof(PreviewText)] = "预览",
             [nameof(StopPreviewTooltip)] = "停止预览",
             [nameof(StartPreviewTooltip)] = "预览 24 小时循环",
@@ -33,14 +33,14 @@ public partial class LocalizationManager
             [nameof(LanguageLabel)] = "语言",
             [nameof(LanguageTooltip)] = "首选用户界面语言",
             [nameof(StartWithWindowsLabel)] = "随 Windows 启动",
-            [nameof(StartWithWindowsTooltip)] = "在 Windows 启动时运行 LightBulb",
+            [nameof(StartWithWindowsTooltip)] = "在 Windows 启动时运行 Afterglow",
             [nameof(DefaultToDayConfigLabel)] = "默认为日间配置",
             [nameof(DefaultToDayConfigTooltip)] =
-                "当 LightBulb 被禁用或暂停时，恢复配置的日间色温和亮度，而不是默认的显示器伽马值",
+                "当 Afterglow 被禁用或暂停时，恢复配置的日间色温和亮度，而不是默认的显示器伽马值",
             [nameof(PauseWhenFullscreenLabel)] = "全屏时暂停",
-            [nameof(PauseWhenFullscreenTooltip)] = "当任何全屏窗口处于前台时暂停 LightBulb",
+            [nameof(PauseWhenFullscreenTooltip)] = "当任何全屏窗口处于前台时暂停 Afterglow",
             [nameof(GammaSmoothingLabel)] = "伽马平滑",
-            [nameof(GammaSmoothingTooltip)] = "在启用或禁用 LightBulb 时缓慢过渡，给眼睛适应的时间",
+            [nameof(GammaSmoothingTooltip)] = "在启用或禁用 Afterglow 时缓慢过渡，给眼睛适应的时间",
             [nameof(GammaPollingLabel)] = "伽马轮询",
             [nameof(GammaPollingTooltip)] = "定期强制刷新显示器伽马值，防止其他程序覆盖它",
 
@@ -51,13 +51,13 @@ public partial class LocalizationManager
                 白天的亮度
 
                 注意：此亮度设置应用于颜色伽马，而非显示器的实际物理亮度。
-                如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 LightBulb 的亮度控制。
+                如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 Afterglow 的亮度控制。
                 """,
             [nameof(NightBrightnessTooltip)] = """
                 夜晚的亮度
 
                 注意：此亮度设置应用于颜色伽马，而非显示器的实际物理亮度。
-                如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 LightBulb 的亮度控制。
+                如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 Afterglow 的亮度控制。
                 """,
             [nameof(TransitionDurationTooltip)] = "从日间配置切换到夜间配置所需的时间",
             [nameof(TransitionOffsetTooltip)] = "指定过渡开始时间相对于日出和日落的提前或延后量",
@@ -82,10 +82,10 @@ public partial class LocalizationManager
             [nameof(LocationErrorText)] = "解析位置出错，请重试",
 
             // Hot key settings tab (快捷键设置选项卡)
-            [nameof(ToggleLightBulbHotkeyLabel)] = "切换 LightBulb",
-            [nameof(ToggleLightBulbHotkeyTooltip)] = "用于开启/关闭 LightBulb 的全局快捷键",
+            [nameof(ToggleLightBulbHotkeyLabel)] = "切换 Afterglow",
+            [nameof(ToggleLightBulbHotkeyTooltip)] = "用于开启/关闭 Afterglow 的全局快捷键",
             [nameof(ToggleWindowLabel)] = "切换窗口",
-            [nameof(ToggleWindowHotkeyTooltip)] = "用于显示/隐藏 LightBulb 主窗口的全局快捷键",
+            [nameof(ToggleWindowHotkeyTooltip)] = "用于显示/隐藏 Afterglow 主窗口的全局快捷键",
             [nameof(IncreaseTemperatureOffsetLabel)] = "增加色温偏移 ↑",
             [nameof(IncreaseTemperatureOffsetTooltip)] = "用于增加当前色温偏移量的全局快捷键",
             [nameof(DecreaseTemperatureOffsetLabel)] = "减少色温偏移 ↓",
@@ -100,7 +100,7 @@ public partial class LocalizationManager
             // Application whitelist settings tab (应用白名单设置选项卡)
             [nameof(AppWhitelistLabel)] = "应用白名单",
             [nameof(RefreshAppsTooltip)] = "刷新正在运行的应用程序",
-            [nameof(PauseForWhitelistedTooltip)] = "当选定的应用程序之一处于前台时暂停 LightBulb",
+            [nameof(PauseForWhitelistedTooltip)] = "当选定的应用程序之一处于前台时暂停 Afterglow",
 
             // Tray icon context menu (托盘图标上下文菜单)
             [nameof(TraySettingsMenuItem)] = "设置",
@@ -114,7 +114,7 @@ public partial class LocalizationManager
             [nameof(UnstableBuildMessage)] = """
                 您正在使用 {0} 的开发版本。这些版本未经过充分测试，可能包含错误。
 
-                开发版本已禁用自动更新。如果您想切换到稳定版本，请手动下载。
+                如果您想切换到稳定版本，可以从发布页面下载。
                 """,
             [nameof(SeeReleasesButton)] = "查看发布版本",
             [nameof(LimitedGammaRangeTitle)] = "伽马范围受限",
@@ -226,8 +226,8 @@ public partial class LocalizationManager
             [nameof(AutoPauseCardTitle)] = "智能自动暂停",
             [nameof(AutoPauseCardSubtitle)] = "在以下情况下临时恢复正常色彩。",
             [nameof(PauseWhenScreenLockedLabel)] = "屏幕锁定时暂停",
-            [nameof(PauseWhenScreenLockedTooltip)] = "在电脑锁定期间暂停 LightBulb",
-            [nameof(WhitelistCardSubtitle)] = "当任一所选程序处于前台时暂停 LightBulb。",
+            [nameof(PauseWhenScreenLockedTooltip)] = "在电脑锁定期间暂停 Afterglow",
+            [nameof(WhitelistCardSubtitle)] = "当任一所选程序处于前台时暂停 Afterglow。",
             [nameof(PerMonitorFullscreenPauseLabel)] = "仅暂停运行全屏应用的显示器",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "当全屏应用处于前台时，仅在运行该应用的显示器上恢复正常色彩，其他显示器继续跟随周期",
@@ -253,7 +253,7 @@ public partial class LocalizationManager
             [nameof(NoDisplaysText)] = "未检测到显示器。",
             [nameof(PrimaryBadge)] = "主显示器",
             [nameof(DisplayEnabledTooltip)] =
-                "对此显示器应用 LightBulb。排除后，该显示器将保持中性色彩。",
+                "对此显示器应用 Afterglow。排除后，该显示器将保持中性色彩。",
             [nameof(MonitorTemperatureOffsetLabel)] = "色温偏移",
             [nameof(MonitorTemperatureOffsetTooltip)] =
                 "仅调整此显示器的色温。使用感知缩放时，这是在您的白天色温下的偏移量。",
@@ -271,7 +271,7 @@ public partial class LocalizationManager
             [nameof(HotkeysCardSubtitle)] = "点击一个字段并按下组合键即可分配。",
             [nameof(SystemPreferencesCardTitle)] = "系统偏好设置",
             [nameof(StartMinimizedLabel)] = "启动时最小化",
-            [nameof(StartMinimizedTooltip)] = "启动时将 LightBulb 隐藏到系统托盘，即使是手动启动",
+            [nameof(StartMinimizedTooltip)] = "启动时将 Afterglow 隐藏到系统托盘，即使是手动启动",
             [nameof(ExtendedGammaRangeLabel)] = "扩展伽马范围",
             [nameof(ExtendedGammaRangeTooltip)] =
                 "解锁 Windows 中的完整伽马范围，以支持更暖的色温和更低的亮度。更改此项需要管理员权限。",
@@ -279,7 +279,7 @@ public partial class LocalizationManager
             [nameof(GammaPollingIntervalTooltip)] = "启用伽马轮询时，强制刷新伽马的频率",
             [nameof(SecondsValueText)] = "{0} 秒",
             // Tray menu
-            [nameof(TrayOpenMenuItem)] = "打开 LightBulb",
+            [nameof(TrayOpenMenuItem)] = "打开 Afterglow",
             [nameof(TrayPauseMenuItem)] = "暂停",
             [nameof(TrayResumeMenuItem)] = "继续",
             [nameof(TrayPreviewMenuItem)] = "预览 24 小时周期",

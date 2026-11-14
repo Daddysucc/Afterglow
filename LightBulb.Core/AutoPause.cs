@@ -26,7 +26,15 @@ public readonly record struct AutoPauseSettings(
     bool IsPauseWhenFullScreenEnabled,
     bool IsPerMonitorFullScreenPauseEnabled,
     bool IsApplicationWhitelistEnabled
-);
+)
+{
+    /// <summary>
+    /// Whether the foreground application needs to be looked up at all (which involves opening
+    /// its process), as only the fullscreen and whitelist checks depend on it.
+    /// </summary>
+    public bool IsForegroundApplicationNeeded =>
+        IsPauseWhenFullScreenEnabled || IsApplicationWhitelistEnabled;
+}
 
 /// <param name="Reason">Why all displays are paused, if they are.</param>
 /// <param name="PausedMonitor">Display that is paused on its own, while the others are not.</param>

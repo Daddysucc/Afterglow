@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Avalonia.Threading;
 using LightBulb.Core;
 using LightBulb.PlatformInterop;
 using LightBulb.Utils;
@@ -16,6 +17,7 @@ public partial class GammaService : IDisposable
     private readonly IDisposable _eventSubscription;
 
     private bool _isUpdatingGamma;
+    private bool _isDisposed;
 
     // Keyed by GDI device name (e.g. \.DISPLAY1), which stays valid as long as the display is connected
     private IReadOnlyDictionary<string, DeviceContext> _deviceContexts =
@@ -60,6 +62,11 @@ public partial class GammaService : IDisposable
             SystemEvent.Register(SystemEvent.Ids.SettingsChanged, InvalidateDeviceContexts),
             SystemEvent.Register(SystemEvent.Ids.SystemColorsChanged, InvalidateDeviceContexts)
         );
+
+        // Never leave the displays tinted, even if the app crashes or is terminated
+        AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
     }
 
     private void EnsureValidDeviceContexts()
@@ -201,11 +208,56 @@ public partial class GammaService : IDisposable
             _lastUpdateTimestamp = DateTimeOffset.Now;
     }
 
+    /// <summary>
+    /// Restores neutral gamma on all displays. Safe to call from any thread and at any time,
+    /// including while the app is crashing.
+    /// </summary>
+    public void RestoreDefaultGamma()
+    {
+        foreach (var deviceContext in _deviceContexts.Values)
+        {
+            try
+            {
+                deviceContext.ResetGamma();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to reset gamma: {ex}");
+            }
+        }
+    }
+
+    // Gamma ramps outlive the process that set them, so they're reset as soon as anything goes
+    // wrong, rather than only during a regular shutdown (which a crash may skip, or cut short).
+    // These may run on any thread, possibly while the UI thread is already gone.
+    private void OnProcessExit(object? sender, EventArgs args) => RestoreDefaultGamma();
+
+    private void OnUnhandledException(object? sender, UnhandledExceptionEventArgs args) =>
+        RestoreDefaultGamma();
+
+    private void OnDispatcherUnhandledException(
+        object? sender,
+        DispatcherUnhandledExceptionEventArgs args
+    )
+    {
+        RestoreDefaultGamma();
+
+        // This runs on the UI thread, so if the app carries on, gamma is applied again right away
+        _writeTracker.Reset();
+    }
+
     public void Dispose()
     {
-        // Reset gamma on all contexts
-        foreach (var deviceContext in _deviceContexts.Values)
-            deviceContext.ResetGamma();
+        if (_isDisposed)
+            return;
+
+        _isDisposed = true;
+
+        AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
+        AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+        Dispatcher.UIThread.UnhandledException -= OnDispatcherUnhandledException;
+
+        RestoreDefaultGamma();
 
         _eventSubscription.Dispose();
         Disposable.Merge(_deviceContexts.Values).Dispose();

@@ -15,8 +15,8 @@ public partial class LocalizationManager
             [nameof(BrightnessOffsetLabel)] = "Desplazamiento de brillo:",
             [nameof(ClickToResetLabel)] = "Clic para restablecer",
             [nameof(OffsetLabel)] = "desplazamiento",
-            [nameof(ToggleLightBulbTooltip)] = "Activar/desactivar LightBulb",
-            [nameof(HideToTrayTooltip)] = "Minimizar LightBulb en la bandeja del sistema",
+            [nameof(ToggleLightBulbTooltip)] = "Activar/desactivar Afterglow",
+            [nameof(HideToTrayTooltip)] = "Minimizar Afterglow en la bandeja del sistema",
             [nameof(PreviewText)] = "VISTA PREVIA",
             [nameof(StopPreviewTooltip)] = "Detener vista previa",
             [nameof(StartPreviewTooltip)] = "Vista previa del ciclo de 24 horas",
@@ -25,16 +25,16 @@ public partial class LocalizationManager
             [nameof(LanguageLabel)] = "Idioma",
             [nameof(LanguageTooltip)] = "Idioma de interfaz preferido",
             [nameof(StartWithWindowsLabel)] = "Iniciar con Windows",
-            [nameof(StartWithWindowsTooltip)] = "Iniciar LightBulb al arrancar Windows",
+            [nameof(StartWithWindowsTooltip)] = "Iniciar Afterglow al arrancar Windows",
             [nameof(DefaultToDayConfigLabel)] = "Usar configuración diurna por defecto",
             [nameof(DefaultToDayConfigTooltip)] =
-                "Cuando LightBulb está desactivado o en pausa, restaurar la temperatura y el brillo diurnos configurados en lugar del gamma predeterminado del monitor",
+                "Cuando Afterglow está desactivado o en pausa, restaurar la temperatura y el brillo diurnos configurados en lugar del gamma predeterminado del monitor",
             [nameof(PauseWhenFullscreenLabel)] = "Pausar en pantalla completa",
             [nameof(PauseWhenFullscreenTooltip)] =
-                "Pausar LightBulb cuando alguna ventana a pantalla completa esté en primer plano",
+                "Pausar Afterglow cuando alguna ventana a pantalla completa esté en primer plano",
             [nameof(GammaSmoothingLabel)] = "Suavizado de gamma",
             [nameof(GammaSmoothingTooltip)] =
-                "Transicionar lentamente al activar o desactivar LightBulb para dar tiempo a los ojos a adaptarse",
+                "Transicionar lentamente al activar o desactivar Afterglow para dar tiempo a los ojos a adaptarse",
             [nameof(GammaPollingLabel)] = "Sondeo de gamma",
             [nameof(GammaPollingTooltip)] =
                 "Actualizar forzosamente el gamma del monitor a intervalos regulares para evitar que otros programas lo sobreescriban",
@@ -44,13 +44,13 @@ public partial class LocalizationManager
                 Brillo durante el día
 
                 Este ajuste de brillo se aplica al gamma de colores, no al brillo real del monitor.
-                Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de LightBulb manteniendo ambos ajustes de brillo al 100%.
+                Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de Afterglow manteniendo ambos ajustes de brillo al 100%.
                 """,
             [nameof(NightBrightnessTooltip)] = """
                 Brillo durante la noche
 
                 Este ajuste de brillo se aplica al gamma de colores, no al brillo real del monitor.
-                Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de LightBulb manteniendo ambos ajustes de brillo al 100%.
+                Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de Afterglow manteniendo ambos ajustes de brillo al 100%.
                 """,
             [nameof(TransitionDurationTooltip)] =
                 "Duración del tiempo que tarda en cambiar entre las configuraciones diurna y nocturna",
@@ -75,12 +75,12 @@ public partial class LocalizationManager
                 """,
             [nameof(SetLocationTooltip)] = "Establecer ubicación",
             [nameof(LocationErrorText)] = "Error al resolver la ubicación, inténtalo de nuevo",
-            [nameof(ToggleLightBulbHotkeyLabel)] = "Alternar LightBulb",
+            [nameof(ToggleLightBulbHotkeyLabel)] = "Alternar Afterglow",
             [nameof(ToggleLightBulbHotkeyTooltip)] =
-                "Atajo global para activar/desactivar LightBulb",
+                "Atajo global para activar/desactivar Afterglow",
             [nameof(ToggleWindowLabel)] = "Alternar ventana",
             [nameof(ToggleWindowHotkeyTooltip)] =
-                "Atajo global para mostrar/ocultar la ventana principal de LightBulb",
+                "Atajo global para mostrar/ocultar la ventana principal de Afterglow",
             [nameof(IncreaseTemperatureOffsetLabel)] = "Desplazamiento de temperatura ↑",
             [nameof(IncreaseTemperatureOffsetTooltip)] =
                 "Atajo global para aumentar el desplazamiento de temperatura actual",
@@ -99,7 +99,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Lista blanca de aplicaciones",
             [nameof(RefreshAppsTooltip)] = "Actualizar aplicaciones en ejecución",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Pausar LightBulb cuando una de las aplicaciones seleccionadas esté en primer plano",
+                "Pausar Afterglow cuando una de las aplicaciones seleccionadas esté en primer plano",
             [nameof(TraySettingsMenuItem)] = "Ajustes",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Hasta el amanecer",
             [nameof(TrayExitMenuItem)] = "Salir",
@@ -109,7 +109,7 @@ public partial class LocalizationManager
             [nameof(UnstableBuildMessage)] = """
                 Estás usando una compilación de desarrollo de {0}. Estas compilaciones no han sido probadas exhaustivamente y pueden contener errores.
 
-                Las actualizaciones automáticas están desactivadas para compilaciones de desarrollo. Si quieres cambiar a una versión estable, descárgala manualmente.
+                Si quieres cambiar a una versión estable, puedes descargarla desde la página de versiones.
                 """,
             [nameof(SeeReleasesButton)] = "VER VERSIONES",
             [nameof(LimitedGammaRangeTitle)] = "Rango gamma limitado",
@@ -241,9 +241,9 @@ public partial class LocalizationManager
                 "Restablecer temporalmente los colores normales en estas situaciones.",
             [nameof(PauseWhenScreenLockedLabel)] = "Pausar cuando la pantalla esté bloqueada",
             [nameof(PauseWhenScreenLockedTooltip)] =
-                "Pausar LightBulb mientras el equipo esté bloqueado",
+                "Pausar Afterglow mientras el equipo esté bloqueado",
             [nameof(WhitelistCardSubtitle)] =
-                "Pausar LightBulb mientras cualquiera de los programas seleccionados esté en primer plano.",
+                "Pausar Afterglow mientras cualquiera de los programas seleccionados esté en primer plano.",
             [nameof(PerMonitorFullscreenPauseLabel)] =
                 "Pausar solo el monitor en pantalla completa",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
@@ -272,7 +272,7 @@ public partial class LocalizationManager
             [nameof(NoDisplaysText)] = "No se detectaron pantallas.",
             [nameof(PrimaryBadge)] = "PRINCIPAL",
             [nameof(DisplayEnabledTooltip)] =
-                "Aplicar LightBulb a esta pantalla. Una pantalla excluida se mantiene con colores neutros.",
+                "Aplicar Afterglow a esta pantalla. Una pantalla excluida se mantiene con colores neutros.",
             [nameof(MonitorTemperatureOffsetLabel)] = "Desplazamiento de temperatura",
             [nameof(MonitorTemperatureOffsetTooltip)] =
                 "Desplaza la temperatura de color solo en esta pantalla. Con el escalado perceptual, es el desplazamiento a tu temperatura de día.",
@@ -294,7 +294,7 @@ public partial class LocalizationManager
             [nameof(SystemPreferencesCardTitle)] = "Preferencias del sistema",
             [nameof(StartMinimizedLabel)] = "Iniciar minimizado",
             [nameof(StartMinimizedTooltip)] =
-                "Ocultar LightBulb en la bandeja del sistema al iniciarse, incluso cuando se abre manualmente",
+                "Ocultar Afterglow en la bandeja del sistema al iniciarse, incluso cuando se abre manualmente",
             [nameof(ExtendedGammaRangeLabel)] = "Rango de gamma ampliado",
             [nameof(ExtendedGammaRangeTooltip)] =
                 "Desbloquear el rango completo de gamma en Windows, lo que permite temperaturas de color más cálidas y un brillo más bajo. Este cambio requiere privilegios de administrador.",
@@ -303,7 +303,7 @@ public partial class LocalizationManager
                 "Con qué frecuencia se fuerza la actualización de la gamma cuando el sondeo de gamma está activado",
             [nameof(SecondsValueText)] = "{0} s",
             // Tray menu
-            [nameof(TrayOpenMenuItem)] = "Abrir LightBulb",
+            [nameof(TrayOpenMenuItem)] = "Abrir Afterglow",
             [nameof(TrayPauseMenuItem)] = "Pausar",
             [nameof(TrayResumeMenuItem)] = "Reanudar",
             [nameof(TrayPreviewMenuItem)] = "Vista previa del ciclo de 24 h",
