@@ -17,45 +17,38 @@ public partial class LocalizationManager
             [nameof(SunriseTransitionPhaseLabel)] = "Sunrise transition",
             [nameof(SunsetTransitionPhaseLabel)] = "Sunset transition",
             [nameof(NightTransitionPhaseLabel)] = "Bedtime transition",
-            // Status phrases: one per line, a random one is shown for each stage
-            [nameof(StatusDayPhrases)] = """
-                Daytime hours. Colors are balanced for work and accurate contrast.
-                Full daylight spectrum is active for sharp text and clear visuals.
-                Neutral white balance is running to match bright daytime rooms.
-                Standard daytime calibration is active for editing and browsing.
-                Screen colors are set to clean, unshifted daylight.
-                Afternoon focus mode. Display is tuned for maximum clarity.
-                Daylight profile is running with full brightness and natural whites.
-                """,
-            [nameof(StatusEveningPhrases)] = """
-                Sunset has passed. Easing screen glare down for the evening.
-                Evening hours. Harsh blue light is dialed back while you unwind.
-                Dusk has settled. Display is shifted to a comfortable evening warmth.
-                After work hours. Screen tone is softened for relaxing and browsing.
-                Evening warmth is active to take the sharp edge off bright whites.
-                Transitioned past sunset. Colors are warmer for easy evening viewing.
-                Twilight schedule is active. Balanced warmth without heavy tinting.
-                """,
-            [nameof(StatusNightPhrases)] = """
-                Late night hours. Deep warmth is active for dark rooms.
-                Bedtime schedule is running. Blue light is cut to a minimum.
-                Screen is tuned to a dim, heavy amber for late night reading.
-                Quiet hours. Display glare is kept low until morning.
-                Midnight mode is active to protect your eyes in a dark room.
-                Late hours. Warmest color profile is running before sleep.
-                Night schedule is active. Harsh whites are replaced with soft amber.
-                """,
-            [nameof(StatusTransitionToDayText)] = "Transitioning to daytime color...",
-            [nameof(StatusTransitionToEveningText)] = "Transitioning to evening warmth...",
-            [nameof(StatusTransitionToNightText)] = "Transitioning to night warmth...",
-            [nameof(StatusDisabledText)] = "LightBulb is paused. Display is at neutral daylight.",
-            [nameof(StatusDisabledDayConfigText)] =
-                "LightBulb is paused. Display is at your daytime colors.",
-            [nameof(StatusPausedText)] =
-                "Paused automatically for a fullscreen or whitelisted app.",
+            // Status sentence: {0} is the temperature, {1} the brightness (in percent), {2} the target stage
+            [nameof(StatusDayScheduleText)] =
+                "Daytime schedule active at {0} K and {1}% brightness.",
+            [nameof(StatusEveningScheduleText)] =
+                "Evening schedule active at {0} K and {1}% brightness.",
+            [nameof(StatusNightScheduleText)] =
+                "Night schedule active at {0} K and {1}% brightness.",
+            [nameof(StatusWarmingText)] = "Warming to {0} K {2}.",
+            [nameof(StatusCoolingText)] = "Cooling to {0} K {2}.",
+            [nameof(StatusDimmingText)] = "Dimming to {1}% {2}.",
+            [nameof(StatusBrighteningText)] = "Brightening to {1}% {2}.",
+            [nameof(StatusWarmingDimmingText)] = "Warming to {0} K and dimming to {1}% {2}.",
+            [nameof(StatusWarmingBrighteningText)] =
+                "Warming to {0} K and brightening to {1}% {2}.",
+            [nameof(StatusCoolingDimmingText)] = "Cooling to {0} K and dimming to {1}% {2}.",
+            [nameof(StatusCoolingBrighteningText)] =
+                "Cooling to {0} K and brightening to {1}% {2}.",
+            [nameof(StatusForDayText)] = "for day",
+            [nameof(StatusForEveningText)] = "for evening",
+            [nameof(StatusForNightText)] = "for night",
+            [nameof(StatusManualOverrideText)] =
+                "Manual override active at {0} K and {1}% brightness.",
+            [nameof(StatusPausedRemoteStreamingText)] =
+                "Paused for remote streaming with native color restored.",
+            [nameof(StatusPausedFullScreenText)] =
+                "Paused while a fullscreen application is active.",
+            [nameof(StatusPausedScreenLockedText)] = "Paused while the screen is locked.",
+            [nameof(StatusPausedManuallyText)] =
+                "Paused manually with automatic schedule suspended.",
+            [nameof(StatusPausedAutomaticallyText)] =
+                "Paused automatically with native color restored.",
             [nameof(StatusPreviewText)] = "Previewing the next 24 hours…",
-            [nameof(StatusRemoteStreamingPausedText)] =
-                "Paused while a remote streaming session is active.",
             [nameof(PausedRemoteStreamingLabel)] = "Paused (Remote streaming)",
             [nameof(PausedScreenLockedLabel)] = "Paused (Screen locked)",
             [nameof(PausedFullScreenLabel)] = "Paused (Fullscreen app)",

@@ -138,45 +138,31 @@ public partial class LocalizationManager
         [nameof(SunriseTransitionPhaseLabel)] = "Übergang (Sonnenaufgang)",
         [nameof(SunsetTransitionPhaseLabel)] = "Übergang (Sonnenuntergang)",
         [nameof(NightTransitionPhaseLabel)] = "Übergang (Schlafenszeit)",
-        [nameof(StatusDayPhrases)] = """
-            Tagesstunden. Farben sind für Arbeit und genauen Kontrast abgestimmt.
-            Volles Tageslichtspektrum aktiv für scharfen Text und klare Bilder.
-            Ein neutraler Weißabgleich passt zu hellen Räumen am Tag.
-            Standard-Tageskalibrierung aktiv für Bearbeitung und Surfen.
-            Die Bildschirmfarben zeigen reines, unverändertes Tageslicht.
-            Fokusmodus am Nachmittag. Der Bildschirm zeigt maximale Klarheit.
-            Tageslichtprofil aktiv mit voller Helligkeit und natürlichem Weiß.
-            """,
-        [nameof(StatusEveningPhrases)] = """
-            Sonnenuntergang vorbei. Die Blendung wird für den Abend reduziert.
-            Abendstunden. Grelles Blaulicht wird gedämpft, während Sie entspannen.
-            Die Dämmerung ist da. Der Bildschirm zeigt angenehme Abendwärme.
-            Feierabend. Der Bildschirmton ist zum Entspannen und Surfen sanfter.
-            Die Abendwärme nimmt hellem Weiß die Schärfe.
-            Nach Sonnenuntergang sind die Farben wärmer für entspanntes Sehen.
-            Dämmerungsplan aktiv. Ausgewogene Wärme ohne starke Tönung.
-            """,
-        [nameof(StatusNightPhrases)] = """
-            Späte Nachtstunden. Tiefe Wärme ist für dunkle Räume aktiv.
-            Der Schlafplan läuft. Blaues Licht ist auf ein Minimum reduziert.
-            Der Bildschirm zeigt gedämpftes Bernstein zum Lesen in der Nacht.
-            Ruhezeit. Die Bildschirmblendung bleibt bis zum Morgen gering.
-            Der Mitternachtsmodus schont Ihre Augen in einem dunklen Raum.
-            Späte Stunden. Vor dem Schlafen läuft das wärmste Farbprofil.
-            Nachtplan aktiv. Grelles Weiß wird durch sanftes Bernstein ersetzt.
-            """,
-        [nameof(StatusTransitionToDayText)] = "Übergang zu den Tagesfarben...",
-        [nameof(StatusTransitionToEveningText)] = "Übergang zur Abendwärme...",
-        [nameof(StatusTransitionToNightText)] = "Übergang zur Nachtwärme...",
-        [nameof(StatusDisabledText)] =
-            "LightBulb ist pausiert. Der Bildschirm zeigt neutrales Tageslicht.",
-        [nameof(StatusDisabledDayConfigText)] =
-            "LightBulb ist pausiert. Der Bildschirm zeigt Ihre Tagesfarben.",
-        [nameof(StatusPausedText)] =
-            "Automatisch pausiert wegen einer Vollbild- oder Whitelist-Anwendung.",
+        [nameof(StatusDayScheduleText)] = "Tagesplan aktiv mit {0} K und {1} % Helligkeit.",
+        [nameof(StatusEveningScheduleText)] = "Abendplan aktiv mit {0} K und {1} % Helligkeit.",
+        [nameof(StatusNightScheduleText)] = "Nachtplan aktiv mit {0} K und {1} % Helligkeit.",
+        [nameof(StatusWarmingText)] = "Erwärmung auf {0} K {2}.",
+        [nameof(StatusCoolingText)] = "Abkühlung auf {0} K {2}.",
+        [nameof(StatusDimmingText)] = "Dimmen auf {1} % {2}.",
+        [nameof(StatusBrighteningText)] = "Aufhellen auf {1} % {2}.",
+        [nameof(StatusWarmingDimmingText)] = "Erwärmung auf {0} K und Dimmen auf {1} % {2}.",
+        [nameof(StatusWarmingBrighteningText)] = "Erwärmung auf {0} K und Aufhellen auf {1} % {2}.",
+        [nameof(StatusCoolingDimmingText)] = "Abkühlung auf {0} K und Dimmen auf {1} % {2}.",
+        [nameof(StatusCoolingBrighteningText)] = "Abkühlung auf {0} K und Aufhellen auf {1} % {2}.",
+        [nameof(StatusForDayText)] = "für den Tag",
+        [nameof(StatusForEveningText)] = "für den Abend",
+        [nameof(StatusForNightText)] = "für die Nacht",
+        [nameof(StatusManualOverrideText)] =
+            "Manuelle Anpassung aktiv mit {0} K und {1} % Helligkeit.",
+        [nameof(StatusPausedRemoteStreamingText)] =
+            "Pausiert wegen Remote-Streaming, Originalfarben wiederhergestellt.",
+        [nameof(StatusPausedFullScreenText)] =
+            "Pausiert, solange eine Vollbildanwendung aktiv ist.",
+        [nameof(StatusPausedScreenLockedText)] = "Pausiert, solange der Bildschirm gesperrt ist.",
+        [nameof(StatusPausedManuallyText)] = "Manuell pausiert, automatischer Zeitplan ausgesetzt.",
+        [nameof(StatusPausedAutomaticallyText)] =
+            "Automatisch pausiert, Originalfarben wiederhergestellt.",
         [nameof(StatusPreviewText)] = "Vorschau der nächsten 24 Stunden…",
-        [nameof(StatusRemoteStreamingPausedText)] =
-            "Pausiert, solange eine Remote-Streaming-Sitzung aktiv ist.",
         [nameof(PausedRemoteStreamingLabel)] = "Pausiert (Remote-Streaming)",
         [nameof(PausedScreenLockedLabel)] = "Pausiert (Bildschirm gesperrt)",
         [nameof(PausedFullScreenLabel)] = "Pausiert (Vollbildanwendung)",

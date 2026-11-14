@@ -33,12 +33,6 @@ public class LocalizationSpecs : IDisposable
             .Order(StringComparer.Ordinal)
             .ToArray();
 
-    private static string[] GetLines(string text) =>
-        text.Split(
-            ['\r', '\n'],
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-        );
-
     [Theory]
     [MemberData(nameof(TranslatedLanguages))]
     public void I_can_see_every_part_of_the_interface_translated_in_each_supported_language(
@@ -80,46 +74,112 @@ public class LocalizationSpecs : IDisposable
         }
     }
 
-    [Theory]
-    [MemberData(nameof(TranslatedLanguages))]
-    public void I_can_see_as_many_status_phrases_in_each_language_as_in_english(Language language)
+    // The status sentence is a single line at the top of the dashboard, which fits about this many
+    // characters at the smallest window size. English is kept shorter, so translations have room.
+    private const int MaxStatusSentenceLength = 70;
+    private const int MaxEnglishStatusSentenceLength = 57;
+
+    private static readonly string[] StatusSentenceKeys =
+    [
+        nameof(LocalizationManager.StatusDayScheduleText),
+        nameof(LocalizationManager.StatusEveningScheduleText),
+        nameof(LocalizationManager.StatusNightScheduleText),
+        nameof(LocalizationManager.StatusWarmingText),
+        nameof(LocalizationManager.StatusCoolingText),
+        nameof(LocalizationManager.StatusDimmingText),
+        nameof(LocalizationManager.StatusBrighteningText),
+        nameof(LocalizationManager.StatusWarmingDimmingText),
+        nameof(LocalizationManager.StatusWarmingBrighteningText),
+        nameof(LocalizationManager.StatusCoolingDimmingText),
+        nameof(LocalizationManager.StatusCoolingBrighteningText),
+        nameof(LocalizationManager.StatusManualOverrideText),
+        nameof(LocalizationManager.StatusPausedRemoteStreamingText),
+        nameof(LocalizationManager.StatusPausedFullScreenText),
+        nameof(LocalizationManager.StatusPausedScreenLockedText),
+        nameof(LocalizationManager.StatusPausedManuallyText),
+        nameof(LocalizationManager.StatusPausedAutomaticallyText),
+        nameof(LocalizationManager.StatusPreviewText),
+    ];
+
+    private static readonly string[] StatusTargetKeys =
+    [
+        nameof(LocalizationManager.StatusForDayText),
+        nameof(LocalizationManager.StatusForEveningText),
+        nameof(LocalizationManager.StatusForNightText),
+    ];
+
+    public static TheoryData<Language> AllLanguages { get; } =
+        new(Enum.GetValues<Language>().Where(l => l is not Language.System));
+
+    // Every status sentence a language can show, with the longest possible values filled in
+    private static string[] RenderAllStatusSentences(Language language)
     {
-        // Arrange
         var localization = LocalizationManager.GetLocalization(language);
 
-        foreach (
-            var key in new[]
-            {
-                nameof(LocalizationManager.StatusDayPhrases),
-                nameof(LocalizationManager.StatusEveningPhrases),
-                nameof(LocalizationManager.StatusNightPhrases),
-            }
-        )
-        {
-            // Act
-            var phrases = GetLines(localization[key]);
-
-            // Assert
-            phrases
-                .Should()
-                .HaveSameCount(GetLines(English[key]), $"'{key}' has one phrase per line");
-            phrases.Should().OnlyHaveUniqueItems();
-
-            // The status sentence is a single line at the top of the dashboard, which fits about
-            // as many characters as the longest English phrase, even at the smallest window size
-            phrases
-                .Should()
-                .AllSatisfy(p =>
-                    p.Length.Should()
-                        .BeLessThanOrEqualTo(
-                            MaxStatusPhraseLength,
-                            $"'{p}' must fit the dashboard header"
-                        )
-                );
-        }
+        return StatusSentenceKeys
+            .SelectMany(key =>
+                StatusTargetKeys.Select(targetKey =>
+                    string.Format(
+                        LocalizationManager.Resolve(localization, key),
+                        "10000",
+                        "100",
+                        LocalizationManager.Resolve(localization, targetKey)
+                    )
+                )
+            )
+            .Distinct()
+            .ToArray();
     }
 
-    private const int MaxStatusPhraseLength = 70;
+    [Theory]
+    [MemberData(nameof(AllLanguages))]
+    public void I_can_read_every_status_sentence_in_full_in_the_dashboard_header(Language language)
+    {
+        // Act
+        var sentences = RenderAllStatusSentences(language);
+
+        // Assert
+        sentences
+            .Should()
+            .AllSatisfy(s =>
+                s.Length.Should()
+                    .BeLessThanOrEqualTo(
+                        MaxStatusSentenceLength,
+                        $"'{s}' must fit the dashboard header"
+                    )
+            );
+    }
+
+    [Theory]
+    [MemberData(nameof(AllLanguages))]
+    public void I_can_read_every_status_sentence_as_a_plain_sentence(Language language)
+    {
+        // Act
+        var sentences = RenderAllStatusSentences(language);
+
+        // Assert
+        sentences
+            .Should()
+            .AllSatisfy(s =>
+            {
+                s.Should().NotContainAny("·", "—", "–");
+                s.Trim().Should().Be(s);
+            });
+    }
+
+    [Fact]
+    public void I_can_read_every_english_status_sentence_with_room_to_spare()
+    {
+        // Act
+        var sentences = RenderAllStatusSentences(Language.English);
+
+        // Assert
+        sentences
+            .Should()
+            .AllSatisfy(s =>
+                s.Length.Should().BeLessThanOrEqualTo(MaxEnglishStatusSentenceLength, s)
+            );
+    }
 
     [Fact]
     public void I_can_see_english_text_for_anything_a_translation_does_not_have()

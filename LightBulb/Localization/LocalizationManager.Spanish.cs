@@ -136,45 +136,38 @@ public partial class LocalizationManager
             [nameof(SunriseTransitionPhaseLabel)] = "Transición del amanecer",
             [nameof(SunsetTransitionPhaseLabel)] = "Transición del atardecer",
             [nameof(NightTransitionPhaseLabel)] = "Transición a la noche",
-            [nameof(StatusDayPhrases)] = """
-                Horas de día. Colores equilibrados para trabajar con buen contraste.
-                Espectro completo de luz diurna para un texto nítido y claro.
-                Balance de blancos neutro para habitaciones luminosas de día.
-                La calibración diurna estándar está activa para editar y navegar.
-                Colores de pantalla ajustados a una luz diurna limpia y sin alterar.
-                Modo concentración de tarde. Pantalla ajustada a la máxima claridad.
-                Perfil de luz diurna activo, con brillo completo y blancos naturales.
-                """,
-            [nameof(StatusEveningPhrases)] = """
-                Ya se puso el sol. El deslumbramiento se suaviza para la tarde.
-                Horas de la tarde. La luz azul intensa se atenúa mientras descansas.
-                Llegó el anochecer. La pantalla pasa a una calidez cómoda.
-                Fin de la jornada. Tono suavizado para descansar y navegar.
-                La calidez de la tarde suaviza los blancos brillantes.
-                Tras la puesta de sol, colores más cálidos para ver con comodidad.
-                Horario del crepúsculo activo. Calidez equilibrada sin tinte fuerte.
-                """,
-            [nameof(StatusNightPhrases)] = """
-                Altas horas de la noche. Calidez profunda para habitaciones oscuras.
-                Horario para dormir en marcha. La luz azul se reduce al mínimo.
-                Pantalla ajustada a un ámbar tenue para leer de noche.
-                Horas tranquilas. El deslumbramiento se mantiene bajo hasta la mañana.
-                El modo medianoche protege tus ojos en una habitación oscura.
-                Horas tardías. El perfil más cálido está activo antes de dormir.
-                Horario nocturno activo. Un ámbar suave sustituye al blanco intenso.
-                """,
-            [nameof(StatusTransitionToDayText)] = "Pasando a los colores de día...",
-            [nameof(StatusTransitionToEveningText)] = "Pasando a la calidez de la tarde...",
-            [nameof(StatusTransitionToNightText)] = "Pasando a la calidez de la noche...",
-            [nameof(StatusDisabledText)] =
-                "LightBulb está en pausa. La pantalla muestra luz diurna neutra.",
-            [nameof(StatusDisabledDayConfigText)] =
-                "LightBulb está en pausa. La pantalla muestra tus colores de día.",
-            [nameof(StatusPausedText)] =
-                "En pausa automática por una aplicación en pantalla completa o de la lista blanca.",
+            [nameof(StatusDayScheduleText)] = "Horario de día activo a {0} K y {1} % de brillo.",
+            [nameof(StatusEveningScheduleText)] =
+                "Horario de tarde activo a {0} K y {1} % de brillo.",
+            [nameof(StatusNightScheduleText)] =
+                "Horario nocturno activo a {0} K y {1} % de brillo.",
+            [nameof(StatusWarmingText)] = "Calentando a {0} K {2}.",
+            [nameof(StatusCoolingText)] = "Enfriando a {0} K {2}.",
+            [nameof(StatusDimmingText)] = "Bajando el brillo a {1} % {2}.",
+            [nameof(StatusBrighteningText)] = "Subiendo el brillo a {1} % {2}.",
+            [nameof(StatusWarmingDimmingText)] =
+                "Calentando a {0} K y bajando el brillo a {1} % {2}.",
+            [nameof(StatusWarmingBrighteningText)] =
+                "Calentando a {0} K y subiendo el brillo a {1} % {2}.",
+            [nameof(StatusCoolingDimmingText)] =
+                "Enfriando a {0} K y bajando el brillo a {1} % {2}.",
+            [nameof(StatusCoolingBrighteningText)] =
+                "Enfriando a {0} K y subiendo el brillo a {1} % {2}.",
+            [nameof(StatusForDayText)] = "para el día",
+            [nameof(StatusForEveningText)] = "para la tarde",
+            [nameof(StatusForNightText)] = "para la noche",
+            [nameof(StatusManualOverrideText)] = "Ajuste manual activo a {0} K y {1} % de brillo.",
+            [nameof(StatusPausedRemoteStreamingText)] =
+                "En pausa por transmisión remota, con el color nativo restaurado.",
+            [nameof(StatusPausedFullScreenText)] =
+                "En pausa mientras una aplicación está en pantalla completa.",
+            [nameof(StatusPausedScreenLockedText)] =
+                "En pausa mientras la pantalla está bloqueada.",
+            [nameof(StatusPausedManuallyText)] =
+                "En pausa manual, con el horario automático suspendido.",
+            [nameof(StatusPausedAutomaticallyText)] =
+                "En pausa automática, con el color nativo restaurado.",
             [nameof(StatusPreviewText)] = "Vista previa de las próximas 24 horas…",
-            [nameof(StatusRemoteStreamingPausedText)] =
-                "En pausa mientras haya una sesión de transmisión remota activa.",
             [nameof(PausedRemoteStreamingLabel)] = "En pausa (transmisión remota)",
             [nameof(PausedScreenLockedLabel)] = "En pausa (pantalla bloqueada)",
             [nameof(PausedFullScreenLabel)] = "En pausa (aplicación en pantalla completa)",
