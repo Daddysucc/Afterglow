@@ -40,7 +40,7 @@ public class ExternalApplicationService
         {
             using var _ = window;
 
-            if (!window.IsVisible() || window.IsSystemWindow())
+            if (!window.IsVisible() || window.IsCloaked() || window.IsSystemWindow())
                 continue;
 
             var executableFilePath = TryGetExecutableFilePath(window);
@@ -69,8 +69,19 @@ public class ExternalApplicationService
     public string? TryGetForegroundFullScreenMonitor()
     {
         using var window = Window.TryGetForeground();
-        if (window is null || !window.IsVisible() || window.IsSystemWindow())
+
+        // Hidden, minimized, and cloaked windows (e.g. suspended UWP apps, or windows on other
+        // virtual desktops) may still report fullscreen bounds, but aren't actually on screen
+        if (
+            window is null
+            || !window.IsVisible()
+            || window.IsMinimized()
+            || window.IsCloaked()
+            || window.IsSystemWindow()
+        )
+        {
             return null;
+        }
 
         var executableFilePath = TryGetExecutableFilePath(window);
         if (!string.IsNullOrWhiteSpace(executableFilePath) && IsIgnored(executableFilePath))

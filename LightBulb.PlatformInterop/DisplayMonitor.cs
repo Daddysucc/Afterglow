@@ -149,11 +149,11 @@ public static class DisplayMonitors
     }
 
     /// <summary>
-    /// Gets the work area (excluding the taskbar and docked toolbars) and the DPI scale factor
-    /// of the display that contains the given point (or the nearest one).
+    /// Gets the bounds, the work area (excluding the taskbar and docked toolbars), and the DPI scale
+    /// factor of the display that contains the given point (or the nearest one).
     /// All coordinates are in physical screen pixels.
     /// </summary>
-    public static (Rect WorkArea, double Scale) GetWorkAreaAt(int x, int y)
+    public static (Rect Bounds, Rect WorkArea, double Scale) GetWorkAreaAt(int x, int y)
     {
         const uint monitorDefaultToNearest = 2;
         const int mdtEffectiveDpi = 0;
@@ -165,7 +165,7 @@ public static class DisplayMonitors
 
         var monitorInfo = new MonitorInfoEx();
         if (monitorHandle == 0 || !NativeMethods.GetMonitorInfo(monitorHandle, ref monitorInfo))
-            return (Rect.Empty, 1);
+            return (Rect.Empty, Rect.Empty, 1);
 
         var scale =
             NativeMethods.GetDpiForMonitor(monitorHandle, mdtEffectiveDpi, out var dpiX, out _) == 0
@@ -173,7 +173,7 @@ public static class DisplayMonitors
                 ? dpiX / 96.0
                 : 1;
 
-        return (monitorInfo.WorkArea, scale);
+        return (monitorInfo.Monitor, monitorInfo.WorkArea, scale);
     }
 
     /// <summary>

@@ -20,4 +20,7 @@ internal static partial class NativeMethods
 
     [DllImport(Kernel32, SetLastError = true)]
     public static extern bool CloseHandle(nint hObj);
+
+    [DllImport(Kernel32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern nint GetModuleHandle(string? lpModuleName);
 }

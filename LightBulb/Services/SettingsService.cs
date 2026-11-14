@@ -17,9 +17,17 @@ using Microsoft.Win32;
 namespace LightBulb.Services;
 
 [ObservableObject]
-public partial class SettingsService()
-    : SettingsBase(StartOptions.Current.SettingsPath, SettingsSerializerContext.Default)
+public partial class SettingsService : SettingsBase
 {
+    private readonly string _filePath;
+
+    public SettingsService()
+        : this(StartOptions.Current.SettingsPath) { }
+
+    // Allows loading settings from a specific file (e.g. in tests)
+    internal SettingsService(string filePath)
+        : base(filePath, SettingsSerializerContext.Default) => _filePath = filePath;
+
     private readonly RegistrySwitch<int> _extendedGammaRangeSwitch = new(
         RegistryHive.LocalMachine,
         @"Software\Microsoft\Windows NT\CurrentVersion\ICM",
@@ -237,10 +245,9 @@ public partial class SettingsService()
             wasLoaded = false;
         }
 
-        // Also enforced by the property itself, but make it explicit for loaded values
-        ConfigurationTransitionDuration = Cycle.ClampTransitionDuration(
-            ConfigurationTransitionDuration
-        );
+        // Settings files may come from older versions, may have been edited by hand, or may contain
+        // values that newer versions no longer accept, so bring everything within valid ranges
+        SanitizeLoadedValues();
 
         // The evening is an intermediate stage, so keep it between the day and night values.
         // This matters for settings files saved before the evening stage existed, where the
@@ -365,13 +372,89 @@ public partial class SettingsService()
             ),
         ];
 
+    private void SanitizeLoadedValues()
+    {
+        static TimeSpan ClampTime(TimeSpan value, TimeSpan min, TimeSpan max) =>
+            value < min ? min
+            : value > max ? max
+            : value;
+
+        DayConfiguration = DayConfiguration.Clamp(
+            MinimumTemperature,
+            MaximumTemperature,
+            MinimumBrightness,
+            MaximumBrightness
+        );
+
+        EveningConfiguration = EveningConfiguration.Clamp(
+            MinimumTemperature,
+            MaximumTemperature,
+            MinimumBrightness,
+            MaximumBrightness
+        );
+
+        NightConfiguration = NightConfiguration.Clamp(
+            MinimumTemperature,
+            MaximumTemperature,
+            MinimumBrightness,
+            MaximumBrightness
+        );
+
+        // Also enforced by the property itself
+        ConfigurationTransitionDuration = Cycle.ClampTransitionDuration(
+            ConfigurationTransitionDuration
+        );
+
+        ConfigurationTransitionOffset = double.IsFinite(ConfigurationTransitionOffset)
+            ? Math.Clamp(ConfigurationTransitionOffset, 0, 1)
+            : 0;
+
+        ConfigurationSmoothingMaxDuration = ClampTime(
+            ConfigurationSmoothingMaxDuration,
+            TimeSpan.Zero,
+            TimeSpan.FromMinutes(1)
+        );
+
+        // A very short interval would force gamma updates on every tick and waste CPU
+        GammaPollingInterval = ClampTime(
+            GammaPollingInterval,
+            TimeSpan.FromSeconds(0.5),
+            TimeSpan.FromSeconds(10)
+        );
+
+        StreamingPorts = StreamingPortList.Normalize(StreamingPorts);
+
+        // Drop entries without a device path (which can't be matched to any display) and
+        // duplicates (keeping the last one), and keep offsets within the supported range
+        if (MonitorProfiles is not null)
+        {
+            MonitorProfiles = MonitorProfiles
+                .Where(p => p is not null && !string.IsNullOrWhiteSpace(p.DevicePath))
+                .GroupBy(p => p.DevicePath, StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.Last())
+                .Select(p =>
+                    p with
+                    {
+                        LastKnownName = p.LastKnownName ?? "",
+                        TemperatureOffset = MonitorProfile.NormalizeTemperatureOffset(
+                            p.TemperatureOffset
+                        ),
+                        BrightnessOffset = double.IsFinite(p.BrightnessOffset)
+                            ? MonitorProfile.NormalizeBrightnessOffset(p.BrightnessOffset)
+                            : 0,
+                    }
+                )
+                .ToArray();
+        }
+    }
+
     // Copies (rather than moves) the corrupt file, so that if LightBulb is closed before the
     // settings are saved again, the next launch doesn't mistake it for a fresh install
-    private static void BackUpCorruptFile()
+    private void BackUpCorruptFile()
     {
         try
         {
-            var filePath = StartOptions.Current.SettingsPath;
+            var filePath = _filePath;
             if (File.Exists(filePath))
                 File.Copy(filePath, filePath + ".bak", true);
         }

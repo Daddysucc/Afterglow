@@ -166,22 +166,31 @@ public partial class GammaService : IDisposable
         {
             foreach (var (deviceName, deviceContext) in _deviceContexts)
             {
-                var configuration = getConfiguration(deviceName);
+                // Some displays don't support gamma ramps (e.g. certain virtual displays, or HDR
+                // and color-managed ones). A failure on one display must not affect the others.
+                try
+                {
+                    var configuration = getConfiguration(deviceName);
 
-                // Avoid unnecessary changes as updating too often will cause stuttering
-                if (!isStale && !IsSignificantChange(deviceName, configuration))
-                    continue;
+                    // Avoid unnecessary changes as updating too often will cause stuttering
+                    if (!isStale && !IsSignificantChange(deviceName, configuration))
+                        continue;
 
-                deviceContext.SetGamma(
-                    GetRed(configuration) * configuration.Brightness,
-                    GetGreen(configuration) * configuration.Brightness,
-                    GetBlue(configuration) * configuration.Brightness
-                );
+                    deviceContext.SetGamma(
+                        GetRed(configuration) * configuration.Brightness,
+                        GetGreen(configuration) * configuration.Brightness,
+                        GetBlue(configuration) * configuration.Brightness
+                    );
 
-                _lastConfigurations[deviceName] = configuration;
-                isUpdated = true;
+                    _lastConfigurations[deviceName] = configuration;
+                    isUpdated = true;
 
-                Debug.WriteLine($"Updated gamma on {deviceName} to {configuration}.");
+                    Debug.WriteLine($"Updated gamma on {deviceName} to {configuration}.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to update gamma on {deviceName}: {ex}");
+                }
             }
         }
         finally
