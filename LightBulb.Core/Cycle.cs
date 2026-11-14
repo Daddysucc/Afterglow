@@ -7,6 +7,19 @@ public static class Cycle
 {
     private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
 
+    /// <summary>
+    /// Longest transition duration that can be configured.
+    /// </summary>
+    public static TimeSpan MaxTransitionDuration { get; } = TimeSpan.FromHours(3);
+
+    /// <summary>
+    /// Limits a transition duration to the supported range (0 to 3 hours).
+    /// </summary>
+    public static TimeSpan ClampTransitionDuration(TimeSpan duration) =>
+        duration < TimeSpan.Zero ? TimeSpan.Zero
+        : duration > MaxTransitionDuration ? MaxTransitionDuration
+        : duration;
+
     public static TimeOnly GetSunriseStart(
         TimeOnly sunrise,
         TimeSpan transitionDuration,

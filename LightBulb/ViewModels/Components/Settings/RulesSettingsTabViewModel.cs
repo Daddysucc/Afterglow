@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LightBulb.Core;
 using LightBulb.Localization;
 using LightBulb.Models;
 using LightBulb.Services;
@@ -77,6 +79,33 @@ public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
     {
         get => SettingsService.IsStreamingAutoPauseEnabled;
         set => SettingsService.IsStreamingAutoPauseEnabled = value;
+    }
+
+    private string? _rejectedStreamingPorts;
+
+    // Comma-separated local TCP ports, stored in the canonical form (invalid entries are dropped)
+    public string StreamingPorts
+    {
+        get => _rejectedStreamingPorts ?? SettingsService.StreamingPorts;
+        set
+        {
+            SettingsService.StreamingPorts = StreamingPortList.Normalize(value);
+
+            if (string.Equals(SettingsService.StreamingPorts, value, StringComparison.Ordinal))
+                return;
+
+            // The input was normalized. If the stored value didn't change as a result, bindings
+            // wouldn't refresh and the input would keep showing what was typed. So briefly report
+            // the typed value and then the actual one, which makes the input show the normalized value.
+            _rejectedStreamingPorts = value;
+            OnPropertyChanged();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                _rejectedStreamingPorts = null;
+                OnPropertyChanged(nameof(StreamingPorts));
+            });
+        }
     }
 
     public bool IsPauseWhenScreenLockedEnabled

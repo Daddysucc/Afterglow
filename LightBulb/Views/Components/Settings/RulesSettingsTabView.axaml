@@ -75,6 +75,29 @@
                     />
                 </Grid>
 
+                <!--  Streaming ports (refines the option above)  -->
+                <Grid
+                    Margin="16,0,0,0"
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsStreamingAutoPauseEnabled}"
+                    ToolTip.ShowOnDisabled="True"
+                    ToolTip.Tip="{Binding LocalizationManager.StreamingPortsTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.StreamingPortsLabel}"
+                    />
+                    <TextBox
+                        Grid.Column="1"
+                        MinWidth="140"
+                        Classes="value"
+                        PlaceholderText="48010"
+                        Text="{Binding StreamingPorts, UpdateSourceTrigger=LostFocus}"
+                        Theme="{DynamicResource CompactTextBox}"
+                    />
+                </Grid>
+
                 <!--  Screen locked  -->
                 <Grid
                     ColumnDefinitions="*,Auto"

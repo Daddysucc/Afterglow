@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Net.NetworkInformation;
 using LightBulb.Models;
 using LightBulb.PlatformInterop;
 
@@ -81,48 +79,11 @@ public class ExternalApplicationService
         return window.IsFullScreen() ? window.TryGetMonitorDeviceName() : null;
     }
 
-    // Sunshine (game streaming host) uses this TCP port for RTSP, which has an established
-    // connection while a client is streaming. Its UDP ports stay open even when idle,
-    // so they can't be used to tell whether a stream is active.
-    private const int SunshineRtspPort = 48010;
-
     /// <summary>
-    /// Checks whether the computer is being streamed or accessed remotely (Sunshine or Remote Desktop).
+    /// Checks whether the computer is being streamed or accessed remotely: Remote Desktop is
+    /// detected on any port, other streaming hosts (e.g. Sunshine) by an established connection
+    /// on one of the given local TCP ports.
     /// </summary>
-    public bool IsRemoteStreamingActive()
-    {
-        try
-        {
-            if (RemoteSession.IsActive())
-                return true;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check for a remote desktop session: {ex}");
-        }
-
-        try
-        {
-            foreach (
-                var connection in IPGlobalProperties
-                    .GetIPGlobalProperties()
-                    .GetActiveTcpConnections()
-            )
-            {
-                if (
-                    connection.State == TcpState.Established
-                    && connection.LocalEndPoint.Port == SunshineRtspPort
-                )
-                {
-                    return true;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Failed to check for active streaming connections: {ex}");
-        }
-
-        return false;
-    }
+    public bool IsRemoteStreamingActive(IReadOnlyCollection<int> ports) =>
+        RemoteSession.IsStreamingActive(ports);
 }

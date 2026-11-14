@@ -266,6 +266,8 @@ public partial class LocalizationManager
     public string PerMonitorFullscreenPauseTooltip => Get();
     public string StreamingAutoPauseLabel => Get();
     public string StreamingAutoPauseTooltip => Get();
+    public string StreamingPortsLabel => Get();
+    public string StreamingPortsTooltip => Get();
     public string DisplaysCardTitle => Get();
     public string DisplaysCardSubtitle => Get();
     public string IdentifyButton => Get();

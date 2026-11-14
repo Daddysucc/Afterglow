@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Threading;
 using LightBulb.Core;
 using LightBulb.Localization;
 using LightBulb.Services;
@@ -69,13 +70,32 @@ public class CycleSettingsTabViewModel(
         set => SettingsService.SetStageBrightness(CycleStage.Night, value);
     }
 
+    private TimeSpan? _rejectedTransitionDuration;
+
+    // Limited to 3 hours by the settings service
     public TimeSpan ConfigurationTransitionDuration
     {
-        get => SettingsService.ConfigurationTransitionDuration;
-        set =>
-            SettingsService.ConfigurationTransitionDuration = TimeSpan.FromHours(
-                value.TotalHours.Clamp(0, 5)
-            );
+        get => _rejectedTransitionDuration ?? SettingsService.ConfigurationTransitionDuration;
+        set
+        {
+            SettingsService.ConfigurationTransitionDuration = value;
+
+            if (SettingsService.ConfigurationTransitionDuration == value)
+                return;
+
+            // The value was out of range and got clamped. If the stored value didn't change as
+            // a result (e.g. it was already at the maximum), bindings wouldn't refresh and the
+            // input would keep showing what was typed. So briefly report the typed value and then
+            // the actual one, which makes the input snap back to it.
+            _rejectedTransitionDuration = value;
+            OnPropertyChanged();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                _rejectedTransitionDuration = null;
+                OnPropertyChanged(nameof(ConfigurationTransitionDuration));
+            });
+        }
     }
 
     public double ConfigurationTransitionOffset
