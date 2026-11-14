@@ -113,28 +113,11 @@ public class GrayscaleSnoozeSpecs : IDisposable
     // ---- Snooze ----
 
     [Theory]
-    [InlineData(GrayscaleSchedule.Off, false)]
-    [InlineData(GrayscaleSchedule.On, false)]
-    [InlineData(GrayscaleSchedule.NightOnly, true)]
-    [InlineData(GrayscaleSchedule.EveningAndNight, true)]
-    public void I_am_offered_the_right_ways_to_disable_grayscale_for_my_schedule(
-        GrayscaleSchedule schedule,
-        bool isUntilScheduleChangeOffered
-    )
-    {
-        // Act & assert
-        // Durations are offered when the schedule doesn't change during the day, and
-        // "until the next schedule change" when it does
-        GrayscaleController
-            .HasScheduleChanges(schedule)
-            .Should()
-            .Be(isUntilScheduleChangeOffered);
-    }
-
-    [Theory]
+    // The same choices as pausing: 15 min, 1 hr, 3 hrs (and until sunrise, which is a duration too)
     [InlineData(15)]
-    [InlineData(30)]
     [InlineData(60)]
+    [InlineData(180)]
+    [InlineData(9 * 60 + 41)]
     public void I_can_disable_grayscale_for_a_while_and_have_it_come_back_by_itself(int minutes)
     {
         // Arrange
@@ -182,7 +165,7 @@ public class GrayscaleSnoozeSpecs : IDisposable
         controller.UpdateOverride(true, null);
 
         // Act
-        // Disabling until the next schedule change is the same as turning it off manually
+        // Turning grayscale off from the tray row lasts until the next schedule change
         var heldOff = GrayscaleController.Toggle(true, null);
         var stillNight = controller.UpdateOverride(true, heldOff);
         var morning = controller.UpdateOverride(false, stillNight);

@@ -303,8 +303,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "在灰度之上继续应用色温，呈现温暖的琥珀色单色效果。关闭后，灰度模式使用中性白点，亮度设置仍然生效。",
             [nameof(GrayscaleScheduleOnOption)] = "开启",
-            [nameof(PauseFor30MinutesChip)] = "30 分钟",
-            [nameof(GrayscaleUntilScheduleChangeChip)] = "直到下次时间表变化",
             [nameof(TrayResumeGrayscaleMenuItem)] = "恢复灰度",
         };
 }
