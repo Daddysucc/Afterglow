@@ -201,6 +201,23 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial HotKey ResetConfigurationOffsetHotKey { get; set; }
 
+    [ObservableProperty]
+    public partial HotKey ToggleGrayscaleHotKey { get; set; }
+
+    // Grayscale
+
+    [ObservableProperty]
+    public partial GrayscaleSchedule GrayscaleSchedule { get; set; } = GrayscaleSchedule.Off;
+
+    // When disabled, grayscale uses a neutral white point instead of the color temperature
+    [ObservableProperty]
+    public partial bool IsGrayscaleTemperatureShiftEnabled { get; set; } = true;
+
+    // Grayscale state chosen manually, which applies until the schedule next changes it
+    // (null when grayscale simply follows the schedule)
+    [ObservableProperty]
+    public partial bool? GrayscaleOverride { get; set; }
+
     public override void Reset()
     {
         base.Reset();
@@ -532,6 +549,10 @@ public partial class SettingsService : SettingsBase
         );
 
         StreamingPorts = StreamingPortList.Normalize(StreamingPorts);
+
+        // Numeric values that don't correspond to any schedule
+        if (!Enum.IsDefined(GrayscaleSchedule))
+            GrayscaleSchedule = GrayscaleSchedule.Off;
 
         // Drop entries without a device path (which can't be matched to any display) and
         // duplicates (keeping the last one), and keep offsets within the supported range

@@ -48,6 +48,12 @@ public partial class LocalizationManager
                 "Paused manually with automatic schedule suspended.",
             [nameof(StatusPausedAutomaticallyText)] =
                 "Paused automatically with native color restored.",
+            [nameof(StatusPausedRemoteStreamingDayText)] =
+                "Paused for streaming with daytime configuration restored.",
+            [nameof(StatusPausedAutomaticallyDayText)] =
+                "Paused automatically with daytime configuration restored.",
+            [nameof(StatusGrayscaleText)] = "Grayscale active at {0} K and {1}% brightness.",
+            [nameof(StatusGrayscaleNeutralText)] = "Grayscale active with neutral white point.",
             [nameof(StatusPreviewText)] = "Previewing the next 24 hours…",
             [nameof(PausedRemoteStreamingLabel)] = "Paused (Remote streaming)",
             [nameof(PausedScreenLockedLabel)] = "Paused (Screen locked)",
@@ -309,5 +315,23 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 hr",
             [nameof(PauseFor3HoursChip)] = "3 hrs",
             [nameof(PausedStateLabel)] = "Paused",
+            // Grayscale
+            [nameof(GrayscaleButton)] = "GRAYSCALE",
+            [nameof(GrayscaleTooltip)] = "Turn grayscale mode on or off",
+            [nameof(TrayGrayscaleMenuItem)] = "Grayscale",
+            [nameof(ToggleGrayscaleHotkeyLabel)] = "Toggle grayscale",
+            [nameof(ToggleGrayscaleHotkeyTooltip)] = "Global hotkey to turn grayscale mode on/off",
+            [nameof(GrayscaleCardTitle)] = "Grayscale",
+            [nameof(GrayscaleCardSubtitle)] =
+                "Remove colors from the screen, manually or on a schedule.",
+            [nameof(GrayscaleScheduleLabel)] = "Automatic grayscale",
+            [nameof(GrayscaleScheduleTooltip)] =
+                "When grayscale turns on by itself. It can always be toggled manually, and a manual choice lasts until the schedule next changes.",
+            [nameof(GrayscaleScheduleOffOption)] = "Off (manual only)",
+            [nameof(GrayscaleScheduleNightOption)] = "Night only",
+            [nameof(GrayscaleScheduleEveningAndNightOption)] = "Evening & night",
+            [nameof(GrayscaleTemperatureShiftLabel)] = "Shift color temperature in grayscale mode",
+            [nameof(GrayscaleTemperatureShiftTooltip)] =
+                "Keep applying the color temperature on top of grayscale, for a warm amber monochrome look. When off, grayscale uses a neutral white point, and brightness still applies.",
         };
 }

@@ -162,6 +162,12 @@ public partial class LocalizationManager
         [nameof(StatusPausedManuallyText)] = "Manuell pausiert, automatischer Zeitplan ausgesetzt.",
         [nameof(StatusPausedAutomaticallyText)] =
             "Automatisch pausiert, Originalfarben wiederhergestellt.",
+        [nameof(StatusPausedRemoteStreamingDayText)] =
+            "Pausiert wegen Streaming, Tageskonfiguration wiederhergestellt.",
+        [nameof(StatusPausedAutomaticallyDayText)] =
+            "Automatisch pausiert, Tageskonfiguration wiederhergestellt.",
+        [nameof(StatusGrayscaleText)] = "Graustufen aktiv mit {0} K und {1} % Helligkeit.",
+        [nameof(StatusGrayscaleNeutralText)] = "Graustufen aktiv mit neutralem Weißpunkt.",
         [nameof(StatusPreviewText)] = "Vorschau der nächsten 24 Stunden…",
         [nameof(PausedRemoteStreamingLabel)] = "Pausiert (Remote-Streaming)",
         [nameof(PausedScreenLockedLabel)] = "Pausiert (Bildschirm gesperrt)",
@@ -295,5 +301,24 @@ public partial class LocalizationManager
         [nameof(PauseFor1HourChip)] = "1 Std.",
         [nameof(PauseFor3HoursChip)] = "3 Std.",
         [nameof(PausedStateLabel)] = "Pausiert",
+        // Grayscale
+        [nameof(GrayscaleButton)] = "GRAUSTUFEN",
+        [nameof(GrayscaleTooltip)] = "Graustufenmodus ein- oder ausschalten",
+        [nameof(TrayGrayscaleMenuItem)] = "Graustufen",
+        [nameof(ToggleGrayscaleHotkeyLabel)] = "Graustufen umschalten",
+        [nameof(ToggleGrayscaleHotkeyTooltip)] =
+            "Globale Tastenkombination zum Ein-/Ausschalten des Graustufenmodus",
+        [nameof(GrayscaleCardTitle)] = "Graustufen",
+        [nameof(GrayscaleCardSubtitle)] =
+            "Farben vom Bildschirm entfernen, manuell oder nach Zeitplan.",
+        [nameof(GrayscaleScheduleLabel)] = "Automatische Graustufen",
+        [nameof(GrayscaleScheduleTooltip)] =
+            "Wann sich die Graustufen von selbst einschalten. Sie lassen sich jederzeit manuell umschalten, und eine manuelle Wahl gilt bis zur nächsten Änderung durch den Zeitplan.",
+        [nameof(GrayscaleScheduleOffOption)] = "Aus (nur manuell)",
+        [nameof(GrayscaleScheduleNightOption)] = "Nur nachts",
+        [nameof(GrayscaleScheduleEveningAndNightOption)] = "Abends & nachts",
+        [nameof(GrayscaleTemperatureShiftLabel)] = "Farbtemperatur im Graustufenmodus anwenden",
+        [nameof(GrayscaleTemperatureShiftTooltip)] =
+            "Die Farbtemperatur weiterhin über den Graustufen anwenden, für einen warmen, bernsteinfarbenen Monochrom-Look. Wenn aus, verwenden die Graustufen einen neutralen Weißpunkt, und die Helligkeit gilt weiterhin.",
     };
 }

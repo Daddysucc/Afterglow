@@ -98,6 +98,10 @@ public class LocalizationSpecs : IDisposable
         nameof(LocalizationManager.StatusPausedScreenLockedText),
         nameof(LocalizationManager.StatusPausedManuallyText),
         nameof(LocalizationManager.StatusPausedAutomaticallyText),
+        nameof(LocalizationManager.StatusPausedRemoteStreamingDayText),
+        nameof(LocalizationManager.StatusPausedAutomaticallyDayText),
+        nameof(LocalizationManager.StatusGrayscaleText),
+        nameof(LocalizationManager.StatusGrayscaleNeutralText),
         nameof(LocalizationManager.StatusPreviewText),
     ];
 

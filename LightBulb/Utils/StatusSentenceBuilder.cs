@@ -15,6 +15,9 @@ namespace LightBulb.Utils;
 /// <param name="CurrentConfiguration">Configuration being applied, including manual adjustments.</param>
 /// <param name="Phase">Current position within the cycle.</param>
 /// <param name="IsEveningIncluded">Whether today's cycle includes the evening stage.</param>
+/// <param name="IsGrayscaleActive">Whether the screen is grayscale right now.</param>
+/// <param name="IsGrayscaleTemperatureShiftEnabled">Whether the color temperature still applies in grayscale.</param>
+/// <param name="IsDefaultToDayConfigurationEnabled">Whether pauses restore the day configuration (rather than native colors).</param>
 public readonly record struct StatusSentenceContext(
     bool IsPreviewing,
     bool IsEnabled,
@@ -25,7 +28,10 @@ public readonly record struct StatusSentenceContext(
     bool IsEveningIncluded,
     ColorConfiguration DayConfiguration,
     ColorConfiguration EveningConfiguration,
-    ColorConfiguration NightConfiguration
+    ColorConfiguration NightConfiguration,
+    bool IsGrayscaleActive = false,
+    bool IsGrayscaleTemperatureShiftEnabled = true,
+    bool IsDefaultToDayConfigurationEnabled = false
 );
 
 /// <summary>
@@ -132,16 +138,30 @@ public static class StatusSentenceBuilder
         if (!context.IsEnabled)
             return localization.StatusPausedManuallyText;
 
+        // Pauses restore either native colors or, if configured so, the day configuration
         switch (context.PauseReason)
         {
             case PauseReason.RemoteStreaming:
-                return localization.StatusPausedRemoteStreamingText;
+                return context.IsDefaultToDayConfigurationEnabled
+                    ? localization.StatusPausedRemoteStreamingDayText
+                    : localization.StatusPausedRemoteStreamingText;
             case PauseReason.FullScreen:
                 return localization.StatusPausedFullScreenText;
             case PauseReason.ScreenLocked:
                 return localization.StatusPausedScreenLockedText;
             case PauseReason.Whitelist:
-                return localization.StatusPausedAutomaticallyText;
+                return context.IsDefaultToDayConfigurationEnabled
+                    ? localization.StatusPausedAutomaticallyDayText
+                    : localization.StatusPausedAutomaticallyText;
+        }
+
+        // Grayscale is the most visible change, so it's mentioned ahead of manual adjustments
+        // (whose values are included) and the schedule
+        if (context.IsGrayscaleActive)
+        {
+            return context.IsGrayscaleTemperatureShiftEnabled
+                ? Format(localization.StatusGrayscaleText, context.CurrentConfiguration)
+                : localization.StatusGrayscaleNeutralText;
         }
 
         if (context.IsManualOverride)
