@@ -84,8 +84,8 @@ public partial class LocalizationManager
             [nameof(ClickToResetLabel)] = "Click to reset",
             [nameof(OffsetLabel)] = "offset",
             // Main window
-            [nameof(ToggleLightBulbTooltip)] = "Toggle LightBulb on/off",
-            [nameof(HideToTrayTooltip)] = "Hide LightBulb to the system tray",
+            [nameof(ToggleLightBulbTooltip)] = "Toggle Afterglow on/off",
+            [nameof(HideToTrayTooltip)] = "Hide Afterglow to the system tray",
             [nameof(PreviewText)] = "PREVIEW",
             [nameof(StopPreviewTooltip)] = "Stop preview",
             [nameof(StartPreviewTooltip)] = "Preview 24-hour cycle",
@@ -97,16 +97,16 @@ public partial class LocalizationManager
             [nameof(LanguageLabel)] = "Language",
             [nameof(LanguageTooltip)] = "Preferred user interface language",
             [nameof(StartWithWindowsLabel)] = "Start with Windows",
-            [nameof(StartWithWindowsTooltip)] = "Launch LightBulb at Windows startup",
+            [nameof(StartWithWindowsTooltip)] = "Launch Afterglow at Windows startup",
             [nameof(DefaultToDayConfigLabel)] = "Default to day-time configuration",
             [nameof(DefaultToDayConfigTooltip)] =
-                "When LightBulb is disabled or paused, restore the configured day-time temperature and brightness instead of the default monitor gamma",
+                "When Afterglow is disabled or paused, restore the configured day-time temperature and brightness instead of the default monitor gamma",
             [nameof(PauseWhenFullscreenLabel)] = "Pause when fullscreen",
             [nameof(PauseWhenFullscreenTooltip)] =
-                "Pause LightBulb when any fullscreen window is in the foreground",
+                "Pause Afterglow when any fullscreen window is in the foreground",
             [nameof(GammaSmoothingLabel)] = "Gamma smoothing",
             [nameof(GammaSmoothingTooltip)] =
-                "Transition slowly when enabling or disabling LightBulb to give time for eyes to adjust",
+                "Transition slowly when enabling or disabling Afterglow to give time for eyes to adjust",
             [nameof(GammaPollingLabel)] = "Gamma polling",
             [nameof(GammaPollingTooltip)] =
                 "Force-refresh monitor gamma at regular intervals to prevent other programs from overriding it",
@@ -117,13 +117,13 @@ public partial class LocalizationManager
                 Brightness during the day
 
                 Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
-                If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable LightBulb's brightness control by keeping both brightness settings at 100%.
+                If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable Afterglow's brightness control by keeping both brightness settings at 100%.
                 """,
             [nameof(NightBrightnessTooltip)] = """
                 Brightness during the night
 
                 Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
-                If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable LightBulb's brightness control by keeping both brightness settings at 100%.
+                If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable Afterglow's brightness control by keeping both brightness settings at 100%.
                 """,
             [nameof(TransitionDurationTooltip)] =
                 "Duration of time it takes to switch between day-time and night-time configurations",
@@ -164,11 +164,11 @@ public partial class LocalizationManager
             [nameof(SetLocationTooltip)] = "Set location",
             [nameof(LocationErrorText)] = "Error resolving location, try again",
             // Hot key settings tab
-            [nameof(ToggleLightBulbHotkeyLabel)] = "Toggle LightBulb",
-            [nameof(ToggleLightBulbHotkeyTooltip)] = "Global hotkey to toggle LightBulb on/off",
+            [nameof(ToggleLightBulbHotkeyLabel)] = "Toggle Afterglow",
+            [nameof(ToggleLightBulbHotkeyTooltip)] = "Global hotkey to toggle Afterglow on/off",
             [nameof(ToggleWindowLabel)] = "Toggle window",
             [nameof(ToggleWindowHotkeyTooltip)] =
-                "Global hotkey to show/hide LightBulb's main window",
+                "Global hotkey to show/hide Afterglow's main window",
             [nameof(IncreaseTemperatureOffsetLabel)] = "Temperature offset ↑",
             [nameof(IncreaseTemperatureOffsetTooltip)] =
                 "Global hotkey to increase the current temperature offset",
@@ -188,7 +188,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Application whitelist",
             [nameof(RefreshAppsTooltip)] = "Refresh running applications",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Pause LightBulb when one of the selected applications is in the foreground",
+                "Pause Afterglow when one of the selected applications is in the foreground",
             // Tray icon context menu
             [nameof(TraySettingsMenuItem)] = "Settings",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Until sunrise",
@@ -200,7 +200,7 @@ public partial class LocalizationManager
             [nameof(UnstableBuildMessage)] = """
                 You're using a development build of {0}. These builds are not thoroughly tested and may contain bugs.
 
-                Auto-updates are disabled for development builds. If you want to switch to a stable release, please download it manually.
+                If you want to switch to a stable release, you can download one from the releases page.
                 """,
             [nameof(SeeReleasesButton)] = "SEE RELEASES",
             [nameof(LimitedGammaRangeTitle)] = "Limited gamma range",
@@ -250,9 +250,9 @@ public partial class LocalizationManager
                 "Temporarily restore normal colors in these situations.",
             [nameof(PauseWhenScreenLockedLabel)] = "Pause when the screen is locked",
             [nameof(PauseWhenScreenLockedTooltip)] =
-                "Pause LightBulb while the workstation is locked",
+                "Pause Afterglow while the workstation is locked",
             [nameof(WhitelistCardSubtitle)] =
-                "Pause LightBulb while any of the selected programs is in the foreground.",
+                "Pause Afterglow while any of the selected programs is in the foreground.",
             [nameof(PerMonitorFullscreenPauseLabel)] = "Pause only the monitor running fullscreen",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "When a fullscreen application is in the foreground, restore normal colors only on the display that runs it, and keep the other displays on the cycle",
@@ -279,7 +279,7 @@ public partial class LocalizationManager
             [nameof(NoDisplaysText)] = "No displays detected.",
             [nameof(PrimaryBadge)] = "PRIMARY",
             [nameof(DisplayEnabledTooltip)] =
-                "Apply LightBulb to this display. When excluded, the display is kept at neutral colors.",
+                "Apply Afterglow to this display. When excluded, the display is kept at neutral colors.",
             [nameof(MonitorTemperatureOffsetLabel)] = "Temperature offset",
             [nameof(MonitorTemperatureOffsetTooltip)] =
                 "Shifts the color temperature on this display only. With perceptual scaling, this is the shift at your day temperature.",
@@ -301,7 +301,7 @@ public partial class LocalizationManager
             [nameof(SystemPreferencesCardTitle)] = "System Preferences",
             [nameof(StartMinimizedLabel)] = "Start minimized",
             [nameof(StartMinimizedTooltip)] =
-                "Hide LightBulb to the system tray when it starts, even when launched manually",
+                "Hide Afterglow to the system tray when it starts, even when launched manually",
             [nameof(ExtendedGammaRangeLabel)] = "Extended gamma range",
             [nameof(ExtendedGammaRangeTooltip)] =
                 "Unlock the full gamma range in Windows, which allows warmer color temperatures and lower brightness. Changing this requires administrator privileges.",
@@ -310,7 +310,7 @@ public partial class LocalizationManager
                 "How often gamma is force-refreshed when gamma polling is enabled",
             [nameof(SecondsValueText)] = "{0} s",
             // Tray menu
-            [nameof(TrayOpenMenuItem)] = "Open LightBulb",
+            [nameof(TrayOpenMenuItem)] = "Open Afterglow",
             [nameof(TrayPauseMenuItem)] = "Pause",
             [nameof(TrayResumeMenuItem)] = "Resume",
             [nameof(TrayPreviewMenuItem)] = "Preview 24h cycle",

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security;
 using System.Threading;
 using LightBulb.PlatformInterop.Utils;
@@ -19,12 +20,23 @@ public class RegistrySwitch<T>(RegistryHive hive, string keyName, string entryNa
         {
             using (_lock.EnterScope())
             {
-                // This should always be accessible without elevation
-                var value = hive.OpenKey().OpenSubKey(keyName, false)?.GetValue(entryName);
-                if (value is null)
-                    return false;
+                try
+                {
+                    // This should always be accessible without elevation
+                    using var baseKey = hive.OpenKey();
+                    using var key = baseKey.OpenSubKey(keyName, false);
 
-                return EqualityComparer<T>.Default.Equals(enabledValue, (T)value);
+                    // A value of another type (e.g. written by another program, or edited by hand)
+                    // simply doesn't count as set, rather than failing
+                    return key?.GetValue(entryName) is T value
+                        && EqualityComparer<T>.Default.Equals(enabledValue, value);
+                }
+                // Some accounts (e.g. restricted by group policy) can't read every key
+                catch (Exception ex)
+                    when (ex is SecurityException or UnauthorizedAccessException or IOException)
+                {
+                    return false;
+                }
             }
         }
         set
@@ -37,12 +49,13 @@ public class RegistrySwitch<T>(RegistryHive hive, string keyName, string entryNa
 
                 try
                 {
-                    var key = hive.OpenKey().CreateSubKey(keyName, true);
+                    using var baseKey = hive.OpenKey();
+                    using var key = baseKey.CreateSubKey(keyName, true);
 
                     if (value)
                         key.SetValue(entryName, enabledValue);
                     else
-                        key.DeleteValue(entryName);
+                        key.DeleteValue(entryName, false);
                 }
                 catch (Exception ex) when (ex is SecurityException or UnauthorizedAccessException)
                 {

@@ -16,8 +16,8 @@ public partial class LocalizationManager
             [nameof(ClickToResetLabel)] = "點擊重設",
             [nameof(OffsetLabel)] = "微調",
             // Main window
-            [nameof(ToggleLightBulbTooltip)] = "切換 LightBulb 開啟/關閉",
-            [nameof(HideToTrayTooltip)] = "將 LightBulb 隱藏至系統工作列",
+            [nameof(ToggleLightBulbTooltip)] = "切換 Afterglow 開啟/關閉",
+            [nameof(HideToTrayTooltip)] = "將 Afterglow 隱藏至系統工作列",
             [nameof(PreviewText)] = "預覽",
             [nameof(StopPreviewTooltip)] = "停止預覽",
             [nameof(StartPreviewTooltip)] = "預覽 24 小時週期",
@@ -29,15 +29,15 @@ public partial class LocalizationManager
             [nameof(LanguageLabel)] = "語言",
             [nameof(LanguageTooltip)] = "偏好的使用者介面語言",
             [nameof(StartWithWindowsLabel)] = "隨 Windows 啟動",
-            [nameof(StartWithWindowsTooltip)] = "在 Windows 啟動時自動執行 LightBulb",
+            [nameof(StartWithWindowsTooltip)] = "在 Windows 啟動時自動執行 Afterglow",
             [nameof(DefaultToDayConfigLabel)] = "預設採用白天設定",
             [nameof(DefaultToDayConfigTooltip)] =
-                "當 LightBulb 停用或暫停時，還原為設定的白天色溫與亮度，而非預設的顯示器 Gamma 值",
+                "當 Afterglow 停用或暫停時，還原為設定的白天色溫與亮度，而非預設的顯示器 Gamma 值",
             [nameof(PauseWhenFullscreenLabel)] = "全螢幕時暫停",
-            [nameof(PauseWhenFullscreenTooltip)] = "當前景有任何全螢幕視窗時暫停 LightBulb",
+            [nameof(PauseWhenFullscreenTooltip)] = "當前景有任何全螢幕視窗時暫停 Afterglow",
             [nameof(GammaSmoothingLabel)] = "Gamma 平滑化",
             [nameof(GammaSmoothingTooltip)] =
-                "在啟用或停用 LightBulb 時緩慢過渡，以便讓眼睛有時間適應",
+                "在啟用或停用 Afterglow 時緩慢過渡，以便讓眼睛有時間適應",
             [nameof(GammaPollingLabel)] = "Gamma 輪詢",
             [nameof(GammaPollingTooltip)] =
                 "定期強制重新整理顯示器 Gamma 值，以防止其他程式覆蓋此設定",
@@ -48,13 +48,13 @@ public partial class LocalizationManager
                 白天時的亮度
 
                 請注意，此亮度設定適用於色彩 Gamma 值，而非顯示器的實際硬體亮度。
-                如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 LightBulb 的亮度控制。
+                如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 Afterglow 的亮度控制。
                 """,
             [nameof(NightBrightnessTooltip)] = """
                 夜晚時的亮度
 
                 請注意，此亮度設定適用於色彩 Gamma 值，而非顯示器的實際硬體亮度。
-                如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 LightBulb 的亮度控制。
+                如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 Afterglow 的亮度控制。
                 """,
             [nameof(TransitionDurationTooltip)] = "在白天和夜晚設定之間切換所需的時間長度",
             [nameof(TransitionOffsetTooltip)] =
@@ -78,10 +78,10 @@ public partial class LocalizationManager
             [nameof(SetLocationTooltip)] = "設定位置",
             [nameof(LocationErrorText)] = "解析位置時發生錯誤，請再試一次",
             // Hot key settings tab
-            [nameof(ToggleLightBulbHotkeyLabel)] = "切換 LightBulb",
-            [nameof(ToggleLightBulbHotkeyTooltip)] = "全域快捷鍵，用於開啟/關閉 LightBulb",
+            [nameof(ToggleLightBulbHotkeyLabel)] = "切換 Afterglow",
+            [nameof(ToggleLightBulbHotkeyTooltip)] = "全域快捷鍵，用於開啟/關閉 Afterglow",
             [nameof(ToggleWindowLabel)] = "切換視窗",
-            [nameof(ToggleWindowHotkeyTooltip)] = "全域快捷鍵，用於顯示/隱藏 LightBulb 主視窗",
+            [nameof(ToggleWindowHotkeyTooltip)] = "全域快捷鍵，用於顯示/隱藏 Afterglow 主視窗",
             [nameof(IncreaseTemperatureOffsetLabel)] = "色溫微調 ↑",
             [nameof(IncreaseTemperatureOffsetTooltip)] = "全域快捷鍵，用於增加目前的色溫微調值",
             [nameof(DecreaseTemperatureOffsetLabel)] = "色溫微調 ↓",
@@ -95,7 +95,7 @@ public partial class LocalizationManager
             // Application whitelist settings tab
             [nameof(AppWhitelistLabel)] = "應用程式白名單",
             [nameof(RefreshAppsTooltip)] = "重新整理執行中的應用程式",
-            [nameof(PauseForWhitelistedTooltip)] = "當選定的應用程式之一在前景執行時暫停 LightBulb",
+            [nameof(PauseForWhitelistedTooltip)] = "當選定的應用程式之一在前景執行時暫停 Afterglow",
             // Tray icon context menu
             [nameof(TraySettingsMenuItem)] = "設定",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "直到日出",
@@ -107,7 +107,7 @@ public partial class LocalizationManager
             [nameof(UnstableBuildMessage)] = """
                 您正在使用 {0} 的開發版本。這些版本尚未經過充分測試，可能包含 Bug。
 
-                開發版本已停用自動更新。如果您想切換至穩定發行版，請手動下載。
+                如果您想切換至穩定發行版，可以從發行頁面下載。
                 """,
             [nameof(SeeReleasesButton)] = "查看發行版本",
             [nameof(LimitedGammaRangeTitle)] = "Gamma 範圍受限",
@@ -219,8 +219,8 @@ public partial class LocalizationManager
             [nameof(AutoPauseCardTitle)] = "智慧自動暫停",
             [nameof(AutoPauseCardSubtitle)] = "在以下情況下暫時恢復正常色彩。",
             [nameof(PauseWhenScreenLockedLabel)] = "螢幕鎖定時暫停",
-            [nameof(PauseWhenScreenLockedTooltip)] = "在電腦鎖定期間暫停 LightBulb",
-            [nameof(WhitelistCardSubtitle)] = "當任一選取的程式位於前景時暫停 LightBulb。",
+            [nameof(PauseWhenScreenLockedTooltip)] = "在電腦鎖定期間暫停 Afterglow",
+            [nameof(WhitelistCardSubtitle)] = "當任一選取的程式位於前景時暫停 Afterglow。",
             [nameof(PerMonitorFullscreenPauseLabel)] = "僅暫停執行全螢幕應用程式的顯示器",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "當全螢幕應用程式位於前景時，僅在執行該應用程式的顯示器上恢復正常色彩，其他顯示器繼續跟隨週期",
@@ -246,7 +246,7 @@ public partial class LocalizationManager
             [nameof(NoDisplaysText)] = "未偵測到顯示器。",
             [nameof(PrimaryBadge)] = "主顯示器",
             [nameof(DisplayEnabledTooltip)] =
-                "對此顯示器套用 LightBulb。排除後，該顯示器將維持中性色彩。",
+                "對此顯示器套用 Afterglow。排除後，該顯示器將維持中性色彩。",
             [nameof(MonitorTemperatureOffsetLabel)] = "色溫微調",
             [nameof(MonitorTemperatureOffsetTooltip)] =
                 "僅調整此顯示器的色溫。使用感知縮放時，這是在您的白天色溫下的微調量。",
@@ -264,7 +264,7 @@ public partial class LocalizationManager
             [nameof(HotkeysCardSubtitle)] = "點擊欄位並按下按鍵組合即可指派。",
             [nameof(SystemPreferencesCardTitle)] = "系統偏好設定",
             [nameof(StartMinimizedLabel)] = "啟動時最小化",
-            [nameof(StartMinimizedTooltip)] = "啟動時將 LightBulb 隱藏到系統匣，即使是手動啟動",
+            [nameof(StartMinimizedTooltip)] = "啟動時將 Afterglow 隱藏到系統匣，即使是手動啟動",
             [nameof(ExtendedGammaRangeLabel)] = "延伸 Gamma 範圍",
             [nameof(ExtendedGammaRangeTooltip)] =
                 "解除 Windows 中的完整 Gamma 範圍，以支援更暖的色溫與更低的亮度。變更此項需要系統管理員權限。",
@@ -272,7 +272,7 @@ public partial class LocalizationManager
             [nameof(GammaPollingIntervalTooltip)] = "啟用 Gamma 輪詢時，強制重新整理 Gamma 的頻率",
             [nameof(SecondsValueText)] = "{0} 秒",
             // Tray menu
-            [nameof(TrayOpenMenuItem)] = "開啟 LightBulb",
+            [nameof(TrayOpenMenuItem)] = "開啟 Afterglow",
             [nameof(TrayPauseMenuItem)] = "暫停",
             [nameof(TrayResumeMenuItem)] = "繼續",
             [nameof(TrayPreviewMenuItem)] = "預覽 24 小時週期",

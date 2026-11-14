@@ -2,6 +2,11 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>../favicon.ico</ApplicationIcon>
+    <!-- Shown by Windows (e.g. in Task Manager and the file's properties). The assembly name, and
+         therefore the executable, stays "LightBulb" for compatibility with existing installations,
+         settings, and startup entries -->
+    <Product>Afterglow</Product>
+    <AssemblyTitle>Afterglow</AssemblyTitle>
     <!-- Trimming is only supported for self-contained apps (which is how releases are published) -->
     <PublishTrimmed Condition="'$(SelfContained)' == 'true'">true</PublishTrimmed>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>

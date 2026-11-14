@@ -7,7 +7,7 @@
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     xmlns:viewModels="clr-namespace:LightBulb.ViewModels"
-    Title="{x:Static lightBulb:Program.Name}"
+    Title="{x:Static lightBulb:Program.DisplayName}"
     x:DataType="viewModels:MainViewModel"
     Background="Transparent"
     CanResize="False"
@@ -124,7 +124,7 @@
                     <TextBlock
                         FontSize="11"
                         Foreground="{DynamicResource TextMutedBrush}"
-                        Text="{x:Static lightBulb:Program.Name}"
+                        Text="{x:Static lightBulb:Program.DisplayName}"
                     />
                 </StackPanel>
             </Grid>

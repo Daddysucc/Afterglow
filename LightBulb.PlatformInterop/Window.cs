@@ -129,13 +129,21 @@ public partial class Window(nint handle) : NativeResource(handle)
     {
         const int dwmwaCloaked = 14;
 
-        return NativeMethods.DwmGetWindowAttribute(
-                Handle,
-                dwmwaCloaked,
-                out var cloaked,
-                sizeof(int)
-            ) == 0
-            && cloaked != 0;
+        try
+        {
+            return NativeMethods.DwmGetWindowAttribute(
+                    Handle,
+                    dwmwaCloaked,
+                    out var cloaked,
+                    sizeof(int)
+                ) == 0
+                && cloaked != 0;
+        }
+        // The desktop window manager API may be missing on stripped-down editions of Windows
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return false;
+        }
     }
 
     public bool IsFullScreen()

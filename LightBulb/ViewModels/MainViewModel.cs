@@ -46,7 +46,7 @@ public partial class MainViewModel(
 
         var dialog = viewModelManager.GetMessageBoxViewModel(
             LocalizationManager.UnstableBuildTitle,
-            string.Format(LocalizationManager.UnstableBuildMessage, Program.Name),
+            string.Format(LocalizationManager.UnstableBuildMessage, Program.DisplayName),
             LocalizationManager.SeeReleasesButton,
             LocalizationManager.CloseButton
         );
@@ -62,7 +62,7 @@ public partial class MainViewModel(
 
         var dialog = viewModelManager.GetMessageBoxViewModel(
             LocalizationManager.LimitedGammaRangeTitle,
-            string.Format(LocalizationManager.LimitedGammaRangeMessage, Program.Name),
+            string.Format(LocalizationManager.LimitedGammaRangeMessage, Program.DisplayName),
             LocalizationManager.FixButton,
             LocalizationManager.CloseButton
         );
@@ -81,7 +81,7 @@ public partial class MainViewModel(
 
         var dialog = viewModelManager.GetMessageBoxViewModel(
             LocalizationManager.WelcomeTitle,
-            string.Format(LocalizationManager.WelcomeMessage, Program.Name),
+            string.Format(LocalizationManager.WelcomeMessage, Program.DisplayName),
             LocalizationManager.OkButton,
             LocalizationManager.CloseButton
         );
@@ -94,7 +94,9 @@ public partial class MainViewModel(
         if (await dialogManager.ShowDialogAsync(dialog) != true)
             return;
 
-        var settingsDialog = viewModelManager.GetSettingsViewModel();
+        // Disposed once closed, so that the settings stop listening to the app's services
+        using var settings = viewModelManager.CreateSettingsViewModel();
+        var settingsDialog = settings.Value;
         settingsDialog.ActivateTab<ScheduleSettingsTabViewModel>();
 
         await dialogManager.ShowDialogAsync(settingsDialog);
@@ -118,7 +120,9 @@ public partial class MainViewModel(
         // overwritten or lost while the settings page is open
         Dashboard.FlushPendingSave();
 
-        var settingsDialog = viewModelManager.GetSettingsViewModel();
+        // Disposed once closed, so that the settings stop listening to the app's services
+        using var settings = viewModelManager.CreateSettingsViewModel();
+        var settingsDialog = settings.Value;
         settingsDialog.ActivateTab<TTab>();
 
         _isSettingsOpen = true;

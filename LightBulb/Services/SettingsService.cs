@@ -238,22 +238,29 @@ public partial class SettingsService : SettingsBase
 
         TrySaveToFile();
 
-        // Update values in the registry
-        try
-        {
-            _extendedGammaRangeSwitch.IsSet = IsExtendedGammaRangeUnlocked;
-            _autoStartSwitch.IsSet = IsAutoStartEnabled;
-        }
-        catch (Win32Exception)
-        {
-            // This can happen if the user doesn't have the necessary permissions to update
-            // the corresponding registry keys, and privilege elevation has failed.
-            // Throwing an exception here is very messy, so we'll just ignore it.
-            // https://github.com/Tyrrrz/LightBulb/issues/335
-        }
+        // Update values in the registry. Each one separately, so that failing to update one (e.g.
+        // when privilege elevation for the gamma range is declined) doesn't skip the other.
+        // Failures can happen if the user doesn't have the necessary permissions to update the
+        // corresponding registry keys, and privilege elevation has failed or isn't possible.
+        // Saving happens at any time (including during shutdown), so it must never throw.
+        // https://github.com/Tyrrrz/LightBulb/issues/335
+        TryUpdateRegistry(() => _extendedGammaRangeSwitch.IsSet = IsExtendedGammaRangeUnlocked);
+        TryUpdateRegistry(() => _autoStartSwitch.IsSet = IsAutoStartEnabled);
 
         // Trigger UI updates
         OnPropertyChanged(string.Empty);
+    }
+
+    private static void TryUpdateRegistry(Action update)
+    {
+        try
+        {
+            update();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to update registry: {ex}");
+        }
     }
 
     // Errors that mean the file can't be accessed right now, as opposed to it having invalid contents
@@ -286,7 +293,9 @@ public partial class SettingsService : SettingsBase
             base.Save();
             return true;
         }
-        catch (Exception ex) when (IsFileAccessError(ex))
+        // Any file system error, including a missing or invalid directory
+        catch (Exception ex)
+            when (ex is IOException or UnauthorizedAccessException or SecurityException)
         {
             Debug.WriteLine($"Failed to save settings: {ex}");
             return false;
@@ -549,6 +558,10 @@ public partial class SettingsService : SettingsBase
         );
 
         StreamingPorts = StreamingPortList.Normalize(StreamingPorts);
+
+        // Coordinates that don't exist on Earth (e.g. edited by hand) are treated as not set
+        if (Location is { IsValid: false })
+            Location = null;
 
         // Numeric values that don't correspond to any schedule
         if (!Enum.IsDefined(GrayscaleSchedule))

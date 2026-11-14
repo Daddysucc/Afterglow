@@ -10,6 +10,15 @@ namespace LightBulb.Core;
 
 public readonly partial record struct GeoLocation(double Latitude, double Longitude)
 {
+    /// <summary>
+    /// Whether the coordinates exist on Earth: latitude within ±90°, and longitude within ±180°.
+    /// </summary>
+    public bool IsValid =>
+        double.IsFinite(Latitude)
+        && double.IsFinite(Longitude)
+        && Math.Abs(Latitude) <= 90
+        && Math.Abs(Longitude) <= 180;
+
     public override string ToString() =>
         $"{Latitude.ToString(CultureInfo.InvariantCulture)}, {Longitude.ToString(CultureInfo.InvariantCulture)}";
 }
@@ -96,7 +105,11 @@ public partial record struct GeoLocation
         if (string.IsNullOrWhiteSpace(value))
             return null;
 
-        return TryParseSigned(value) ?? TryParseSuffixed(value);
+        // Coordinates out of range are rejected, so that the input is treated as a place to
+        // search for instead (and never produces meaningless sunrise and sunset times)
+        return (TryParseSigned(value) ?? TryParseSuffixed(value)) is { IsValid: true } location
+            ? location
+            : null;
     }
 
     public static async Task<GeoLocation> GetCurrentAsync()

@@ -107,6 +107,10 @@ public class PopupPlacementEdgeCaseSpecs
     [InlineData(-1920, 0, 0, 1080, 1.0)]
     // 1440p display at 125%, above it
     [InlineData(0, -1440, 2560, 0, 1.25)]
+    // 4K display at 200%, to the left of it
+    [InlineData(-3840, 0, 0, 2160, 2.0)]
+    // 1440p laptop panel at 175%, below it
+    [InlineData(0, 2160, 2560, 3600, 1.75)]
     public void I_observe_the_menu_scaled_to_the_display_it_opens_on_in_a_mixed_dpi_setup(
         int left,
         int top,

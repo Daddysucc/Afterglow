@@ -15,8 +15,8 @@ public partial class LocalizationManager
             [nameof(BrightnessOffsetLabel)] = "Зміщення яскравості:",
             [nameof(ClickToResetLabel)] = "Натисніть для скидання",
             [nameof(OffsetLabel)] = "зміщення",
-            [nameof(ToggleLightBulbTooltip)] = "Увімкнути/вимкнути LightBulb",
-            [nameof(HideToTrayTooltip)] = "Сховати LightBulb у системний трей",
+            [nameof(ToggleLightBulbTooltip)] = "Увімкнути/вимкнути Afterglow",
+            [nameof(HideToTrayTooltip)] = "Сховати Afterglow у системний трей",
             [nameof(PreviewText)] = "ДЕМОНСТРАЦІЯ",
             [nameof(StopPreviewTooltip)] = "Зупинити демонстрацію",
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
@@ -25,16 +25,16 @@ public partial class LocalizationManager
             [nameof(LanguageLabel)] = "Мова",
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",
-            [nameof(StartWithWindowsTooltip)] = "Запускати LightBulb при старті Windows",
+            [nameof(StartWithWindowsTooltip)] = "Запускати Afterglow при старті Windows",
             [nameof(DefaultToDayConfigLabel)] = "Повертатись до денної конфігурації",
             [nameof(DefaultToDayConfigTooltip)] =
-                "Коли LightBulb вимкнено або призупинено, відновлювати налаштовану денну температуру та яскравість замість гами монітора за замовчуванням",
+                "Коли Afterglow вимкнено або призупинено, відновлювати налаштовану денну температуру та яскравість замість гами монітора за замовчуванням",
             [nameof(PauseWhenFullscreenLabel)] = "Призупиняти при повноекранному режимі",
             [nameof(PauseWhenFullscreenTooltip)] =
-                "Призупиняти LightBulb, коли будь-яке повноекранне вікно знаходиться на передньому плані",
+                "Призупиняти Afterglow, коли будь-яке повноекранне вікно знаходиться на передньому плані",
             [nameof(GammaSmoothingLabel)] = "Згладжування гами",
             [nameof(GammaSmoothingTooltip)] =
-                "Повільно перемикати гаму при вмиканні або вимиканні LightBulb, щоб очі мали час адаптуватись",
+                "Повільно перемикати гаму при вмиканні або вимиканні Afterglow, щоб очі мали час адаптуватись",
             [nameof(GammaPollingLabel)] = "Оновлення гами",
             [nameof(GammaPollingTooltip)] =
                 "Примусово оновлювати гаму монітора через регулярні проміжки часу, щоб інші програми не могли її перевизначити",
@@ -44,13 +44,13 @@ public partial class LocalizationManager
                 Яскравість протягом дня
 
                 Зауважте, що це налаштування яскравості застосовується до колірної гами, а не до фактичної яскравості монітора.
-                Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості LightBulb, залишивши обидва параметри яскравості на рівні 100%.
+                Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості Afterglow, залишивши обидва параметри яскравості на рівні 100%.
                 """,
             [nameof(NightBrightnessTooltip)] = """
                 Яскравість протягом ночі
 
                 Зауважте, що це налаштування яскравості застосовується до колірної гами, а не до фактичної яскравості монітора.
-                Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості LightBulb, залишивши обидва параметри яскравості на рівні 100%.
+                Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості Afterglow, залишивши обидва параметри яскравості на рівні 100%.
                 """,
             [nameof(TransitionDurationTooltip)] =
                 "Час, необхідний для перемикання між денною та нічною конфігураціями",
@@ -75,12 +75,12 @@ public partial class LocalizationManager
                 """,
             [nameof(SetLocationTooltip)] = "Встановити місцезнаходження",
             [nameof(LocationErrorText)] = "Помилка визначення місцезнаходження, спробуйте ще раз",
-            [nameof(ToggleLightBulbHotkeyLabel)] = "Перемкнути LightBulb",
+            [nameof(ToggleLightBulbHotkeyLabel)] = "Перемкнути Afterglow",
             [nameof(ToggleLightBulbHotkeyTooltip)] =
-                "Глобальна гаряча клавіша для увімкнення/вимкнення LightBulb",
+                "Глобальна гаряча клавіша для увімкнення/вимкнення Afterglow",
             [nameof(ToggleWindowLabel)] = "Перемкнути вікно",
             [nameof(ToggleWindowHotkeyTooltip)] =
-                "Глобальна гаряча клавіша для показу/приховання головного вікна LightBulb",
+                "Глобальна гаряча клавіша для показу/приховання головного вікна Afterglow",
             [nameof(IncreaseTemperatureOffsetLabel)] = "Зміщення температури ↑",
             [nameof(IncreaseTemperatureOffsetTooltip)] =
                 "Глобальна гаряча клавіша для збільшення поточного зміщення температури",
@@ -99,7 +99,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Білий список програм",
             [nameof(RefreshAppsTooltip)] = "Оновити список запущених програм",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Призупиняти LightBulb, коли одна з вибраних програм знаходиться на передньому плані",
+                "Призупиняти Afterglow, коли одна з вибраних програм знаходиться на передньому плані",
             [nameof(TraySettingsMenuItem)] = "Налаштування",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "До сходу сонця",
             [nameof(TrayExitMenuItem)] = "Вийти",
@@ -109,7 +109,7 @@ public partial class LocalizationManager
             [nameof(UnstableBuildMessage)] = """
                 Ви використовуєте збірку розробника {0}. Ці збірки не пройшли ретельного тестування і можуть містити помилки.
 
-                Автоматичні оновлення вимкнені для збірок розробника. Якщо ви хочете перейти на стабільний реліз, завантажте його вручну.
+                Якщо ви хочете перейти на стабільний реліз, завантажте його зі сторінки релізів.
                 """,
             [nameof(SeeReleasesButton)] = "ПЕРЕГЛЯНУТИ РЕЛІЗИ",
             [nameof(LimitedGammaRangeTitle)] = "Обмежений діапазон гами",
@@ -239,9 +239,9 @@ public partial class LocalizationManager
                 "Тимчасово повертати звичайні кольори в цих ситуаціях.",
             [nameof(PauseWhenScreenLockedLabel)] = "Призупиняти, коли екран заблоковано",
             [nameof(PauseWhenScreenLockedTooltip)] =
-                "Призупиняти LightBulb, поки комп'ютер заблоковано",
+                "Призупиняти Afterglow, поки комп'ютер заблоковано",
             [nameof(WhitelistCardSubtitle)] =
-                "Призупиняти LightBulb, поки будь-яка з вибраних програм на передньому плані.",
+                "Призупиняти Afterglow, поки будь-яка з вибраних програм на передньому плані.",
             [nameof(PerMonitorFullscreenPauseLabel)] =
                 "Призупиняти лише монітор із повноекранною програмою",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
@@ -270,7 +270,7 @@ public partial class LocalizationManager
             [nameof(NoDisplaysText)] = "Дисплеї не виявлено.",
             [nameof(PrimaryBadge)] = "ОСНОВНИЙ",
             [nameof(DisplayEnabledTooltip)] =
-                "Застосовувати LightBulb до цього дисплея. Виключений дисплей залишається з нейтральними кольорами.",
+                "Застосовувати Afterglow до цього дисплея. Виключений дисплей залишається з нейтральними кольорами.",
             [nameof(MonitorTemperatureOffsetLabel)] = "Зміщення температури",
             [nameof(MonitorTemperatureOffsetTooltip)] =
                 "Зміщує колірну температуру лише на цьому дисплеї. З перцептивним масштабуванням це зміщення при вашій денній температурі.",
@@ -292,7 +292,7 @@ public partial class LocalizationManager
             [nameof(SystemPreferencesCardTitle)] = "Системні параметри",
             [nameof(StartMinimizedLabel)] = "Запускати згорнутим",
             [nameof(StartMinimizedTooltip)] =
-                "Ховати LightBulb в системний трей під час запуску, навіть якщо його запущено вручну",
+                "Ховати Afterglow в системний трей під час запуску, навіть якщо його запущено вручну",
             [nameof(ExtendedGammaRangeLabel)] = "Розширений діапазон гами",
             [nameof(ExtendedGammaRangeTooltip)] =
                 "Розблокувати повний діапазон гами в Windows, що дозволяє тепліші колірні температури та нижчу яскравість. Для зміни потрібні права адміністратора.",
@@ -301,7 +301,7 @@ public partial class LocalizationManager
                 "Як часто гама примусово оновлюється, коли увімкнено оновлення гами",
             [nameof(SecondsValueText)] = "{0} с",
             // Tray menu
-            [nameof(TrayOpenMenuItem)] = "Відкрити LightBulb",
+            [nameof(TrayOpenMenuItem)] = "Відкрити Afterglow",
             [nameof(TrayPauseMenuItem)] = "Призупинити",
             [nameof(TrayResumeMenuItem)] = "Продовжити",
             [nameof(TrayPreviewMenuItem)] = "Демонстрація 24-годинного циклу",

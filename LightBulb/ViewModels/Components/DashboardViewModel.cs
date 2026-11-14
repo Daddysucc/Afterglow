@@ -614,7 +614,7 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     public string StatusText =>
-        Program.Name
+        Program.DisplayName
         + Environment.NewLine
         + (
             IsActive
@@ -644,6 +644,16 @@ public partial class DashboardViewModel : ViewModelBase
         _pendingSaveRegistration = null;
 
         _settingsService.Save();
+    }
+
+    // For when the app is crashing or being terminated: writes pending changes to the settings
+    // file only (without touching the registry or notifying the UI), so it's safe from any thread
+    internal void TryFlushPendingSaveToFile()
+    {
+        if (_pendingSaveRegistration is null)
+            return;
+
+        _settingsService.TrySaveToFile();
     }
 
     private void RegisterHotKeys()
@@ -872,7 +882,11 @@ public partial class DashboardViewModel : ViewModelBase
         // the fullscreen and whitelist states. This prevents brief flashes when switching from a
         // fullscreen/whitelisted application to an ignored application, and back.
         // https://github.com/Tyrrrz/LightBulb/issues/451
-        var foregroundApplication = _externalApplicationService.TryGetForegroundApplication();
+        // Only looked up when needed, since this opens the foreground application's process
+        var foregroundApplication = settings.IsForegroundApplicationNeeded
+            ? _externalApplicationService.TryGetForegroundApplication()
+            : null;
+
         if (foregroundApplication is not null)
         {
             _fullScreenMonitor = settings.IsPauseWhenFullScreenEnabled

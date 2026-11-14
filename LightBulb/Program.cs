@@ -11,7 +11,13 @@ public static class Program
 {
     private static Assembly Assembly { get; } = Assembly.GetExecutingAssembly();
 
+    // The assembly name, which stays "LightBulb" for compatibility: it names the executable,
+    // the settings folder, the startup entry, and the single-instance lock, which existing
+    // installations and settings rely on
     public static string Name { get; } = Assembly.GetName().Name ?? "LightBulb";
+
+    // The name shown to the user
+    public static string DisplayName { get; } = "Afterglow";
 
     public static Version Version { get; } = Assembly.GetName().Version ?? new Version(0, 0, 0);
 
@@ -56,7 +62,7 @@ public static class Program
         return appExecutablePath;
     }
 
-    public static string ProjectUrl { get; } = "https://github.com/Tyrrrz/LightBulb";
+    public static string ProjectUrl { get; } = "https://github.com/trentrichards1/Afterglow";
 
     public static string ProjectReleasesUrl { get; } = $"{ProjectUrl}/releases";
 

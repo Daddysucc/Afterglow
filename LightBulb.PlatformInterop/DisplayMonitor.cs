@@ -156,7 +156,6 @@ public static class DisplayMonitors
     public static (Rect Bounds, Rect WorkArea, double Scale) GetWorkAreaAt(int x, int y)
     {
         const uint monitorDefaultToNearest = 2;
-        const int mdtEffectiveDpi = 0;
 
         var monitorHandle = NativeMethods.MonitorFromPoint(
             new NativePoint(x, y),
@@ -167,13 +166,28 @@ public static class DisplayMonitors
         if (monitorHandle == 0 || !NativeMethods.GetMonitorInfo(monitorHandle, ref monitorInfo))
             return (Rect.Empty, Rect.Empty, 1);
 
-        var scale =
-            NativeMethods.GetDpiForMonitor(monitorHandle, mdtEffectiveDpi, out var dpiX, out _) == 0
-            && dpiX > 0
-                ? dpiX / 96.0
-                : 1;
+        return (monitorInfo.Monitor, monitorInfo.WorkArea, TryGetScale(monitorHandle) ?? 1);
+    }
 
-        return (monitorInfo.Monitor, monitorInfo.WorkArea, scale);
+    // Effective DPI scale of a display (e.g. 1.5 at 150%)
+    private static double? TryGetScale(nint monitorHandle)
+    {
+        const int mdtEffectiveDpi = 0;
+
+        try
+        {
+            return
+                NativeMethods.GetDpiForMonitor(monitorHandle, mdtEffectiveDpi, out var dpiX, out _)
+                    == 0
+                && dpiX > 0
+                ? dpiX / 96.0
+                : null;
+        }
+        // Per-monitor DPI isn't available on older and stripped-down editions of Windows
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return null;
+        }
     }
 
     /// <summary>
