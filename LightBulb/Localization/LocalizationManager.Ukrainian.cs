@@ -165,6 +165,13 @@ public partial class LocalizationManager
                 "Призупинено вручну, автоматичний розклад вимкнено.",
             [nameof(StatusPausedAutomaticallyText)] =
                 "Призупинено автоматично, відновлено рідні кольори.",
+            [nameof(StatusPausedRemoteStreamingDayText)] =
+                "Призупинено через трансляцію, відновлено денну конфігурацію.",
+            [nameof(StatusPausedAutomaticallyDayText)] =
+                "Призупинено автоматично, відновлено денну конфігурацію.",
+            [nameof(StatusGrayscaleText)] = "Відтінки сірого активні з {0} K і яскравістю {1}%.",
+            [nameof(StatusGrayscaleNeutralText)] =
+                "Відтінки сірого активні з нейтральною точкою білого.",
             [nameof(StatusPreviewText)] = "Демонстрація наступних 24 годин…",
             [nameof(PausedRemoteStreamingLabel)] = "Призупинено (віддалена трансляція)",
             [nameof(PausedScreenLockedLabel)] = "Призупинено (екран заблоковано)",
@@ -299,5 +306,24 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 год",
             [nameof(PauseFor3HoursChip)] = "3 год",
             [nameof(PausedStateLabel)] = "Призупинено",
+            // Grayscale
+            [nameof(GrayscaleButton)] = "ВІДТІНКИ СІРОГО",
+            [nameof(GrayscaleTooltip)] = "Увімкнути або вимкнути режим відтінків сірого",
+            [nameof(TrayGrayscaleMenuItem)] = "Відтінки сірого",
+            [nameof(ToggleGrayscaleHotkeyLabel)] = "Відтінки сірого",
+            [nameof(ToggleGrayscaleHotkeyTooltip)] =
+                "Глобальна гаряча клавіша для ввімкнення/вимкнення відтінків сірого",
+            [nameof(GrayscaleCardTitle)] = "Відтінки сірого",
+            [nameof(GrayscaleCardSubtitle)] = "Прибрати кольори з екрана вручну або за розкладом.",
+            [nameof(GrayscaleScheduleLabel)] = "Автоматичні відтінки сірого",
+            [nameof(GrayscaleScheduleTooltip)] =
+                "Коли відтінки сірого вмикаються самі. Їх завжди можна перемкнути вручну, і ручний вибір діє до наступної зміни за розкладом.",
+            [nameof(GrayscaleScheduleOffOption)] = "Вимк. (лише вручну)",
+            [nameof(GrayscaleScheduleNightOption)] = "Лише вночі",
+            [nameof(GrayscaleScheduleEveningAndNightOption)] = "Увечері та вночі",
+            [nameof(GrayscaleTemperatureShiftLabel)] =
+                "Змінювати колірну температуру у відтінках сірого",
+            [nameof(GrayscaleTemperatureShiftTooltip)] =
+                "Продовжувати застосовувати колірну температуру поверх відтінків сірого для теплого бурштинового монохромного вигляду. Якщо вимкнено, використовується нейтральна точка білого, а яскравість і далі застосовується.",
         };
 }

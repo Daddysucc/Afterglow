@@ -115,4 +115,21 @@ public class CycleSettingsTabViewModel(
         get => SettingsService.NightStartTime;
         set => SettingsService.NightStartTime = value;
     }
+
+    // Index into the grayscale schedule selector, in the order of the schedule's values
+    public int GrayscaleScheduleIndex
+    {
+        get => (int)SettingsService.GrayscaleSchedule;
+        set
+        {
+            if (Enum.IsDefined((GrayscaleSchedule)value))
+                SettingsService.GrayscaleSchedule = (GrayscaleSchedule)value;
+        }
+    }
+
+    public bool IsGrayscaleTemperatureShiftEnabled
+    {
+        get => SettingsService.IsGrayscaleTemperatureShiftEnabled;
+        set => SettingsService.IsGrayscaleTemperatureShiftEnabled = value;
+    }
 }

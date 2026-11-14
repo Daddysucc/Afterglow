@@ -48,6 +48,7 @@ public partial class App : Application, IDisposable
         services.AddSingleton<LocalizationManager>();
         services.AddSingleton<MonitorService>();
         services.AddSingleton<GammaService>();
+        services.AddSingleton<GrayscaleService>();
         services.AddSingleton<HotKeyService>();
         services.AddSingleton<SettingsService>();
 

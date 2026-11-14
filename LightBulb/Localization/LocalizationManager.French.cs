@@ -167,6 +167,12 @@ public partial class LocalizationManager
         [nameof(StatusPausedManuallyText)] = "En pause manuelle, programme automatique suspendu.",
         [nameof(StatusPausedAutomaticallyText)] =
             "En pause automatique, couleurs d'origine rétablies.",
+        [nameof(StatusPausedRemoteStreamingDayText)] =
+            "En pause pour le streaming, configuration de jour rétablie.",
+        [nameof(StatusPausedAutomaticallyDayText)] =
+            "En pause automatique, configuration de jour rétablie.",
+        [nameof(StatusGrayscaleText)] = "Niveaux de gris actifs à {0} K et {1} % de luminosité.",
+        [nameof(StatusGrayscaleNeutralText)] = "Niveaux de gris actifs avec un point blanc neutre.",
         [nameof(StatusPreviewText)] = "Aperçu des 24 prochaines heures…",
         [nameof(PausedRemoteStreamingLabel)] = "En pause (streaming à distance)",
         [nameof(PausedScreenLockedLabel)] = "En pause (écran verrouillé)",
@@ -301,5 +307,25 @@ public partial class LocalizationManager
         [nameof(PauseFor1HourChip)] = "1 h",
         [nameof(PauseFor3HoursChip)] = "3 h",
         [nameof(PausedStateLabel)] = "En pause",
+        // Grayscale
+        [nameof(GrayscaleButton)] = "NIVEAUX DE GRIS",
+        [nameof(GrayscaleTooltip)] = "Activer ou désactiver le mode niveaux de gris",
+        [nameof(TrayGrayscaleMenuItem)] = "Niveaux de gris",
+        [nameof(ToggleGrayscaleHotkeyLabel)] = "Basculer les niveaux de gris",
+        [nameof(ToggleGrayscaleHotkeyTooltip)] =
+            "Raccourci global pour activer/désactiver le mode niveaux de gris",
+        [nameof(GrayscaleCardTitle)] = "Niveaux de gris",
+        [nameof(GrayscaleCardSubtitle)] =
+            "Retirer les couleurs de l'écran, manuellement ou selon un horaire.",
+        [nameof(GrayscaleScheduleLabel)] = "Niveaux de gris automatiques",
+        [nameof(GrayscaleScheduleTooltip)] =
+            "Quand les niveaux de gris s'activent d'eux-mêmes. Ils peuvent toujours être basculés manuellement, et un choix manuel dure jusqu'au prochain changement de l'horaire.",
+        [nameof(GrayscaleScheduleOffOption)] = "Désactivé (manuel uniquement)",
+        [nameof(GrayscaleScheduleNightOption)] = "La nuit uniquement",
+        [nameof(GrayscaleScheduleEveningAndNightOption)] = "Le soir et la nuit",
+        [nameof(GrayscaleTemperatureShiftLabel)] =
+            "Appliquer la température de couleur en niveaux de gris",
+        [nameof(GrayscaleTemperatureShiftTooltip)] =
+            "Continuer d'appliquer la température de couleur par-dessus les niveaux de gris, pour un rendu monochrome ambré et chaud. Si désactivé, les niveaux de gris utilisent un point blanc neutre, et la luminosité reste appliquée.",
     };
 }

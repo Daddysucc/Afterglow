@@ -380,5 +380,58 @@
                 </Grid>
             </StackPanel>
         </Border>
+
+        <!--  Grayscale  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="12">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.GrayscaleCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.GrayscaleCardSubtitle}"
+                    />
+                </StackPanel>
+
+                <!--  Automatic schedule  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.GrayscaleScheduleTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.GrayscaleScheduleLabel}"
+                    />
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="170"
+                        SelectedIndex="{Binding GrayscaleScheduleIndex}"
+                    >
+                        <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleOffOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleNightOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleEveningAndNightOption}" />
+                    </ComboBox>
+                </Grid>
+
+                <!--  Color temperature in grayscale  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.GrayscaleTemperatureShiftTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.GrayscaleTemperatureShiftLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding IsGrayscaleTemperatureShiftEnabled}"
+                    />
+                </Grid>
+            </StackPanel>
+        </Border>
     </StackPanel>
 </UserControl>

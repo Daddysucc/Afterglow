@@ -112,4 +112,10 @@ public class ControlsSettingsTabViewModel(
         get => SettingsService.ResetConfigurationOffsetHotKey;
         set => SettingsService.ResetConfigurationOffsetHotKey = value;
     }
+
+    public HotKey ToggleGrayscaleHotKey
+    {
+        get => SettingsService.ToggleGrayscaleHotKey;
+        set => SettingsService.ToggleGrayscaleHotKey = value;
+    }
 }

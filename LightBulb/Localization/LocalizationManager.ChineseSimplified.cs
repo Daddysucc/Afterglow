@@ -161,6 +161,10 @@ public partial class LocalizationManager
             [nameof(StatusPausedScreenLockedText)] = "屏幕锁定期间已暂停。",
             [nameof(StatusPausedManuallyText)] = "已手动暂停，自动方案已中止。",
             [nameof(StatusPausedAutomaticallyText)] = "已自动暂停，已恢复原生色彩。",
+            [nameof(StatusPausedRemoteStreamingDayText)] = "因远程串流已暂停，已恢复白天配置。",
+            [nameof(StatusPausedAutomaticallyDayText)] = "已自动暂停，已恢复白天配置。",
+            [nameof(StatusGrayscaleText)] = "灰度模式已启用，色温 {0} K，亮度 {1}%。",
+            [nameof(StatusGrayscaleNeutralText)] = "灰度模式已启用，使用中性白点。",
             [nameof(StatusPreviewText)] = "正在预览接下来的 24 小时…",
             [nameof(PausedRemoteStreamingLabel)] = "已暂停（远程串流）",
             [nameof(PausedScreenLockedLabel)] = "已暂停（屏幕已锁定）",
@@ -281,5 +285,22 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 小时",
             [nameof(PauseFor3HoursChip)] = "3 小时",
             [nameof(PausedStateLabel)] = "已暂停",
+            // Grayscale
+            [nameof(GrayscaleButton)] = "灰度",
+            [nameof(GrayscaleTooltip)] = "开启或关闭灰度模式",
+            [nameof(TrayGrayscaleMenuItem)] = "灰度模式",
+            [nameof(ToggleGrayscaleHotkeyLabel)] = "切换灰度模式",
+            [nameof(ToggleGrayscaleHotkeyTooltip)] = "用于开启/关闭灰度模式的全局快捷键",
+            [nameof(GrayscaleCardTitle)] = "灰度模式",
+            [nameof(GrayscaleCardSubtitle)] = "手动或按时间表去除屏幕色彩。",
+            [nameof(GrayscaleScheduleLabel)] = "自动灰度",
+            [nameof(GrayscaleScheduleTooltip)] =
+                "灰度模式何时自动开启。它随时都可以手动切换，手动选择会持续到时间表下一次变化为止。",
+            [nameof(GrayscaleScheduleOffOption)] = "关闭（仅手动）",
+            [nameof(GrayscaleScheduleNightOption)] = "仅夜间",
+            [nameof(GrayscaleScheduleEveningAndNightOption)] = "傍晚和夜间",
+            [nameof(GrayscaleTemperatureShiftLabel)] = "灰度模式下应用色温",
+            [nameof(GrayscaleTemperatureShiftTooltip)] =
+                "在灰度之上继续应用色温，呈现温暖的琥珀色单色效果。关闭后，灰度模式使用中性白点，亮度设置仍然生效。",
         };
 }

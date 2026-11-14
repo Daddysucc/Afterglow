@@ -270,6 +270,33 @@
                 </Grid>
             </Button>
 
+            <!--  Grayscale  -->
+            <Button
+                Classes="menu-item"
+                Click="MenuItem_OnClick"
+                Command="{Binding Dashboard.ToggleGrayscaleCommand}"
+            >
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <materialIcons:MaterialIcon
+                        Grid.Column="0"
+                        Classes="row-icon"
+                        Kind="CircleHalfFull"
+                    />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding LocalizationManager.TrayGrayscaleMenuItem}"
+                    />
+                    <materialIcons:MaterialIcon
+                        Grid.Column="2"
+                        Width="16"
+                        Height="16"
+                        Foreground="{DynamicResource AccentTextBrush}"
+                        IsVisible="{Binding Dashboard.IsGrayscaleEnabled}"
+                        Kind="Check"
+                    />
+                </Grid>
+            </Button>
+
             <!--  Settings  -->
             <Button
                 Classes="menu-item"

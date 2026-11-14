@@ -167,6 +167,13 @@ public partial class LocalizationManager
                 "En pausa manual, con el horario automático suspendido.",
             [nameof(StatusPausedAutomaticallyText)] =
                 "En pausa automática, con el color nativo restaurado.",
+            [nameof(StatusPausedRemoteStreamingDayText)] =
+                "En pausa por transmisión, con la configuración diurna restaurada.",
+            [nameof(StatusPausedAutomaticallyDayText)] =
+                "En pausa automática, con la configuración diurna restaurada.",
+            [nameof(StatusGrayscaleText)] = "Escala de grises activa a {0} K y {1} % de brillo.",
+            [nameof(StatusGrayscaleNeutralText)] =
+                "Escala de grises activa con punto blanco neutro.",
             [nameof(StatusPreviewText)] = "Vista previa de las próximas 24 horas…",
             [nameof(PausedRemoteStreamingLabel)] = "En pausa (transmisión remota)",
             [nameof(PausedScreenLockedLabel)] = "En pausa (pantalla bloqueada)",
@@ -301,5 +308,25 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 h",
             [nameof(PauseFor3HoursChip)] = "3 h",
             [nameof(PausedStateLabel)] = "En pausa",
+            // Grayscale
+            [nameof(GrayscaleButton)] = "ESCALA DE GRISES",
+            [nameof(GrayscaleTooltip)] = "Activar o desactivar el modo escala de grises",
+            [nameof(TrayGrayscaleMenuItem)] = "Escala de grises",
+            [nameof(ToggleGrayscaleHotkeyLabel)] = "Alternar escala de grises",
+            [nameof(ToggleGrayscaleHotkeyTooltip)] =
+                "Atajo global para activar/desactivar la escala de grises",
+            [nameof(GrayscaleCardTitle)] = "Escala de grises",
+            [nameof(GrayscaleCardSubtitle)] =
+                "Quita los colores de la pantalla, manualmente o según un horario.",
+            [nameof(GrayscaleScheduleLabel)] = "Escala de grises automática",
+            [nameof(GrayscaleScheduleTooltip)] =
+                "Cuándo se activa la escala de grises por sí sola. Siempre se puede alternar manualmente, y una elección manual dura hasta el siguiente cambio del horario.",
+            [nameof(GrayscaleScheduleOffOption)] = "Desactivada (solo manual)",
+            [nameof(GrayscaleScheduleNightOption)] = "Solo de noche",
+            [nameof(GrayscaleScheduleEveningAndNightOption)] = "Tarde y noche",
+            [nameof(GrayscaleTemperatureShiftLabel)] =
+                "Aplicar la temperatura de color en escala de grises",
+            [nameof(GrayscaleTemperatureShiftTooltip)] =
+                "Seguir aplicando la temperatura de color sobre la escala de grises, para un aspecto monocromo ámbar y cálido. Si está desactivado, la escala de grises usa un punto blanco neutro y el brillo se sigue aplicando.",
         };
 }

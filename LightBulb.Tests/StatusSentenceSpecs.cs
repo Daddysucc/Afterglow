@@ -48,7 +48,10 @@ public class StatusSentenceSpecs : IDisposable
         bool isEnabled = true,
         PauseReason pauseReason = PauseReason.None,
         bool isManualOverride = false,
-        ColorConfiguration? current = null
+        ColorConfiguration? current = null,
+        bool isGrayscaleActive = false,
+        bool isGrayscaleTemperatureShiftEnabled = true,
+        bool isDefaultToDayConfigurationEnabled = false
     ) =>
         StatusSentenceBuilder.Build(
             new StatusSentenceContext(
@@ -61,10 +64,96 @@ public class StatusSentenceSpecs : IDisposable
                 isEveningIncluded,
                 day ?? Day,
                 evening ?? Evening,
-                night ?? Night
+                night ?? Night,
+                isGrayscaleActive,
+                isGrayscaleTemperatureShiftEnabled,
+                isDefaultToDayConfigurationEnabled
             ),
             _localization
         );
+
+    [Fact]
+    public void I_can_see_grayscale_and_the_color_temperature_tinting_it()
+    {
+        // Act & assert
+        Build(
+                CycleStage.Night,
+                isGrayscaleActive: true,
+                current: new ColorConfiguration(3200, 0.85)
+            )
+            .Should()
+            .Be("Grayscale active at 3200 K and 85% brightness.");
+    }
+
+    [Fact]
+    public void I_can_see_grayscale_with_a_neutral_white_point_when_temperature_shifting_is_off()
+    {
+        // Act & assert
+        Build(
+                CycleStage.Night,
+                isGrayscaleActive: true,
+                isGrayscaleTemperatureShiftEnabled: false,
+                current: new ColorConfiguration(6600, 0.85)
+            )
+            .Should()
+            .Be("Grayscale active with neutral white point.");
+    }
+
+    [Fact]
+    public void I_can_see_grayscale_mentioned_ahead_of_transitions_and_manual_adjustments()
+    {
+        // Act & assert
+        Build(
+                CycleStage.Night,
+                true,
+                isManualOverride: true,
+                isGrayscaleActive: true,
+                current: new ColorConfiguration(3000, 0.8)
+            )
+            .Should()
+            .Be("Grayscale active at 3000 K and 80% brightness.");
+    }
+
+    [Theory]
+    [InlineData(PauseReason.RemoteStreaming)]
+    [InlineData(PauseReason.FullScreen)]
+    [InlineData(PauseReason.ScreenLocked)]
+    [InlineData(PauseReason.Whitelist)]
+    public void I_can_see_a_pause_explained_rather_than_grayscale_while_paused(PauseReason reason)
+    {
+        // Act & assert
+        Build(CycleStage.Night, pauseReason: reason, isGrayscaleActive: true)
+            .Should()
+            .StartWith("Paused");
+    }
+
+    [Theory]
+    [InlineData(
+        PauseReason.RemoteStreaming,
+        "Paused for streaming with daytime configuration restored."
+    )]
+    [InlineData(PauseReason.Whitelist, "Paused automatically with daytime configuration restored.")]
+    [InlineData(PauseReason.FullScreen, "Paused while a fullscreen application is active.")]
+    [InlineData(PauseReason.ScreenLocked, "Paused while the screen is locked.")]
+    public void I_can_see_that_pauses_restore_my_daytime_configuration_when_set_to_do_so(
+        PauseReason reason,
+        string expected
+    )
+    {
+        // Act & assert
+        Build(CycleStage.Night, pauseReason: reason, isDefaultToDayConfigurationEnabled: true)
+            .Should()
+            .Be(expected);
+    }
+
+    [Fact]
+    public void I_can_see_a_manual_pause_described_the_same_way_regardless_of_the_restored_colors()
+    {
+        // Act & assert
+        Build(CycleStage.Night, isEnabled: false, isDefaultToDayConfigurationEnabled: true)
+            .Should()
+            .Be("Paused manually with automatic schedule suspended.");
+    }
 
     [Theory]
     [InlineData(CycleStage.Day, "Daytime schedule active at 6500 K and 100% brightness.")]

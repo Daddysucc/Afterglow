@@ -154,6 +154,10 @@ public partial class LocalizationManager
             [nameof(StatusPausedScreenLockedText)] = "螢幕鎖定期間已暫停。",
             [nameof(StatusPausedManuallyText)] = "已手動暫停，自動排程已中止。",
             [nameof(StatusPausedAutomaticallyText)] = "已自動暫停，已恢復原生色彩。",
+            [nameof(StatusPausedRemoteStreamingDayText)] = "因遠端串流已暫停，已恢復白天設定。",
+            [nameof(StatusPausedAutomaticallyDayText)] = "已自動暫停，已恢復白天設定。",
+            [nameof(StatusGrayscaleText)] = "灰階模式已啟用，色溫 {0} K，亮度 {1}%。",
+            [nameof(StatusGrayscaleNeutralText)] = "灰階模式已啟用，使用中性白點。",
             [nameof(StatusPreviewText)] = "正在預覽接下來的 24 小時…",
             [nameof(PausedRemoteStreamingLabel)] = "已暫停（遠端串流）",
             [nameof(PausedScreenLockedLabel)] = "已暫停（螢幕已鎖定）",
@@ -274,5 +278,22 @@ public partial class LocalizationManager
             [nameof(PauseFor1HourChip)] = "1 小時",
             [nameof(PauseFor3HoursChip)] = "3 小時",
             [nameof(PausedStateLabel)] = "已暫停",
+            // Grayscale
+            [nameof(GrayscaleButton)] = "灰階",
+            [nameof(GrayscaleTooltip)] = "開啟或關閉灰階模式",
+            [nameof(TrayGrayscaleMenuItem)] = "灰階模式",
+            [nameof(ToggleGrayscaleHotkeyLabel)] = "切換灰階模式",
+            [nameof(ToggleGrayscaleHotkeyTooltip)] = "用於開啟/關閉灰階模式的全域快捷鍵",
+            [nameof(GrayscaleCardTitle)] = "灰階模式",
+            [nameof(GrayscaleCardSubtitle)] = "手動或依排程移除螢幕色彩。",
+            [nameof(GrayscaleScheduleLabel)] = "自動灰階",
+            [nameof(GrayscaleScheduleTooltip)] =
+                "灰階模式何時自動開啟。它隨時都能手動切換，手動選擇會持續到排程下一次變化為止。",
+            [nameof(GrayscaleScheduleOffOption)] = "關閉（僅手動）",
+            [nameof(GrayscaleScheduleNightOption)] = "僅夜間",
+            [nameof(GrayscaleScheduleEveningAndNightOption)] = "傍晚與夜間",
+            [nameof(GrayscaleTemperatureShiftLabel)] = "灰階模式下套用色溫",
+            [nameof(GrayscaleTemperatureShiftTooltip)] =
+                "在灰階之上繼續套用色溫，呈現溫暖的琥珀色單色效果。關閉後，灰階模式使用中性白點，亮度設定仍然生效。",
         };
 }

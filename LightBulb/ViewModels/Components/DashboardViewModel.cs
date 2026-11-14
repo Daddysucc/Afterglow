@@ -26,6 +26,7 @@ public partial class DashboardViewModel : ViewModelBase
 {
     private readonly SettingsService _settingsService;
     private readonly GammaService _gammaService;
+    private readonly GrayscaleService _grayscaleService;
     private readonly HotKeyService _hotKeyService;
     private readonly ExternalApplicationService _externalApplicationService;
     private readonly MonitorService _monitorService;
@@ -51,6 +52,9 @@ public partial class DashboardViewModel : ViewModelBase
 
     private bool _isDashboardVisible = true;
 
+    private readonly GrayscaleController _grayscaleController = new();
+    private bool _isGrayscaleWanted;
+
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
 
@@ -58,6 +62,7 @@ public partial class DashboardViewModel : ViewModelBase
         SettingsService settingsService,
         LocalizationManager localizationManager,
         GammaService gammaService,
+        GrayscaleService grayscaleService,
         HotKeyService hotKeyService,
         ExternalApplicationService externalApplicationService,
         MonitorService monitorService
@@ -66,6 +71,7 @@ public partial class DashboardViewModel : ViewModelBase
         _settingsService = settingsService;
         LocalizationManager = localizationManager;
         _gammaService = gammaService;
+        _grayscaleService = grayscaleService;
         _hotKeyService = hotKeyService;
         _externalApplicationService = externalApplicationService;
         _monitorService = monitorService;
@@ -87,6 +93,19 @@ public partial class DashboardViewModel : ViewModelBase
                         // Invalidate device contexts
                         _gammaService.InvalidateDeviceContexts();
                     }
+
+                    // Grayscale is suspended while paused manually, and restored when resumed
+                    UpdateGrayscale();
+                }
+            ),
+            // Apply grayscale settings right away, rather than on the next update
+            settingsService.WatchProperties(
+                [o => o.GrayscaleSchedule, o => o.IsGrayscaleTemperatureShiftEnabled],
+                () =>
+                {
+                    UpdateGrayscale();
+                    OnPropertyChanged(nameof(TargetConfiguration));
+                    OnPropertyChanged(nameof(StatusSentence));
                 }
             ),
             // Refresh localized text when the language changes
@@ -112,6 +131,7 @@ public partial class DashboardViewModel : ViewModelBase
                     o => o.IncreaseBrightnessOffsetHotKey,
                     o => o.DecreaseBrightnessOffsetHotKey,
                     o => o.ResetConfigurationOffsetHotKey,
+                    o => o.ToggleGrayscaleHotKey,
                 ],
                 RegisterHotKeys
             )
@@ -353,8 +373,16 @@ public partial class DashboardViewModel : ViewModelBase
             ? _settingsService.DayConfiguration
             : ColorConfiguration.Default;
 
+    // While grayscale is on, the color temperature either tints it, or is replaced by a neutral
+    // white point (keeping the brightness), depending on the settings
     public ColorConfiguration TargetConfiguration =>
-        IsActive ? GetCycleConfiguration(SolarTimes, Instant) : PausedConfiguration;
+        IsActive
+            ? GrayscaleController.GetConfiguration(
+                GetCycleConfiguration(SolarTimes, Instant),
+                IsGrayscaleActive,
+                _settingsService.IsGrayscaleTemperatureShiftEnabled
+            )
+            : PausedConfiguration;
 
     // e.g. "Paused (Remote streaming)"
     private string PausedLabel =>
@@ -451,7 +479,10 @@ public partial class DashboardViewModel : ViewModelBase
                 Schedule.IsEveningIncluded,
                 _settingsService.DayConfiguration,
                 _settingsService.EveningConfiguration,
-                _settingsService.NightConfiguration
+                _settingsService.NightConfiguration,
+                IsGrayscaleActive,
+                _settingsService.IsGrayscaleTemperatureShiftEnabled,
+                _settingsService.IsDefaultToDayConfigurationEnabled
             ),
             LocalizationManager
         );
@@ -690,6 +721,11 @@ public partial class DashboardViewModel : ViewModelBase
                 ResetConfigurationOffset
             );
         }
+
+        if (_settingsService.ToggleGrayscaleHotKey != HotKey.None)
+        {
+            _hotKeyService.RegisterHotKey(_settingsService.ToggleGrayscaleHotKey, ToggleGrayscale);
+        }
     }
 
     private void UpdateInstant()
@@ -854,7 +890,87 @@ public partial class DashboardViewModel : ViewModelBase
         PauseReason = state.Reason;
         PausedMonitor = state.PausedMonitor;
         IsPaused = state.IsGloballyPaused;
+
+        // Also follows the grayscale schedule as the cycle moves between stages
+        UpdateGrayscale();
     }
+
+    // Whether the screen is grayscale right now
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    public partial bool IsGrayscaleActive { get; private set; }
+
+    // Whether grayscale is on (or would be, if LightBulb weren't paused), as shown by its toggles
+    public bool IsGrayscaleEnabled
+    {
+        get => _isGrayscaleWanted;
+        set
+        {
+            if (value != _isGrayscaleWanted)
+                ToggleGrayscale();
+        }
+    }
+
+    private bool IsGrayscaleScheduled =>
+        GrayscaleController.IsScheduled(_settingsService.GrayscaleSchedule, Phase);
+
+    private void UpdateGrayscale()
+    {
+        var isScheduled = IsGrayscaleScheduled;
+
+        // A manual choice only lasts until the schedule next turns grayscale on or off
+        var manualOverride = _grayscaleController.UpdateOverride(
+            isScheduled,
+            _settingsService.GrayscaleOverride
+        );
+
+        if (manualOverride != _settingsService.GrayscaleOverride)
+        {
+            _settingsService.GrayscaleOverride = manualOverride;
+            QueueSave();
+        }
+
+        var isWanted = GrayscaleController.IsWanted(isScheduled, manualOverride);
+        if (isWanted != _isGrayscaleWanted)
+        {
+            _isGrayscaleWanted = isWanted;
+            OnPropertyChanged(nameof(IsGrayscaleEnabled));
+        }
+
+        // Suspended while paused, and while a display is paused on its own for a fullscreen
+        // application (grayscale can't be limited to the other displays)
+        IsGrayscaleActive = GrayscaleController.IsApplied(
+            isWanted,
+            IsActive,
+            !IsCyclePreviewEnabled && PausedMonitor is not null
+        );
+
+        _grayscaleService.SetEnabled(IsGrayscaleActive);
+    }
+
+    [RelayCommand]
+    private void ToggleGrayscale()
+    {
+        var isScheduled = IsGrayscaleScheduled;
+
+        // Bring the schedule state up to date first, so that the toggle isn't mistaken for
+        // something that happened before a schedule change
+        var manualOverride = _grayscaleController.UpdateOverride(
+            isScheduled,
+            _settingsService.GrayscaleOverride
+        );
+
+        _settingsService.GrayscaleOverride = GrayscaleController.Toggle(
+            isScheduled,
+            manualOverride
+        );
+
+        QueueSave();
+        UpdateGrayscale();
+    }
+
+    partial void OnIsCyclePreviewEnabledChanged(bool value) => UpdateGrayscale();
 
     public override Task InitializeAsync()
     {

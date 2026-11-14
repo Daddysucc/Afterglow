@@ -120,6 +120,20 @@
                         HotKey="{Binding ResetConfigurationOffsetHotKey}"
                     />
                 </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleGrayscaleHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleGrayscaleHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ToggleGrayscaleHotKey}"
+                    />
+                </Grid>
             </StackPanel>
         </Border>
 
