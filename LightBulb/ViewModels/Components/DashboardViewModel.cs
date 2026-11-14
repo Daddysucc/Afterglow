@@ -76,6 +76,7 @@ public partial class DashboardViewModel : ViewModelBase
                 {
                     OnPropertyChanged(nameof(SunsetTransitionTooltip));
                     OnPropertyChanged(nameof(SunriseTransitionTooltip));
+                    OnPropertyChanged(nameof(CycleStateText));
                     OnPropertyChanged(nameof(StatusText));
                 }
             ),
@@ -129,30 +130,39 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(SolarTimes))]
+    [NotifyPropertyChangedFor(nameof(Schedule))]
     [NotifyPropertyChangedFor(nameof(SunriseStart))]
     [NotifyPropertyChangedFor(nameof(SunriseEnd))]
     [NotifyPropertyChangedFor(nameof(SunsetStart))]
     [NotifyPropertyChangedFor(nameof(SunsetEnd))]
+    [NotifyPropertyChangedFor(nameof(NightTransitionStart))]
+    [NotifyPropertyChangedFor(nameof(NightTransitionEnd))]
+    [NotifyPropertyChangedFor(nameof(IsEveningIncluded))]
     [NotifyPropertyChangedFor(nameof(SunriseTransitionTooltip))]
     [NotifyPropertyChangedFor(nameof(SunsetTransitionTooltip))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
     [NotifyPropertyChangedFor(nameof(CycleState))]
+    [NotifyPropertyChangedFor(nameof(CycleStateText))]
     public partial DateTimeOffset Instant { get; set; } = DateTimeOffset.Now;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOffsetEnabled))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
     [NotifyPropertyChangedFor(nameof(AdjustedDayConfiguration))]
+    [NotifyPropertyChangedFor(nameof(AdjustedEveningConfiguration))]
     [NotifyPropertyChangedFor(nameof(AdjustedNightConfiguration))]
     [NotifyPropertyChangedFor(nameof(CycleState))]
+    [NotifyPropertyChangedFor(nameof(CycleStateText))]
     public partial double TemperatureOffset { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOffsetEnabled))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
     [NotifyPropertyChangedFor(nameof(AdjustedDayConfiguration))]
+    [NotifyPropertyChangedFor(nameof(AdjustedEveningConfiguration))]
     [NotifyPropertyChangedFor(nameof(AdjustedNightConfiguration))]
     [NotifyPropertyChangedFor(nameof(CycleState))]
+    [NotifyPropertyChangedFor(nameof(CycleStateText))]
     public partial double BrightnessOffset { get; set; }
 
     [ObservableProperty]
@@ -165,40 +175,55 @@ public partial class DashboardViewModel : ViewModelBase
             ? SolarTimes.Calculate(location, Instant)
             : new SolarTimes(_settingsService.ManualSunrise, _settingsService.ManualSunset);
 
-    public TimeOnly SunriseStart =>
-        Cycle.GetSunriseStart(
-            SolarTimes.Sunrise,
+    // Effective transition times, with any overlaps between transitions already resolved
+    public CycleSchedule Schedule =>
+        Cycle.GetSchedule(
+            SolarTimes,
             _settingsService.ConfigurationTransitionDuration,
-            _settingsService.ConfigurationTransitionOffset
+            _settingsService.ConfigurationTransitionOffset,
+            _settingsService.IsEveningConfigurationEnabled ? _settingsService.NightStartTime : null
         );
 
-    public TimeOnly SunriseEnd =>
-        Cycle.GetSunriseEnd(
-            SolarTimes.Sunrise,
-            _settingsService.ConfigurationTransitionDuration,
-            _settingsService.ConfigurationTransitionOffset
-        );
+    public TimeOnly SunriseStart => Schedule.SunriseStart;
 
-    public TimeOnly SunsetStart =>
-        Cycle.GetSunsetStart(
-            SolarTimes.Sunset,
-            _settingsService.ConfigurationTransitionDuration,
-            _settingsService.ConfigurationTransitionOffset
-        );
+    public TimeOnly SunriseEnd => Schedule.SunriseEnd;
 
-    public TimeOnly SunsetEnd =>
-        Cycle.GetSunsetEnd(
-            SolarTimes.Sunset,
-            _settingsService.ConfigurationTransitionDuration,
-            _settingsService.ConfigurationTransitionOffset
-        );
+    public TimeOnly SunsetStart => Schedule.SunsetStart;
 
-    public string SunsetTransitionTooltip =>
-        string.Format(
-            LocalizationManager.SunsetTransitionTooltip,
-            SunsetStart.ToString(CultureInfo.CurrentCulture),
-            SunsetEnd.ToString(CultureInfo.CurrentCulture)
-        );
+    public TimeOnly SunsetEnd => Schedule.SunsetEnd;
+
+    public TimeOnly NightTransitionStart => Schedule.NightTransitionStart;
+
+    public TimeOnly NightTransitionEnd => Schedule.NightTransitionEnd;
+
+    // False if the evening stage is disabled, or if it's skipped today because
+    // the night starts before the sunset transition finishes
+    public bool IsEveningIncluded => Schedule.IsEveningIncluded;
+
+    public string SunsetTransitionTooltip
+    {
+        get
+        {
+            var schedule = Schedule;
+
+            var sunsetTooltip = string.Format(
+                LocalizationManager.SunsetTransitionTooltip,
+                schedule.SunsetStart.ToString(CultureInfo.CurrentCulture),
+                schedule.SunsetEnd.ToString(CultureInfo.CurrentCulture)
+            );
+
+            if (!schedule.IsEveningIncluded)
+                return sunsetTooltip;
+
+            var nightTooltip = string.Format(
+                LocalizationManager.NightTransitionTooltip,
+                schedule.NightTransitionStart.ToString(CultureInfo.CurrentCulture),
+                schedule.NightTransitionEnd.ToString(CultureInfo.CurrentCulture)
+            );
+
+            return sunsetTooltip + "\n" + nightTooltip;
+        }
+    }
 
     public string SunriseTransitionTooltip =>
         string.Format(
@@ -209,17 +234,30 @@ public partial class DashboardViewModel : ViewModelBase
 
     public bool IsOffsetEnabled => Math.Abs(TemperatureOffset) + Math.Abs(BrightnessOffset) >= 0.01;
 
+    private ColorConfiguration CycleConfiguration =>
+        _settingsService.IsEveningConfigurationEnabled
+            ? Cycle.InterpolateConfiguration(
+                SolarTimes,
+                _settingsService.DayConfiguration,
+                _settingsService.EveningConfiguration,
+                _settingsService.NightConfiguration,
+                _settingsService.NightStartTime,
+                _settingsService.ConfigurationTransitionDuration,
+                _settingsService.ConfigurationTransitionOffset,
+                Instant
+            )
+            : Cycle.InterpolateConfiguration(
+                SolarTimes,
+                _settingsService.DayConfiguration,
+                _settingsService.NightConfiguration,
+                _settingsService.ConfigurationTransitionDuration,
+                _settingsService.ConfigurationTransitionOffset,
+                Instant
+            );
+
     public ColorConfiguration TargetConfiguration =>
         IsActive
-            ? Cycle
-                .InterpolateConfiguration(
-                    SolarTimes,
-                    _settingsService.DayConfiguration,
-                    _settingsService.NightConfiguration,
-                    _settingsService.ConfigurationTransitionDuration,
-                    _settingsService.ConfigurationTransitionOffset,
-                    Instant
-                )
+            ? CycleConfiguration
                 .WithOffset(TemperatureOffset, BrightnessOffset)
                 .Clamp(
                     _settingsService.MinimumTemperature,
@@ -233,6 +271,9 @@ public partial class DashboardViewModel : ViewModelBase
     public ColorConfiguration AdjustedDayConfiguration =>
         _settingsService.DayConfiguration.WithOffset(TemperatureOffset, BrightnessOffset);
 
+    public ColorConfiguration AdjustedEveningConfiguration =>
+        _settingsService.EveningConfiguration.WithOffset(TemperatureOffset, BrightnessOffset);
+
     public ColorConfiguration AdjustedNightConfiguration =>
         _settingsService.NightConfiguration.WithOffset(TemperatureOffset, BrightnessOffset);
 
@@ -244,7 +285,20 @@ public partial class DashboardViewModel : ViewModelBase
             _ when IsPaused => CycleState.Paused,
             _ when CurrentConfiguration == AdjustedDayConfiguration => CycleState.Day,
             _ when CurrentConfiguration == AdjustedNightConfiguration => CycleState.Night,
+            _ when IsEveningIncluded && CurrentConfiguration == AdjustedEveningConfiguration =>
+                CycleState.Evening,
             _ => CycleState.Transition,
+        };
+
+    public string CycleStateText =>
+        CycleState switch
+        {
+            CycleState.Disabled => LocalizationManager.DisabledStateLabel,
+            CycleState.Paused => LocalizationManager.PausedStateLabel,
+            CycleState.Day => LocalizationManager.DayStateLabel,
+            CycleState.Evening => LocalizationManager.EveningStateLabel,
+            CycleState.Night => LocalizationManager.NightStateLabel,
+            _ => LocalizationManager.TransitionStateLabel,
         };
 
     public string StatusText =>

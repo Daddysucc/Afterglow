@@ -39,6 +39,8 @@
                         <ResourceDictionary x:Key="Default">
                             <SolidColorBrush x:Key="SundialNightBorderBrush" Color="#B4FFAF1A" />
                             <SolidColorBrush x:Key="SundialNightBrush" Color="#B4FFD280" />
+                            <SolidColorBrush x:Key="SundialEveningBorderBrush" Color="#B4A98BD6" />
+                            <SolidColorBrush x:Key="SundialEveningBrush" Color="#B4E3D4F5" />
                             <SolidColorBrush x:Key="SundialDayBorderBrush" Color="#B48AC0FF" />
                             <SolidColorBrush x:Key="SundialDayBrush" Color="#B4F2F8FF" />
                             <SolidColorBrush x:Key="SundialSunriseBorderBrush" Color="#B4FFC766" />
@@ -51,6 +53,8 @@
                         <ResourceDictionary x:Key="Dark">
                             <SolidColorBrush x:Key="SundialNightBorderBrush" Color="#B4B18B4E" />
                             <SolidColorBrush x:Key="SundialNightBrush" Color="#B4ECC17E" />
+                            <SolidColorBrush x:Key="SundialEveningBorderBrush" Color="#B47A62A3" />
+                            <SolidColorBrush x:Key="SundialEveningBrush" Color="#B4AE9BCC" />
                             <SolidColorBrush x:Key="SundialDayBorderBrush" Color="#B44E93B1" />
                             <SolidColorBrush x:Key="SundialDayBrush" Color="#B48FBDCD" />
                             <SolidColorBrush x:Key="SundialSunriseBorderBrush" Color="#B4B18C4E" />
@@ -65,11 +69,12 @@
             </Panel.Resources>
 
             <!--  Night-time arc  -->
+            <!--  (when there's no evening stage, the night transition collapses onto the end of the sunset)  -->
             <controls:Arc
                 Width="180"
                 Height="180"
                 EndAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                StartAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
                 Stroke="{DynamicResource SundialNightBorderBrush}"
                 StrokeThickness="28"
             />
@@ -77,8 +82,48 @@
                 Width="180"
                 Height="180"
                 EndAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                StartAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
                 Stroke="{DynamicResource SundialNightBrush}"
+                StrokeThickness="26"
+            />
+
+            <!--  Evening arc  -->
+            <controls:Arc
+                Width="180"
+                Height="180"
+                EndAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                IsVisible="{Binding IsEveningIncluded}"
+                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                Stroke="{DynamicResource SundialEveningBorderBrush}"
+                StrokeThickness="28"
+            />
+            <controls:Arc
+                Width="180"
+                Height="180"
+                EndAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                IsVisible="{Binding IsEveningIncluded}"
+                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                Stroke="{DynamicResource SundialEveningBrush}"
+                StrokeThickness="26"
+            />
+
+            <!--  Night transition (evening to night)  -->
+            <controls:Arc
+                Width="180"
+                Height="180"
+                EndAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                IsVisible="{Binding IsEveningIncluded}"
+                StartAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                Stroke="{DynamicResource SundialSunsetBorderBrush}"
+                StrokeThickness="28"
+            />
+            <controls:Arc
+                Width="180"
+                Height="180"
+                EndAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                IsVisible="{Binding IsEveningIncluded}"
+                StartAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
+                Stroke="{DynamicResource SundialSunsetBrush}"
                 StrokeThickness="26"
             />
 
@@ -205,6 +250,7 @@
                     Width="48"
                     Height="48"
                     Kind="{Binding CycleState, Converter={x:Static converters:CycleStateToMaterialIconKindConverter.Instance}}"
+                    ToolTip.Tip="{Binding CycleStateText}"
                 />
                 <TextBlock FontSize="20">
                     <Run Text="{Binding CurrentConfiguration.Temperature, StringFormat={}{0:F0} K, Mode=OneWay}" />

@@ -14,6 +14,14 @@ public partial class LocalizationManager
                 "Sunset transition starts at **{0}** and ends at **{1}**",
             [nameof(SunriseTransitionTooltip)] =
                 "Sunrise transition starts at **{0}** and ends at **{1}**",
+            [nameof(NightTransitionTooltip)] =
+                "Night transition starts at **{0}** and ends at **{1}**",
+            [nameof(DayStateLabel)] = "Day",
+            [nameof(EveningStateLabel)] = "Evening",
+            [nameof(NightStateLabel)] = "Night",
+            [nameof(TransitionStateLabel)] = "Transition",
+            [nameof(PausedStateLabel)] = "Paused",
+            [nameof(DisabledStateLabel)] = "Disabled",
             [nameof(OffsetTooltipHeader)] =
                 "Current temperature and brightness values are adjusted by an offset:",
             [nameof(TemperatureOffsetLabel)] = "Temperature offset:",
@@ -86,6 +94,24 @@ public partial class LocalizationManager
             [nameof(TransitionOffsetLabel)] = "Transition offset:",
             [nameof(TransitionOffsetTooltip)] =
                 "Offset that specifies how early or late the transition starts, relative to the sunrise and sunset",
+            [nameof(EveningStageLabel)] = "Evening stage",
+            [nameof(EveningStageTooltip)] =
+                "Use an intermediate evening configuration from sunset until the night start time, instead of switching straight to the night-time configuration at sunset",
+            [nameof(EveningTemperatureLabel)] = "Evening color temperature:",
+            [nameof(EveningTemperatureTooltip)] =
+                "Color temperature between the sunset and the night start time",
+            [nameof(EveningBrightnessLabel)] = "Evening brightness:",
+            [nameof(EveningBrightnessTooltip)] = """
+                Brightness between the sunset and the night start time
+
+                Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
+                """,
+            [nameof(NightStartTimeLabel)] = "Night start time:",
+            [nameof(NightStartTimeTooltip)] = """
+                Time when the transition from the evening configuration to the night-time configuration begins (adjusted by the transition offset, the same way as the sunset)
+
+                If the night starts before the sunset transition has finished, the evening stage is skipped for that day.
+                """,
             // Location settings tab
             [nameof(SolarConfigLabel)] = "Solar configuration:",
             [nameof(ManualLabel)] = "Manual",
