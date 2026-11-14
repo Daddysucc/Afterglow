@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,6 +39,10 @@ public partial class DashboardViewModel : ViewModelBase
     private IDisposable? _enableAfterDelayRegistration;
     private IDisposable? _pendingSaveRegistration;
     private readonly PhrasePicker<CycleStage> _statusPhrasePicker = new();
+    private readonly Dictionary<
+        CycleStage,
+        (string Source, IReadOnlyList<string> Phrases)
+    > _stagePhrasesCache = new();
 
     // Smoothing of the overall configuration, and of each display (by GDI device name)
     private readonly ConfigurationSmoother _globalSmoother = new(ColorConfiguration.Default);
@@ -48,6 +53,9 @@ public partial class DashboardViewModel : ViewModelBase
     // Last known states, kept while an unidentifiable application (e.g. the taskbar) is in focus
     private string? _fullScreenMonitor;
     private bool _isWhitelistedApplicationActive;
+
+    private bool _isDashboardVisible = true;
+    private long _lastHiddenStatusMinute = long.MinValue;
 
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
@@ -173,25 +181,74 @@ public partial class DashboardViewModel : ViewModelBase
 
     public bool IsActive => IsEnabled && !IsPaused || IsCyclePreviewEnabled;
 
-    // Everything that depends on the time of day or on the settings is refreshed on every tick
+    // Everything that depends on the time of day or on the settings is refreshed on every tick.
+    // Dashboard-only visuals are refreshed separately, and only while the dashboard can be seen.
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SolarTimes))]
-    [NotifyPropertyChangedFor(nameof(Schedule))]
-    [NotifyPropertyChangedFor(nameof(Phase))]
-    [NotifyPropertyChangedFor(nameof(ActiveStageTemperature))]
-    [NotifyPropertyChangedFor(nameof(MinimumSliderTemperature))]
-    [NotifyPropertyChangedFor(nameof(MaximumSliderTemperature))]
-    [NotifyPropertyChangedFor(nameof(ActiveStageTemperatureTooltip))]
     [NotifyPropertyChangedFor(nameof(TargetConfiguration))]
-    [NotifyPropertyChangedFor(nameof(StatusSentence))]
-    [NotifyPropertyChangedFor(nameof(SolarTimingText))]
-    [NotifyPropertyChangedFor(nameof(ActivePhaseCaption))]
-    [NotifyPropertyChangedFor(nameof(LocationText))]
-    [NotifyPropertyChangedFor(nameof(CycleCurve))]
-    [NotifyPropertyChangedFor(nameof(DayProgress))]
     [NotifyPropertyChangedFor(nameof(TrayStatusText))]
     [NotifyPropertyChangedFor(nameof(StatusIndicator))]
     public partial DateTimeOffset Instant { get; set; } = DateTimeOffset.Now;
+
+    // Properties that are only shown on the dashboard and change with the time of day
+    private static readonly PropertyChangedEventArgs[] DashboardVisualPropertyArgs =
+    [
+        new(nameof(SolarTimes)),
+        new(nameof(Schedule)),
+        new(nameof(Phase)),
+        new(nameof(ActiveStageTemperature)),
+        new(nameof(MinimumSliderTemperature)),
+        new(nameof(MaximumSliderTemperature)),
+        new(nameof(ActiveStageTemperatureTooltip)),
+        new(nameof(StatusSentence)),
+        new(nameof(SolarTimingText)),
+        new(nameof(ActivePhaseCaption)),
+        new(nameof(LocationText)),
+        new(nameof(CycleCurve)),
+        new(nameof(DayProgress)),
+    ];
+
+    private static readonly PropertyChangedEventArgs ActivePhaseCaptionArgs = new(
+        nameof(ActivePhaseCaption)
+    );
+
+    // Set by the main window: false while it's hidden or minimized
+    public bool IsDashboardVisible
+    {
+        get => _isDashboardVisible;
+        set
+        {
+            if (!SetProperty(ref _isDashboardVisible, value))
+                return;
+
+            // Catch up on everything that was skipped while the dashboard couldn't be seen
+            if (value)
+                NotifyDashboardVisualsChanged();
+        }
+    }
+
+    private void NotifyDashboardVisualsChanged()
+    {
+        foreach (var args in DashboardVisualPropertyArgs)
+            OnPropertyChanged(args);
+    }
+
+    partial void OnInstantChanged(DateTimeOffset value)
+    {
+        if (IsDashboardVisible)
+        {
+            NotifyDashboardVisualsChanged();
+            return;
+        }
+
+        // While hidden, still look at the status sentence once a minute, so that its phrase
+        // picker sees every stage change and picks phrases the same way as when it's visible
+        var minute = value.ToUnixTimeSeconds() / 60;
+        if (minute == _lastHiddenStatusMinute)
+            return;
+
+        _lastHiddenStatusMinute = minute;
+        _ = StatusSentence;
+    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsOffsetEnabled))]
@@ -207,10 +264,16 @@ public partial class DashboardViewModel : ViewModelBase
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusText))]
-    [NotifyPropertyChangedFor(nameof(ActivePhaseCaption))]
     [NotifyPropertyChangedFor(nameof(TrayStatusText))]
     public partial ColorConfiguration CurrentConfiguration { get; set; } =
         ColorConfiguration.Default;
+
+    // Changes on every tick while smoothing or transitioning, but is only shown on the dashboard
+    partial void OnCurrentConfigurationChanged(ColorConfiguration value)
+    {
+        if (IsDashboardVisible)
+            OnPropertyChanged(ActivePhaseCaptionArgs);
+    }
 
     public SolarTimes SolarTimes =>
         _settingsService is { IsManualSunriseSunsetEnabled: false, Location: { } location }
@@ -397,15 +460,30 @@ public partial class DashboardViewModel : ViewModelBase
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
         );
 
-    private IReadOnlyList<string> GetStagePhrases(CycleStage stage) =>
-        SplitPhrases(
-            stage switch
-            {
-                CycleStage.Day => LocalizationManager.StatusDayPhrases,
-                CycleStage.Evening => LocalizationManager.StatusEveningPhrases,
-                _ => LocalizationManager.StatusNightPhrases,
-            }
-        );
+    // Split once per language, rather than on every refresh. The cache is keyed by the source
+    // string, so a different language (i.e. a different string) is split again automatically.
+    private IReadOnlyList<string> GetStagePhrases(CycleStage stage)
+    {
+        var source = stage switch
+        {
+            CycleStage.Day => LocalizationManager.StatusDayPhrases,
+            CycleStage.Evening => LocalizationManager.StatusEveningPhrases,
+            _ => LocalizationManager.StatusNightPhrases,
+        };
+
+        if (
+            _stagePhrasesCache.TryGetValue(stage, out var cached)
+            && string.Equals(cached.Source, source, StringComparison.Ordinal)
+        )
+        {
+            return cached.Phrases;
+        }
+
+        var phrases = SplitPhrases(source);
+        _stagePhrasesCache[stage] = (source, phrases);
+
+        return phrases;
+    }
 
     // Plain-language description of what's going on right now.
     // A new random phrase is only picked when the stage changes, not on every refresh.

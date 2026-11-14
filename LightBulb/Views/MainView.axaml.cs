@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -9,6 +10,21 @@ namespace LightBulb.Views;
 public partial class MainView : Window<MainViewModel>
 {
     public MainView() => InitializeComponent();
+
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        // Let the dashboard skip refreshing its visuals while the window can't be seen
+        if (
+            (change.Property == IsVisibleProperty || change.Property == WindowStateProperty)
+            && base.DataContext is MainViewModel mainViewModel
+        )
+        {
+            mainViewModel.Dashboard.IsDashboardVisible =
+                IsVisible && WindowState != WindowState.Minimized;
+        }
+    }
 
     private void Window_OnLoaded(object? sender, RoutedEventArgs args)
     {
