@@ -126,5 +126,167 @@ public partial class LocalizationManager
                 按一下確定以開啟設定。
                 """,
             [nameof(OkButton)] = "確定",
+            // Dashboard
+            [nameof(BedtimeLabel)] = "就寢時間",
+            [nameof(DayStateLabel)] = "白天",
+            [nameof(EveningStateLabel)] = "傍晚",
+            [nameof(NightStateLabel)] = "夜間",
+            [nameof(SunriseTransitionPhaseLabel)] = "日出過渡",
+            [nameof(SunsetTransitionPhaseLabel)] = "日落過渡",
+            [nameof(NightTransitionPhaseLabel)] = "就寢過渡",
+            [nameof(StatusDayPhrases)] = """
+                白天時段。色彩已為工作與精準的對比度調校均衡。
+                完整的日光光譜已啟用，文字清晰，畫面通透。
+                中性白平衡正在運作，與明亮的白天環境相符。
+                標準日間校準已啟用，適合編輯與瀏覽。
+                螢幕色彩已設為純淨、未偏移的日光。
+                午後專注模式。顯示效果已調至最清晰。
+                日光設定檔正在運作，亮度全開，白色自然。
+                """,
+            [nameof(StatusEveningPhrases)] = """
+                太陽已經下山。螢幕眩光正為傍晚逐漸減弱。
+                傍晚時段。在您放鬆時，刺眼的藍光已被調低。
+                暮色已至。螢幕已切換為舒適的傍晚暖色。
+                下班時間。螢幕色調已柔化，適合休閒與瀏覽。
+                傍晚暖色已啟用，讓明亮的白色不再刺眼。
+                已過日落。色彩更暖，方便傍晚舒適觀看。
+                黃昏排程已啟用。暖意均衡，不會過度偏色。
+                """,
+            [nameof(StatusNightPhrases)] = """
+                深夜時段。深度暖色已為昏暗房間啟用。
+                就寢排程正在運作。藍光已降至最低。
+                螢幕已調為柔和的深琥珀色，適合夜間閱讀。
+                安靜時段。螢幕眩光將維持在低水準直到早晨。
+                午夜模式已啟用，在昏暗房間中保護您的眼睛。
+                夜深了。睡前正在使用最暖的色彩設定檔。
+                夜間排程已啟用。刺眼的白色已被柔和的琥珀色取代。
+                """,
+            [nameof(StatusTransitionToDayText)] = "正在過渡到白天色彩...",
+            [nameof(StatusTransitionToEveningText)] = "正在過渡到傍晚暖色...",
+            [nameof(StatusTransitionToNightText)] = "正在過渡到夜間暖色...",
+            [nameof(StatusDisabledText)] = "LightBulb 已暫停。螢幕顯示中性日光。",
+            [nameof(StatusDisabledDayConfigText)] = "LightBulb 已暫停。螢幕顯示您的白天色彩。",
+            [nameof(StatusPausedText)] = "因全螢幕或白名單應用程式而自動暫停。",
+            [nameof(StatusPreviewText)] = "正在預覽接下來的 24 小時…",
+            [nameof(StatusRemoteStreamingPausedText)] = "遠端串流工作階段進行期間已暫停。",
+            [nameof(PausedRemoteStreamingLabel)] = "已暫停（遠端串流）",
+            [nameof(PausedScreenLockedLabel)] = "已暫停（螢幕已鎖定）",
+            [nameof(PausedFullScreenLabel)] = "已暫停（全螢幕應用程式）",
+            [nameof(PausedWhitelistLabel)] = "已暫停（白名單應用程式）",
+            [nameof(PausedCaption)] = "{0} · {1} K（亮度 {2}）",
+            [nameof(SolarEventPastText)] = "{0}：{1}前",
+            [nameof(SolarEventFutureText)] = "{0}：{1}後",
+            [nameof(SolarEventNowText)] = "{0}：現在",
+            [nameof(DurationMinuteText)] = "1 分鐘",
+            [nameof(DurationMinutesText)] = "{0} 分鐘",
+            [nameof(DurationHourText)] = "1 小時",
+            [nameof(DurationHoursText)] = "{0} 小時",
+            [nameof(ActivePhaseCaption)] = "目前階段：{0} · {1} K（亮度 {2}）",
+            [nameof(ActiveStageTemperatureTooltip)] = "拖曳以調整目前階段的色溫（{0}）",
+            [nameof(ManualScheduleText)] = "手動排程",
+            [nameof(LocationNotSetText)] = "位置：未設定",
+            [nameof(LocationCoordinatesText)] = "位置：{0}",
+            [nameof(OpenLocationSettingsTooltip)] = "變更位置設定",
+            // Cycle
+            [nameof(EveningStageTooltip)] =
+                "從日落到夜間開始時間使用一個中間的傍晚設定，而不是在日落時直接切換到夜間設定",
+            [nameof(EveningTemperatureTooltip)] = "日落到夜間開始時間之間的色溫",
+            [nameof(EveningBrightnessTooltip)] = """
+                日落到夜間開始時間之間的亮度
+
+                請注意，此亮度設定作用於色彩 Gamma，而非顯示器的實際亮度。
+                """,
+            [nameof(NightStartTimeTooltip)] = """
+                從傍晚設定過渡到夜間設定的開始時間（與日落相同，會依過渡微調值調整）
+
+                如果夜間在日落過渡結束之前就開始，當天將略過傍晚階段。
+                """,
+            // Settings page
+            [nameof(BackTooltip)] = "返回儀表板（變更已儲存）",
+            [nameof(CycleTabName)] = "週期與色彩",
+            [nameof(ScheduleTabName)] = "排程與位置",
+            [nameof(RulesTabName)] = "規則與白名單",
+            [nameof(ControlsTabName)] = "控制與應用程式",
+            [nameof(DayCardSubtitle)] = "日出到日落",
+            [nameof(EveningCardSubtitle)] = "日落到就寢時間",
+            [nameof(NightCardSubtitle)] = "就寢時間到日出",
+            [nameof(TemperatureLabel)] = "色溫",
+            [nameof(BrightnessLabel)] = "亮度",
+            [nameof(BedtimeNightStartLabel)] = "就寢時間（夜間開始）",
+            [nameof(TransitionsCardTitle)] = "過渡",
+            [nameof(DurationLabel)] = "時長",
+            [nameof(TransitionOffsetShortLabel)] = "微調",
+            [nameof(LocationCardTitle)] = "位置與座標",
+            [nameof(LocationCardSubtitle)] =
+                "用於計算日出與日落時間。可搜尋地點、輸入座標，或自動偵測。",
+            [nameof(LocationInUseText)] = "正在使用 {0}, {1}",
+            [nameof(SolarScheduleCardTitle)] = "日照排程",
+            [nameof(SolarScheduleCardSubtitle)] = "根據您的位置計算日出與日落時間，或手動設定。",
+            [nameof(OffLabel)] = "關閉",
+            // Rules & whitelist
+            [nameof(AutoPauseCardTitle)] = "智慧自動暫停",
+            [nameof(AutoPauseCardSubtitle)] = "在以下情況下暫時恢復正常色彩。",
+            [nameof(PauseWhenScreenLockedLabel)] = "螢幕鎖定時暫停",
+            [nameof(PauseWhenScreenLockedTooltip)] = "在電腦鎖定期間暫停 LightBulb",
+            [nameof(WhitelistCardSubtitle)] = "當任一選取的程式位於前景時暫停 LightBulb。",
+            [nameof(PerMonitorFullscreenPauseLabel)] = "僅暫停執行全螢幕應用程式的顯示器",
+            [nameof(PerMonitorFullscreenPauseTooltip)] =
+                "當全螢幕應用程式位於前景時，僅在執行該應用程式的顯示器上恢復正常色彩，其他顯示器繼續跟隨週期",
+            [nameof(StreamingAutoPauseLabel)] = "遠端串流時暫停（Sunshine / RDP）",
+            [nameof(StreamingAutoPauseTooltip)] =
+                "當這台電腦正透過 Sunshine 串流或透過遠端桌面存取時，在所有顯示器上恢復正常色彩",
+            [nameof(StreamingPortsLabel)] = "串流 TCP 連接埠",
+            [nameof(StreamingPortsTooltip)] =
+                "遠端桌面會在任何連接埠上自動偵測。Sunshine 與其他串流應用程式則透過這些本機 TCP 連接埠之一上的作用中連線來偵測，連接埠之間以逗號分隔（例如 Sunshine 為 48010，或填入 48010, 27036 以同時包含 Steam Remote Play）。",
+            [nameof(DisplaysCardTitle)] = "已連接的顯示器",
+            [nameof(DisplaysCardSubtitle)] =
+                "排除顯示器或個別微調其暖色。顯示器重新連接後會再次被辨識。",
+            [nameof(IdentifyButton)] = "識別",
+            [nameof(IdentifyTooltip)] = "在每台顯示器的螢幕上顯示其編號",
+            [nameof(OffsetScalingLabel)] = "微調縮放",
+            [nameof(OffsetScalingTooltip)] = "隨著週期從白天進入夜間，每台顯示器的色溫微調如何套用",
+            [nameof(PerceptualOffsetScalingOption)] = "Mired（感知）",
+            [nameof(FixedOffsetScalingOption)] = "克耳文（固定）",
+            [nameof(PerceptualOffsetScalingDescription)] =
+                "色溫微調在您的白天色溫下精確生效，並在傍晚與夜間依感知比例縮放，讓不同類型的面板在視覺上保持一致。",
+            [nameof(FixedOffsetScalingDescription)] =
+                "色溫微調一律以相同的固定克耳文值套用，不隨白天到夜間縮放。",
+            [nameof(NoDisplaysText)] = "未偵測到顯示器。",
+            [nameof(PrimaryBadge)] = "主顯示器",
+            [nameof(DisplayEnabledTooltip)] =
+                "對此顯示器套用 LightBulb。排除後，該顯示器將維持中性色彩。",
+            [nameof(MonitorTemperatureOffsetLabel)] = "色溫微調",
+            [nameof(MonitorTemperatureOffsetTooltip)] =
+                "僅調整此顯示器的色溫。使用感知縮放時，這是在您的白天色溫下的微調量。",
+            [nameof(MonitorBrightnessOffsetLabel)] = "亮度微調",
+            [nameof(MonitorBrightnessOffsetTooltip)] = "僅在此顯示器上加到目前亮度",
+            [nameof(ResetOffsetsTooltip)] = "重設微調",
+            [nameof(ReferenceDisplayNote)] = "參考顯示器 · 跟隨「週期與色彩」主排程",
+            [nameof(EffectiveNowText)] = "目前生效：{0} K · {1}",
+            [nameof(ExcludedNeutralText)] = "已排除 · 中性 6600 K",
+            [nameof(DisconnectedDisplaysLabel)] = "已儲存的中斷連線顯示器（{0}）",
+            [nameof(ForgetButton)] = "忘記",
+            [nameof(ForgetDisplayTooltip)] = "移除此顯示器已儲存的偏好設定",
+            // Controls & app
+            [nameof(HotkeysCardTitle)] = "全域快捷鍵",
+            [nameof(HotkeysCardSubtitle)] = "點擊欄位並按下按鍵組合即可指派。",
+            [nameof(SystemPreferencesCardTitle)] = "系統偏好設定",
+            [nameof(StartMinimizedLabel)] = "啟動時最小化",
+            [nameof(StartMinimizedTooltip)] = "啟動時將 LightBulb 隱藏到系統匣，即使是手動啟動",
+            [nameof(ExtendedGammaRangeLabel)] = "延伸 Gamma 範圍",
+            [nameof(ExtendedGammaRangeTooltip)] =
+                "解除 Windows 中的完整 Gamma 範圍，以支援更暖的色溫與更低的亮度。變更此項需要系統管理員權限。",
+            [nameof(GammaPollingIntervalLabel)] = "重新整理間隔",
+            [nameof(GammaPollingIntervalTooltip)] = "啟用 Gamma 輪詢時，強制重新整理 Gamma 的頻率",
+            [nameof(SecondsValueText)] = "{0} 秒",
+            // Tray menu
+            [nameof(TrayOpenMenuItem)] = "開啟 LightBulb",
+            [nameof(TrayPauseMenuItem)] = "暫停",
+            [nameof(TrayResumeMenuItem)] = "繼續",
+            [nameof(TrayPreviewMenuItem)] = "預覽 24 小時週期",
+            [nameof(PauseFor15MinutesChip)] = "15 分鐘",
+            [nameof(PauseFor1HourChip)] = "1 小時",
+            [nameof(PauseFor3HoursChip)] = "3 小時",
+            [nameof(PausedStateLabel)] = "已暫停",
         };
 }
