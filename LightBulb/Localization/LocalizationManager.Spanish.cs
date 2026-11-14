@@ -9,10 +9,6 @@ public partial class LocalizationManager
         {
             [nameof(SunsetLabel)] = "Puesta",
             [nameof(SunriseLabel)] = "Amanecer",
-            [nameof(SunsetTransitionTooltip)] =
-                "La transición del atardecer comienza a las **{0}** y termina a las **{1}**",
-            [nameof(SunriseTransitionTooltip)] =
-                "La transición del amanecer comienza a las **{0}** y termina a las **{1}**",
             [nameof(OffsetTooltipHeader)] =
                 "Los valores actuales de temperatura y brillo están ajustados por un desplazamiento:",
             [nameof(TemperatureOffsetLabel)] = "Desplazamiento de temperatura:",
@@ -24,7 +20,6 @@ public partial class LocalizationManager
             [nameof(PreviewText)] = "VISTA PREVIA",
             [nameof(StopPreviewTooltip)] = "Detener vista previa",
             [nameof(StartPreviewTooltip)] = "Vista previa del ciclo de 24 horas",
-            [nameof(SettingsText)] = "AJUSTES",
             [nameof(OpenSettingsTooltip)] = "Abrir ajustes",
             [nameof(ResetButton)] = "RESTABLECER",
             [nameof(ResetTooltip)] = "Restablecer todos los ajustes a sus valores predeterminados",

@@ -11,10 +11,6 @@ public partial class LocalizationManager
     {
         [nameof(SunsetLabel)] = "Coucher",
         [nameof(SunriseLabel)] = "Lever",
-        [nameof(SunsetTransitionTooltip)] =
-            "La transition du coucher de soleil commence à **{0}** et se termine à **{1}**",
-        [nameof(SunriseTransitionTooltip)] =
-            "La transition du lever de soleil commence à **{0}** et se termine à **{1}**",
         [nameof(OffsetTooltipHeader)] =
             "Les valeurs actuelles de température et de luminosité sont ajustées par un décalage :",
         [nameof(TemperatureOffsetLabel)] = "Décalage de température :",
@@ -26,7 +22,6 @@ public partial class LocalizationManager
         [nameof(PreviewText)] = "APERÇU",
         [nameof(StopPreviewTooltip)] = "Arrêter l'aperçu",
         [nameof(StartPreviewTooltip)] = "Aperçu du cycle de 24 heures",
-        [nameof(SettingsText)] = "PARAMÈTRES",
         [nameof(OpenSettingsTooltip)] = "Ouvrir les paramètres",
         [nameof(ResetButton)] = "RÉINITIALISER",
         [nameof(ResetTooltip)] = "Réinitialiser tous les paramètres à leurs valeurs par défaut",

@@ -6,8 +6,8 @@ using PowerKit.Extensions;
 
 namespace LightBulb.ViewModels.Components.Settings;
 
-// Day, evening, and night values are kept in order (day >= evening >= night),
-// so changing one of them may push the others along with it.
+// Day, evening, and night values are kept in order (day >= evening >= night) by the settings
+// service, so changing one of them may push the others along with it.
 public class GeneralSettingsTabViewModel(
     SettingsService settingsService,
     LocalizationManager localizationManager
@@ -24,19 +24,7 @@ public class GeneralSettingsTabViewModel(
     public double DayTemperature
     {
         get => SettingsService.DayConfiguration.Temperature;
-        set
-        {
-            SettingsService.DayConfiguration = new ColorConfiguration(
-                value.Clamp(SettingsService.MinimumTemperature, SettingsService.MaximumTemperature),
-                DayBrightness
-            );
-
-            if (DayTemperature < EveningTemperature)
-                EveningTemperature = DayTemperature;
-
-            if (DayTemperature < NightTemperature)
-                NightTemperature = DayTemperature;
-        }
+        set => SettingsService.SetStageTemperature(CycleStage.Day, value);
     }
 
     // This value is used for slider bounds, but it's not an actual restriction
@@ -48,19 +36,7 @@ public class GeneralSettingsTabViewModel(
     public double EveningTemperature
     {
         get => SettingsService.EveningConfiguration.Temperature;
-        set
-        {
-            SettingsService.EveningConfiguration = new ColorConfiguration(
-                value.Clamp(SettingsService.MinimumTemperature, SettingsService.MaximumTemperature),
-                EveningBrightness
-            );
-
-            if (EveningTemperature > DayTemperature)
-                DayTemperature = EveningTemperature;
-
-            if (EveningTemperature < NightTemperature)
-                NightTemperature = EveningTemperature;
-        }
+        set => SettingsService.SetStageTemperature(CycleStage.Evening, value);
     }
 
     // This value is used for slider bounds, but it's not an actual restriction
@@ -72,73 +48,25 @@ public class GeneralSettingsTabViewModel(
     public double NightTemperature
     {
         get => SettingsService.NightConfiguration.Temperature;
-        set
-        {
-            SettingsService.NightConfiguration = new ColorConfiguration(
-                value.Clamp(SettingsService.MinimumTemperature, SettingsService.MaximumTemperature),
-                NightBrightness
-            );
-
-            if (NightTemperature > EveningTemperature)
-                EveningTemperature = NightTemperature;
-
-            if (NightTemperature > DayTemperature)
-                DayTemperature = NightTemperature;
-        }
+        set => SettingsService.SetStageTemperature(CycleStage.Night, value);
     }
 
     public double DayBrightness
     {
         get => SettingsService.DayConfiguration.Brightness;
-        set
-        {
-            SettingsService.DayConfiguration = new ColorConfiguration(
-                DayTemperature,
-                value.Clamp(SettingsService.MinimumBrightness, SettingsService.MaximumBrightness)
-            );
-
-            if (DayBrightness < EveningBrightness)
-                EveningBrightness = DayBrightness;
-
-            if (DayBrightness < NightBrightness)
-                NightBrightness = DayBrightness;
-        }
+        set => SettingsService.SetStageBrightness(CycleStage.Day, value);
     }
 
     public double EveningBrightness
     {
         get => SettingsService.EveningConfiguration.Brightness;
-        set
-        {
-            SettingsService.EveningConfiguration = new ColorConfiguration(
-                EveningTemperature,
-                value.Clamp(SettingsService.MinimumBrightness, SettingsService.MaximumBrightness)
-            );
-
-            if (EveningBrightness > DayBrightness)
-                DayBrightness = EveningBrightness;
-
-            if (EveningBrightness < NightBrightness)
-                NightBrightness = EveningBrightness;
-        }
+        set => SettingsService.SetStageBrightness(CycleStage.Evening, value);
     }
 
     public double NightBrightness
     {
         get => SettingsService.NightConfiguration.Brightness;
-        set
-        {
-            SettingsService.NightConfiguration = new ColorConfiguration(
-                NightTemperature,
-                value.Clamp(SettingsService.MinimumBrightness, SettingsService.MaximumBrightness)
-            );
-
-            if (NightBrightness > EveningBrightness)
-                EveningBrightness = NightBrightness;
-
-            if (NightBrightness > DayBrightness)
-                DayBrightness = NightBrightness;
-        }
+        set => SettingsService.SetStageBrightness(CycleStage.Night, value);
     }
 
     public TimeSpan ConfigurationTransitionDuration
