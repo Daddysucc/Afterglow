@@ -55,6 +55,15 @@ public partial class SettingsService()
     public partial ColorConfiguration NightConfiguration { get; set; } = new(3900, 0.85);
 
     [ObservableProperty]
+    public partial bool IsEveningConfigurationEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial ColorConfiguration EveningConfiguration { get; set; } = new(4500, 0.95);
+
+    [ObservableProperty]
+    public partial TimeOnly NightStartTime { get; set; } = new(22, 00);
+
+    [ObservableProperty]
     public partial TimeSpan ConfigurationTransitionDuration { get; set; } =
         TimeSpan.FromMinutes(40);
 
@@ -182,6 +191,22 @@ public partial class SettingsService()
     {
         var wasLoaded = base.Load();
 
+        // The evening is an intermediate stage, so keep it between the day and night values.
+        // This matters for settings files saved before the evening stage existed, where the
+        // default evening configuration may not fit the user's own day and night configurations.
+        EveningConfiguration = new ColorConfiguration(
+            ClampBetween(
+                EveningConfiguration.Temperature,
+                NightConfiguration.Temperature,
+                DayConfiguration.Temperature
+            ),
+            ClampBetween(
+                EveningConfiguration.Brightness,
+                NightConfiguration.Brightness,
+                DayConfiguration.Brightness
+            )
+        );
+
         // Get values from the registry
         IsExtendedGammaRangeUnlocked = _extendedGammaRangeSwitch.IsSet;
         IsAutoStartEnabled = _autoStartSwitch.IsSet;
@@ -191,6 +216,10 @@ public partial class SettingsService()
 
         return wasLoaded;
     }
+
+    // Unlike Math.Clamp, this doesn't throw if the bounds are in the wrong order
+    private static double ClampBetween(double value, double bound1, double bound2) =>
+        Math.Clamp(value, Math.Min(bound1, bound2), Math.Max(bound1, bound2));
 }
 
 public partial class SettingsService

@@ -16,6 +16,7 @@ public class CycleStateToMaterialIconKindConverter : IValueConverter
             CycleState.Disabled => MaterialIconKind.Cancel,
             CycleState.Paused => MaterialIconKind.PauseCircleOutline,
             CycleState.Day => MaterialIconKind.WhiteBalanceSunny,
+            CycleState.Evening => MaterialIconKind.WeatherSunset,
             CycleState.Night => MaterialIconKind.MoonAndStars,
             CycleState.Transition => MaterialIconKind.Sync,
             // Shouldn't happen

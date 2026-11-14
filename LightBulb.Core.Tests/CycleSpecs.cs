@@ -97,7 +97,8 @@ public class CycleSpecs
         var dayConfiguration = new ColorConfiguration(6600, 1);
         var nightConfiguration = new ColorConfiguration(3600, 0.85);
 
-        var instant = new DateTimeOffset(2019, 01, 01, 18, 30, 00, TimeSpan.Zero);
+        // Sunrise transition runs from 05:30 to 07:00
+        var instant = new DateTimeOffset(2019, 01, 01, 06, 30, 00, TimeSpan.Zero);
 
         // Act
         var configuration = Cycle.InterpolateConfiguration(
@@ -114,6 +115,57 @@ public class CycleSpecs
         configuration.Temperature.Should().BeGreaterThan(nightConfiguration.Temperature);
         configuration.Brightness.Should().BeLessThan(dayConfiguration.Brightness);
         configuration.Brightness.Should().BeGreaterThan(nightConfiguration.Brightness);
+    }
+
+    [Fact]
+    public void I_observe_no_abrupt_changes_in_color_configuration_when_the_night_is_shorter_than_both_transitions()
+    {
+        // Arrange
+        // Sunset transition (23:30 to 01:10) overlaps with sunrise transition (00:50 to 02:30)
+        var solarTimes = new SolarTimes(new TimeOnly(02, 30), new TimeOnly(23, 30));
+        var transitionDuration = new TimeSpan(01, 40, 00);
+        var transitionOffset = 0;
+        var dayConfiguration = new ColorConfiguration(6600, 1);
+        var nightConfiguration = new ColorConfiguration(3600, 0.85);
+
+        var startInstant = new DateTimeOffset(2019, 01, 01, 00, 00, 00, TimeSpan.Zero);
+
+        for (
+            var offset = TimeSpan.Zero;
+            offset < TimeSpan.FromDays(1);
+            offset += TimeSpan.FromMinutes(1)
+        )
+        {
+            var instant1 = startInstant + offset;
+            var instant2 = instant1 + TimeSpan.FromMinutes(1);
+
+            // Act
+            var configuration1 = Cycle.InterpolateConfiguration(
+                solarTimes,
+                dayConfiguration,
+                nightConfiguration,
+                transitionDuration,
+                transitionOffset,
+                instant1
+            );
+
+            var configuration2 = Cycle.InterpolateConfiguration(
+                solarTimes,
+                dayConfiguration,
+                nightConfiguration,
+                transitionDuration,
+                transitionOffset,
+                instant2
+            );
+
+            // Assert
+            Math.Abs(configuration1.Temperature - configuration2.Temperature)
+                .Should()
+                .BeLessThan(
+                    (dayConfiguration.Temperature - nightConfiguration.Temperature) / 10,
+                    $"there should be no abrupt change from {instant1} to {instant2}"
+                );
+        }
     }
 
     [Fact]

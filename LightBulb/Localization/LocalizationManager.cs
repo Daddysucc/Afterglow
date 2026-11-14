@@ -90,6 +90,13 @@ public partial class LocalizationManager
     public string SunriseLabel => Get();
     public string SunsetTransitionTooltip => Get();
     public string SunriseTransitionTooltip => Get();
+    public string NightTransitionTooltip => Get();
+    public string DayStateLabel => Get();
+    public string EveningStateLabel => Get();
+    public string NightStateLabel => Get();
+    public string TransitionStateLabel => Get();
+    public string PausedStateLabel => Get();
+    public string DisabledStateLabel => Get();
     public string OffsetTooltipHeader => Get();
     public string TemperatureOffsetLabel => Get();
     public string BrightnessOffsetLabel => Get();
@@ -154,6 +161,14 @@ public partial class LocalizationManager
     public string TransitionDurationTooltip => Get();
     public string TransitionOffsetLabel => Get();
     public string TransitionOffsetTooltip => Get();
+    public string EveningStageLabel => Get();
+    public string EveningStageTooltip => Get();
+    public string EveningTemperatureLabel => Get();
+    public string EveningTemperatureTooltip => Get();
+    public string EveningBrightnessLabel => Get();
+    public string EveningBrightnessTooltip => Get();
+    public string NightStartTimeLabel => Get();
+    public string NightStartTimeTooltip => Get();
 
     // ---- Location settings tab ----
 

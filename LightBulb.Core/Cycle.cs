@@ -5,6 +5,8 @@ namespace LightBulb.Core;
 
 public static class Cycle
 {
+    private static readonly TimeSpan OneDay = TimeSpan.FromDays(1);
+
     public static TimeOnly GetSunriseStart(
         TimeOnly sunrise,
         TimeSpan transitionDuration,
@@ -61,52 +63,208 @@ public static class Cycle
         return sunset.Add(shift);
     }
 
-    private static double Interpolate(
+    private enum Stage
+    {
+        Day,
+        Evening,
+        Night,
+    }
+
+    // Start is the time elapsed since the beginning of the cycle (i.e. the sunrise transition start)
+    private readonly record struct Transition(
+        TimeSpan Start,
+        TimeSpan Duration,
+        Stage Target,
+        bool IsSunrise,
+        bool IsSkipped
+    );
+
+    // Transitions are sorted chronologically, the first one always being the sunrise.
+    // The cycle wraps around one day after its origin.
+    private readonly record struct Plan(
+        TimeOnly Origin,
+        Transition[] Transitions,
+        bool IsEveningIncluded
+    );
+
+    private static Plan GetPlan(
         SolarTimes solarTimes,
-        double dayValue,
-        double nightValue,
         TimeSpan transitionDuration,
         double transitionOffset,
+        TimeOnly? nightStart
+    )
+    {
+        // Transitions can't be negative or longer than the cycle itself
+        var duration = TimeSpan.FromTicks(Math.Clamp(transitionDuration.Ticks, 0, OneDay.Ticks));
+
+        var origin = GetSunriseStart(solarTimes.Sunrise, duration, transitionOffset);
+
+        // Subtracting time-of-day values wraps around midnight, so positions are always within [0, 1 day)
+        TimeSpan GetPosition(TimeOnly time) => time - origin;
+
+        var sunsetStart = GetPosition(
+            GetSunsetStart(solarTimes.Sunset, duration, transitionOffset)
+        );
+
+        // The night transition is positioned relative to the night start time the same way
+        // the sunset transition is positioned relative to the sunset.
+        var nightTransitionStart = nightStart is not null
+            ? GetPosition(GetSunsetStart(nightStart.Value, duration, transitionOffset))
+            : (TimeSpan?)null;
+
+        // The evening stage only makes sense if the night starts after the sunset transition
+        // has finished. Otherwise (e.g. night start is set earlier than the sunset), skip it
+        // and transition straight from day to night instead.
+        var isEveningIncluded = nightTransitionStart >= sunsetStart + duration;
+
+        Transition[] transitions = isEveningIncluded
+            ?
+            [
+                new(TimeSpan.Zero, duration, Stage.Day, true, false),
+                new(sunsetStart, duration, Stage.Evening, false, false),
+                new(nightTransitionStart!.Value, duration, Stage.Night, false, false),
+            ]
+            :
+            [
+                new(TimeSpan.Zero, duration, Stage.Day, true, false),
+                new(sunsetStart, duration, Stage.Night, false, false),
+            ];
+
+        // A transition that would still be running when the next one starts is shortened,
+        // so that it finishes exactly as the next one begins. This keeps the curve continuous
+        // when transitions overlap (e.g. very short nights or a night start right before sunrise).
+        // A transition left with no time at all is overridden by the next one and is skipped.
+        for (var i = 0; i < transitions.Length; i++)
+        {
+            var nextStart = i + 1 < transitions.Length ? transitions[i + 1].Start : OneDay;
+            var available = nextStart - transitions[i].Start;
+
+            transitions[i] = transitions[i] with
+            {
+                Duration = available < duration ? available : duration,
+                IsSkipped = available <= TimeSpan.Zero,
+            };
+        }
+
+        return new Plan(origin, transitions, isEveningIncluded);
+    }
+
+    public static CycleSchedule GetSchedule(
+        SolarTimes solarTimes,
+        TimeSpan transitionDuration,
+        double transitionOffset,
+        TimeOnly? nightStart = null
+    )
+    {
+        var plan = GetPlan(solarTimes, transitionDuration, transitionOffset, nightStart);
+
+        TimeOnly GetStart(Transition transition) => plan.Origin.Add(transition.Start);
+        TimeOnly GetEnd(Transition transition) =>
+            plan.Origin.Add(transition.Start + transition.Duration);
+
+        var sunrise = plan.Transitions[0];
+        var sunset = plan.Transitions[1];
+
+        // When there's no evening, collapse the night transition onto the end of the sunset
+        var night = plan.IsEveningIncluded
+            ? plan.Transitions[2]
+            : sunset with
+            {
+                Start = sunset.Start + sunset.Duration,
+                Duration = TimeSpan.Zero,
+            };
+
+        return new CycleSchedule(
+            GetStart(sunrise),
+            GetEnd(sunrise),
+            GetStart(sunset),
+            GetEnd(sunset),
+            GetStart(night),
+            GetEnd(night),
+            plan.IsEveningIncluded
+        );
+    }
+
+    private static double Interpolate(
+        Plan plan,
+        double dayValue,
+        double eveningValue,
+        double nightValue,
         DateTimeOffset instant
     )
     {
-        var sunriseStart = GetSunriseStart(
-            solarTimes.Sunrise,
-            transitionDuration,
-            transitionOffset
-        );
-        var sunriseEnd = GetSunriseEnd(solarTimes.Sunrise, transitionDuration, transitionOffset);
-        var sunsetStart = GetSunsetStart(solarTimes.Sunset, transitionDuration, transitionOffset);
-        var sunsetEnd = GetSunsetEnd(solarTimes.Sunset, transitionDuration, transitionOffset);
+        double GetValue(Stage stage) =>
+            stage switch
+            {
+                Stage.Day => dayValue,
+                Stage.Evening => eveningValue,
+                _ => nightValue,
+            };
 
-        // Sunrise transition
-        var prevSunriseStart = sunriseStart.PreviousBefore(instant);
-        var nextSunriseEnd = sunriseEnd.NextAfter(instant);
-        var isDuringSunrise = (nextSunriseEnd - prevSunriseStart).Duration() <= transitionDuration;
-        if (isDuringSunrise)
+        var transitions = plan.Transitions;
+        var position = instant.ToTimeOnly() - plan.Origin;
+
+        // Find the most recent transition that has started.
+        // There's always at least one, because the first non-skipped transition starts at the origin.
+        var currentIndex = 0;
+        for (var i = 0; i < transitions.Length; i++)
         {
-            var progress = (instant - prevSunriseStart) / transitionDuration;
-            return dayValue + (nightValue - dayValue) * Math.Cos(progress * Math.PI / 2);
+            if (!transitions[i].IsSkipped && transitions[i].Start <= position)
+                currentIndex = i;
         }
 
-        // Sunset transition
-        var prevSunsetStart = sunsetStart.PreviousBefore(instant);
-        var nextSunsetEnd = sunsetEnd.NextAfter(instant);
-        var isDuringSunset = (nextSunsetEnd - prevSunsetStart).Duration() <= transitionDuration;
-        if (isDuringSunset)
+        // Find the transition before it, wrapping around to the end of the previous cycle.
+        // The last transition is never skipped, so this always terminates.
+        var previousIndex = currentIndex;
+        do
         {
-            var progress = (instant - prevSunsetStart) / transitionDuration;
-            return dayValue + (nightValue - dayValue) * Math.Sin(progress * Math.PI / 2);
-        }
+            previousIndex = (previousIndex - 1 + transitions.Length) % transitions.Length;
+        } while (transitions[previousIndex].IsSkipped);
 
-        // Day time
-        if (nextSunsetEnd < nextSunriseEnd)
-            return dayValue;
+        var current = transitions[currentIndex];
+        var fromValue = GetValue(transitions[previousIndex].Target);
+        var toValue = GetValue(current.Target);
 
-        // Night time
-        return nightValue;
+        // Transition has finished (this also covers zero-length transitions)
+        var elapsed = position - current.Start;
+        if (elapsed >= current.Duration)
+            return toValue;
+
+        var progress = elapsed / current.Duration;
+
+        // Sunrise eases in, sunset and night ease out
+        return current.IsSunrise
+            ? toValue + (fromValue - toValue) * Math.Cos(progress * Math.PI / 2)
+            : fromValue + (toValue - fromValue) * Math.Sin(progress * Math.PI / 2);
     }
 
+    private static ColorConfiguration InterpolateConfiguration(
+        Plan plan,
+        ColorConfiguration dayConfiguration,
+        ColorConfiguration eveningConfiguration,
+        ColorConfiguration nightConfiguration,
+        DateTimeOffset instant
+    ) =>
+        new(
+            Interpolate(
+                plan,
+                dayConfiguration.Temperature,
+                eveningConfiguration.Temperature,
+                nightConfiguration.Temperature,
+                instant
+            ),
+            Interpolate(
+                plan,
+                dayConfiguration.Brightness,
+                eveningConfiguration.Brightness,
+                nightConfiguration.Brightness,
+                instant
+            )
+        );
+
+    /// <summary>
+    /// Classic two-stage cycle: day → (sunset) → night → (sunrise) → day.
+    /// </summary>
     public static ColorConfiguration InterpolateConfiguration(
         SolarTimes solarTimes,
         ColorConfiguration dayConfiguration,
@@ -115,22 +273,33 @@ public static class Cycle
         double transitionOffset,
         DateTimeOffset instant
     ) =>
-        new(
-            Interpolate(
-                solarTimes,
-                dayConfiguration.Temperature,
-                nightConfiguration.Temperature,
-                transitionDuration,
-                transitionOffset,
-                instant
-            ),
-            Interpolate(
-                solarTimes,
-                dayConfiguration.Brightness,
-                nightConfiguration.Brightness,
-                transitionDuration,
-                transitionOffset,
-                instant
-            )
+        InterpolateConfiguration(
+            GetPlan(solarTimes, transitionDuration, transitionOffset, null),
+            dayConfiguration,
+            nightConfiguration,
+            nightConfiguration,
+            instant
+        );
+
+    /// <summary>
+    /// Three-stage cycle: day → (sunset) → evening → (night start) → night → (sunrise) → day.
+    /// If the night starts before the sunset transition has finished, the evening stage is skipped.
+    /// </summary>
+    public static ColorConfiguration InterpolateConfiguration(
+        SolarTimes solarTimes,
+        ColorConfiguration dayConfiguration,
+        ColorConfiguration eveningConfiguration,
+        ColorConfiguration nightConfiguration,
+        TimeOnly nightStart,
+        TimeSpan transitionDuration,
+        double transitionOffset,
+        DateTimeOffset instant
+    ) =>
+        InterpolateConfiguration(
+            GetPlan(solarTimes, transitionDuration, transitionOffset, nightStart),
+            dayConfiguration,
+            eveningConfiguration,
+            nightConfiguration,
+            instant
         );
 }
