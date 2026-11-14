@@ -8,18 +8,22 @@ public partial class DeviceContext(nint handle) : NativeResource(handle)
 {
     private int _gammaChannelOffset;
 
-    private void SetGammaRamp(GammaRamp ramp)
+    private bool SetGammaRamp(GammaRamp ramp)
     {
-        if (!NativeMethods.SetDeviceGammaRamp(Handle, ref ramp))
-        {
-            Debug.WriteLine(
-                $"Failed to set gamma ramp on device context #{Handle}). "
-                    + $"Error {Marshal.GetLastWin32Error()}."
-            );
-        }
+        if (NativeMethods.SetDeviceGammaRamp(Handle, ref ramp))
+            return true;
+
+        Debug.WriteLine(
+            $"Failed to set gamma ramp on device context #{Handle}. "
+                + $"Error {Marshal.GetLastWin32Error()}."
+        );
+
+        return false;
     }
 
-    public void SetGamma(double redMultiplier, double greenMultiplier, double blueMultiplier)
+    // Returns false if the driver rejected the ramp (e.g. a display that doesn't support gamma ramps,
+    // or one that isn't ready yet after waking up), so that the caller can try again later
+    public bool SetGamma(double redMultiplier, double greenMultiplier, double blueMultiplier)
     {
         var ramp = new GammaRamp
         {
@@ -45,10 +49,10 @@ public partial class DeviceContext(nint handle) : NativeResource(handle)
         ramp.Green[255] = (ushort)(ramp.Green[255] + _gammaChannelOffset);
         ramp.Blue[255] = (ushort)(ramp.Blue[255] + _gammaChannelOffset);
 
-        SetGammaRamp(ramp);
+        return SetGammaRamp(ramp);
     }
 
-    public void ResetGamma() => SetGamma(1, 1, 1);
+    public bool ResetGamma() => SetGamma(1, 1, 1);
 
     protected override void Dispose(bool disposing)
     {

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using LightBulb.Core;
 using LightBulb.PlatformInterop;
+using LightBulb.Utils;
 using PowerKit;
 using PowerKit.Extensions;
 
@@ -22,9 +23,7 @@ public partial class GammaService : IDisposable
     private bool _areDeviceContextsValid;
     private DateTimeOffset _lastGammaInvalidationTimestamp = DateTimeOffset.MinValue;
 
-    private readonly Dictionary<string, ColorConfiguration> _lastConfigurations = new(
-        StringComparer.OrdinalIgnoreCase
-    );
+    private readonly GammaWriteTracker _writeTracker = new();
     private DateTimeOffset _lastUpdateTimestamp = DateTimeOffset.MinValue;
 
     public GammaService(SettingsService settingsService)
@@ -89,7 +88,7 @@ public partial class GammaService : IDisposable
         _deviceContexts = deviceContexts;
 
         // Force gamma to be re-applied on all (possibly new) displays
-        _lastConfigurations.Clear();
+        _writeTracker.Reset();
     }
 
     private bool IsGammaStale()
@@ -118,16 +117,6 @@ public partial class GammaService : IDisposable
         }
 
         return false;
-    }
-
-    private bool IsSignificantChange(string deviceName, ColorConfiguration configuration)
-    {
-        // Nothing to compare to
-        if (!_lastConfigurations.TryGetValue(deviceName, out var lastConfiguration))
-            return true;
-
-        return Math.Abs(configuration.Temperature - lastConfiguration.Temperature) > 15
-            || Math.Abs(configuration.Brightness - lastConfiguration.Brightness) > 0.01;
     }
 
     public void InvalidateGamma()
@@ -159,6 +148,7 @@ public partial class GammaService : IDisposable
 
         var isStale = IsGammaStale();
         var isUpdated = false;
+        var instant = DateTimeOffset.Now;
 
         _isUpdatingGamma = true;
 
@@ -173,22 +163,31 @@ public partial class GammaService : IDisposable
                     var configuration = getConfiguration(deviceName);
 
                     // Avoid unnecessary changes as updating too often will cause stuttering
-                    if (!isStale && !IsSignificantChange(deviceName, configuration))
+                    if (!_writeTracker.ShouldWrite(deviceName, configuration, isStale, instant))
                         continue;
 
-                    deviceContext.SetGamma(
+                    var isWritten = deviceContext.SetGamma(
                         GetRed(configuration) * configuration.Brightness,
                         GetGreen(configuration) * configuration.Brightness,
                         GetBlue(configuration) * configuration.Brightness
                     );
 
-                    _lastConfigurations[deviceName] = configuration;
+                    // A rejected ramp leaves the display unchanged, so it must be retried later
+                    // rather than being remembered as applied
+                    if (!isWritten)
+                    {
+                        _writeTracker.RecordFailure(deviceName, instant);
+                        continue;
+                    }
+
+                    _writeTracker.RecordSuccess(deviceName, configuration);
                     isUpdated = true;
 
                     Debug.WriteLine($"Updated gamma on {deviceName} to {configuration}.");
                 }
                 catch (Exception ex)
                 {
+                    _writeTracker.RecordFailure(deviceName, instant);
                     Debug.WriteLine($"Failed to update gamma on {deviceName}: {ex}");
                 }
             }
