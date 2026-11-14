@@ -10,17 +10,17 @@ using PowerKit.Extensions;
 
 namespace LightBulb.ViewModels.Components.Settings;
 
-public partial class ApplicationWhitelistSettingsTabViewModel : SettingsTabViewModelBase
+public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
 {
     private readonly ExternalApplicationService _externalApplicationService;
     private readonly IDisposable _eventSubscription;
 
-    public ApplicationWhitelistSettingsTabViewModel(
+    public RulesSettingsTabViewModel(
         SettingsService settingsService,
         LocalizationManager localizationManager,
         ExternalApplicationService externalApplicationService
     )
-        : base(settingsService, localizationManager, 3)
+        : base(settingsService, localizationManager, 2)
     {
         _externalApplicationService = externalApplicationService;
 
@@ -30,7 +30,25 @@ public partial class ApplicationWhitelistSettingsTabViewModel : SettingsTabViewM
         );
     }
 
-    public override string DisplayName => LocalizationManager.AppWhitelistTabName;
+    public override string DisplayName => LocalizationManager.RulesTabName;
+
+    public bool IsPauseWhenFullScreenEnabled
+    {
+        get => SettingsService.IsPauseWhenFullScreenEnabled;
+        set => SettingsService.IsPauseWhenFullScreenEnabled = value;
+    }
+
+    public bool IsPauseWhenScreenLockedEnabled
+    {
+        get => SettingsService.IsPauseWhenScreenLockedEnabled;
+        set => SettingsService.IsPauseWhenScreenLockedEnabled = value;
+    }
+
+    public bool IsDefaultToDayConfigurationEnabled
+    {
+        get => SettingsService.IsDefaultToDayConfigurationEnabled;
+        set => SettingsService.IsDefaultToDayConfigurationEnabled = value;
+    }
 
     public bool IsApplicationWhitelistEnabled
     {

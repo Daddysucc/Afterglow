@@ -5,121 +5,139 @@
     xmlns:converters="clr-namespace:LightBulb.Converters"
     xmlns:dialogs="clr-namespace:LightBulb.ViewModels.Dialogs"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    Width="400"
-    Height="270"
+    xmlns:settings="clr-namespace:LightBulb.ViewModels.Components.Settings"
+    Width="678"
+    Height="358"
     x:DataType="dialogs:SettingsViewModel"
+    Background="{DynamicResource AppBackgroundBrush}"
 >
-    <Grid ColumnDefinitions="Auto,*">
-        <!--  Settings tab selection  -->
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{Binding BackCommand}" Gesture="Escape" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <!--  Segmented pill tab  -->
+        <Style Selector="Button.pill">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="CornerRadius" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:pointerover, ^:focus-visible">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            </Style>
+
+            <Style Selector="^.active">
+                <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+        <!--  Navigation header (also lets the window be dragged, since it covers the title bar)  -->
         <Border
-            Grid.Column="0"
-            VerticalAlignment="Stretch"
-            Background="{DynamicResource MaterialDarkBackgroundBrush}"
+            Grid.Row="0"
+            Height="46"
+            Padding="4,0,6,0"
+            Background="{DynamicResource AppHeaderBrush}"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            BorderThickness="0,0,0,1"
+            PointerPressed="HeaderBorder_OnPointerPressed"
         >
-            <ItemsControl ItemsSource="{Binding Tabs}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderThickness="0,0,2,0" Classes.active="{Binding IsActive}">
-                            <Border.Styles>
-                                <Style Selector="Border.active">
-                                    <Setter
-                                        Property="BorderBrush"
-                                        Value="{DynamicResource MaterialSecondaryMidBrush}"
-                                    />
-                                </Style>
-                            </Border.Styles>
-                            <Button
-                                Margin="4"
-                                Padding="8"
-                                Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
-                                CommandParameter="{Binding}"
-                                Foreground="{DynamicResource MaterialDarkForegroundBrush}"
-                                Theme="{DynamicResource MaterialFlatButton}"
-                                ToolTip.Tip="{Binding DisplayName}"
-                            >
-                                <materialIcons:MaterialIcon
-                                    Width="24"
-                                    Height="24"
-                                    Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
-                                />
-                            </Button>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Border>
-
-        <Grid
-            Grid.Column="1"
-            Background="{DynamicResource MaterialCardBackgroundBrush}"
-            RowDefinitions="*,Auto,Auto"
-        >
-            <!--  Active settings tab  -->
-            <ScrollViewer
-                Grid.Row="0"
-                HorizontalScrollBarVisibility="Disabled"
-                VerticalScrollBarVisibility="Auto"
-            >
-                <ContentControl Margin="0,0,8,16" Content="{Binding ActiveTab}" />
-            </ScrollViewer>
-
-            <!--  Separator  -->
-            <Rectangle
-                Grid.Row="1"
-                Height="1"
-                HorizontalAlignment="Stretch"
-                Fill="{DynamicResource MaterialDividerBrush}"
-            />
-
-            <!--  Buttons  -->
-            <UniformGrid Grid.Row="2" Margin="4" Columns="3">
-                <!--  Reset  -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!--  Back to the dashboard  -->
                 <Button
-                    Margin="4"
-                    HorizontalContentAlignment="Stretch"
+                    Grid.Column="0"
+                    Padding="6"
+                    VerticalAlignment="Center"
+                    Command="{Binding BackCommand}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.BackTooltip}"
+                >
+                    <materialIcons:MaterialIcon Width="22" Height="22" Kind="ArrowLeft" />
+                </Button>
+
+                <!--  Tabs  -->
+                <Border
+                    Grid.Column="1"
+                    Padding="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource CardBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                >
+                    <ItemsControl ItemsSource="{Binding Tabs}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
+                                <Button
+                                    Classes="pill"
+                                    Classes.active="{Binding IsActive}"
+                                    Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
+                                    CommandParameter="{Binding}"
+                                >
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <materialIcons:MaterialIcon
+                                            Width="15"
+                                            Height="15"
+                                            VerticalAlignment="Center"
+                                            Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
+                                        />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            Text="{Binding DisplayName}"
+                                        />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!--  Reset all settings  -->
+                <Button
+                    Grid.Column="2"
+                    Padding="6"
+                    VerticalAlignment="Center"
                     Command="{Binding ResetCommand}"
+                    Foreground="{DynamicResource TextMutedBrush}"
                     Theme="{DynamicResource MaterialFlatButton}"
                     ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
                 >
-                    <TextBlock
-                        Text="{Binding LocalizationManager.ResetButton}"
-                        TextAlignment="Center"
-                        TextTrimming="CharacterEllipsis"
-                    />
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="Restore" />
                 </Button>
+            </Grid>
+        </Border>
 
-                <!--  Cancel  -->
-                <Button
-                    Margin="4"
-                    HorizontalContentAlignment="Stretch"
-                    Command="{Binding CancelCommand}"
-                    IsCancel="True"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="{Binding LocalizationManager.CancelButton}"
-                >
-                    <TextBlock
-                        Text="{Binding LocalizationManager.CancelButton}"
-                        TextAlignment="Center"
-                        TextTrimming="CharacterEllipsis"
-                    />
-                </Button>
-
-                <!--  Save  -->
-                <Button
-                    Margin="4"
-                    HorizontalContentAlignment="Stretch"
-                    Command="{Binding SaveCommand}"
-                    IsDefault="True"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="{Binding LocalizationManager.SaveButton}"
-                >
-                    <TextBlock
-                        Text="{Binding LocalizationManager.SaveButton}"
-                        TextAlignment="Center"
-                        TextTrimming="CharacterEllipsis"
-                    />
-                </Button>
-            </UniformGrid>
-        </Grid>
+        <!--  Active tab  -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+        >
+            <ContentControl Margin="16,14,16,16" Content="{Binding ActiveTab}" />
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -21,17 +21,8 @@ public partial class LocalizationManager
             [nameof(StopPreviewTooltip)] = "Зупинити демонстрацію",
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
             [nameof(OpenSettingsTooltip)] = "Відкрити налаштування",
-            [nameof(ResetButton)] = "СКИНУТИ",
             [nameof(ResetTooltip)] = "Скинути всі налаштування до типових",
             [nameof(CancelButton)] = "СКАСУВАТИ",
-            [nameof(SaveButton)] = "ЗБЕРЕГТИ",
-            [nameof(GeneralTabName)] = "Загальне",
-            [nameof(LocationTabName)] = "Місцезнаходження",
-            [nameof(AdvancedTabName)] = "Додатково",
-            [nameof(AppWhitelistTabName)] = "Білий список",
-            [nameof(HotkeysTabName)] = "Гарячі клавіші",
-            [nameof(ThemeLabel)] = "Тема",
-            [nameof(ThemeTooltip)] = "Бажана тема інтерфейсу",
             [nameof(LanguageLabel)] = "Мова",
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",
@@ -50,38 +41,29 @@ public partial class LocalizationManager
             [nameof(GammaPollingLabel)] = "Оновлення гами",
             [nameof(GammaPollingTooltip)] =
                 "Примусово оновлювати гаму монітора через регулярні проміжки часу, щоб інші програми не могли її перевизначити",
-            [nameof(DayTemperatureLabel)] = "Денна колірна температура:",
             [nameof(DayTemperatureTooltip)] = "Колірна температура протягом дня",
-            [nameof(NightTemperatureLabel)] = "Нічна колірна температура:",
             [nameof(NightTemperatureTooltip)] = "Колірна температура протягом ночі",
-            [nameof(DayBrightnessLabel)] = "Денна яскравість:",
             [nameof(DayBrightnessTooltip)] = """
                 Яскравість протягом дня
 
                 Зауважте, що це налаштування яскравості застосовується до колірної гами, а не до фактичної яскравості монітора.
                 Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості LightBulb, залишивши обидва параметри яскравості на рівні 100%.
                 """,
-            [nameof(NightBrightnessLabel)] = "Нічна яскравість:",
             [nameof(NightBrightnessTooltip)] = """
                 Яскравість протягом ночі
 
                 Зауважте, що це налаштування яскравості застосовується до колірної гами, а не до фактичної яскравості монітора.
                 Якщо ваш комп'ютер вже здатний автоматично регулювати яскравість екрана залежно від умов освітлення (як правило, ноутбуки), то рекомендується вимкнути контроль яскравості LightBulb, залишивши обидва параметри яскравості на рівні 100%.
                 """,
-            [nameof(TransitionDurationLabel)] = "Тривалість переходу:",
             [nameof(TransitionDurationTooltip)] =
                 "Час, необхідний для перемикання між денною та нічною конфігураціями",
-            [nameof(TransitionOffsetLabel)] = "Зміщення переходу:",
             [nameof(TransitionOffsetTooltip)] =
                 "Зміщення, що визначає, наскільки раніше або пізніше починається перехід відносно сходу та заходу сонця",
-            [nameof(SolarConfigLabel)] = "Сонячна конфігурація:",
             [nameof(ManualLabel)] = "Ручна",
             [nameof(ManualTooltip)] = "Налаштувати схід та захід сонця вручну",
             [nameof(LocationBasedLabel)] = "За місцезнаходженням",
             [nameof(LocationBasedTooltip)] =
                 "Налаштуйте своє місцезнаходження для автоматичного обчислення часу сходу та заходу сонця",
-            [nameof(SunriseTimeLabel)] = "Схід сонця:",
-            [nameof(SunsetTimeLabel)] = "Захід сонця:",
             [nameof(YourLocationLabel)] = "Ваше місцезнаходження:",
             [nameof(AutoDetectLocationTooltip)] =
                 "Спробувати автоматично визначити місцезнаходження за вашою IP-адресою",
@@ -121,22 +103,8 @@ public partial class LocalizationManager
             [nameof(RefreshAppsTooltip)] = "Оновити список запущених програм",
             [nameof(PauseForWhitelistedTooltip)] =
                 "Призупиняти LightBulb, коли одна з вибраних програм знаходиться на передньому плані",
-            [nameof(TrayShowMenuItem)] = "Показати",
-            [nameof(TrayHideMenuItem)] = "Приховати",
             [nameof(TraySettingsMenuItem)] = "Налаштування",
-            [nameof(TrayEnableMenuItem)] = "Увімкнути",
-            [nameof(TrayDisableMenuItem)] = "Вимкнути",
-            [nameof(TrayDisableTemporarilyMenuItem)] = "Вимкнути...",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "До сходу сонця",
-            [nameof(TrayDisableFor1DayMenuItem)] = "На 1 день",
-            [nameof(TrayDisableFor12HoursMenuItem)] = "На 12 годин",
-            [nameof(TrayDisableFor6HoursMenuItem)] = "На 6 годин",
-            [nameof(TrayDisableFor3HoursMenuItem)] = "На 3 години",
-            [nameof(TrayDisableFor1HourMenuItem)] = "На 1 годину",
-            [nameof(TrayDisableFor30MinutesMenuItem)] = "На 30 хвилин",
-            [nameof(TrayDisableFor15MinutesMenuItem)] = "На 15 хвилин",
-            [nameof(TrayDisableFor5MinutesMenuItem)] = "На 5 хвилин",
-            [nameof(TrayDisableFor1MinuteMenuItem)] = "На 1 хвилину",
             [nameof(TrayExitMenuItem)] = "Вийти",
             [nameof(TrayTooltipDisabled)] = "Вимкнено",
             [nameof(UpdateAvailableTitle)] = "Доступне оновлення",

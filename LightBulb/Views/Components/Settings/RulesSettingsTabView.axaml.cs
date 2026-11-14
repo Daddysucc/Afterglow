@@ -10,13 +10,11 @@ using PowerKit.Extensions;
 
 namespace LightBulb.Views.Components.Settings;
 
-public partial class ApplicationWhitelistSettingsTabView
-    : UserControl<ApplicationWhitelistSettingsTabViewModel>,
-        IDisposable
+public partial class RulesSettingsTabView : UserControl<RulesSettingsTabViewModel>, IDisposable
 {
     private IDisposable? _eventSubscription;
 
-    public ApplicationWhitelistSettingsTabView() => InitializeComponent();
+    public RulesSettingsTabView() => InitializeComponent();
 
     private void UserControl_OnLoaded(object? sender, RoutedEventArgs args)
     {

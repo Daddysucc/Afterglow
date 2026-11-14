@@ -5,13 +5,13 @@
     xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
     xmlns:lightBulb="clr-namespace:LightBulb"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
-    xmlns:models="clr-namespace:LightBulb.Models"
     xmlns:viewModels="clr-namespace:LightBulb.ViewModels"
     x:Name="Window"
     Title="{x:Static lightBulb:Program.Name}"
     Width="680"
     Height="360"
     x:DataType="viewModels:MainViewModel"
+    Background="{DynamicResource AppBackgroundBrush}"
     CanResize="False"
     Closing="Window_OnClosing"
     Icon="/favicon.ico"
@@ -21,53 +21,9 @@
     WindowDecorations="None"
     WindowStartupLocation="CenterScreen"
 >
-    <Window.Resources>
-        <ResourceDictionary>
-            <!--  Dashboard palette (also used by the dashboard view)  -->
-            <ResourceDictionary.ThemeDictionaries>
-                <ResourceDictionary x:Key="Default">
-                    <SolidColorBrush x:Key="DashboardTitleBarBrush" Color="#3B464E" />
-                    <SolidColorBrush x:Key="DashboardTitleBarForegroundBrush" Color="#F2F4F5" />
-                    <SolidColorBrush x:Key="DashboardTitleBarOutlineBrush" Color="#7A868F" />
-                    <SolidColorBrush x:Key="DashboardCanvasBrush" Color="#EBEBEB" />
-                    <SolidColorBrush x:Key="DashboardGraphBrush" Color="#F2F2F2" />
-                    <SolidColorBrush x:Key="DashboardGraphBorderBrush" Color="#DADADA" />
-                    <SolidColorBrush x:Key="DashboardTextBrush" Color="#2E3338" />
-                    <SolidColorBrush x:Key="DashboardMutedTextBrush" Color="#5F78A8" />
-                    <SolidColorBrush x:Key="DashboardCaptionBrush" Color="#5B6168" />
-                    <SolidColorBrush x:Key="DashboardBedtimeBrush" Color="#4A6185" />
-                    <SolidColorBrush x:Key="DashboardSliderTrackBrush" Color="#6C8CD5" />
-                    <SolidColorBrush x:Key="DashboardSliderThumbBorderBrush" Color="#B9C1CC" />
-                    <SolidColorBrush x:Key="DashboardCurveBrush" Color="#3B464E" />
-                    <SolidColorBrush x:Key="DashboardWaveBrush" Opacity="0.045" Color="#3B464E" />
-                    <SolidColorBrush x:Key="DashboardMarkerRingBrush" Color="#FFFFFF" />
-                    <x:Double x:Key="DashboardShadeOpacity">1</x:Double>
-                </ResourceDictionary>
-                <ResourceDictionary x:Key="Dark">
-                    <SolidColorBrush x:Key="DashboardTitleBarBrush" Color="#1E2429" />
-                    <SolidColorBrush x:Key="DashboardTitleBarForegroundBrush" Color="#E6E9EB" />
-                    <SolidColorBrush x:Key="DashboardTitleBarOutlineBrush" Color="#56616A" />
-                    <SolidColorBrush x:Key="DashboardCanvasBrush" Color="#2A3036" />
-                    <SolidColorBrush x:Key="DashboardGraphBrush" Color="#252B30" />
-                    <SolidColorBrush x:Key="DashboardGraphBorderBrush" Color="#363D44" />
-                    <SolidColorBrush x:Key="DashboardTextBrush" Color="#E3E6E8" />
-                    <SolidColorBrush x:Key="DashboardMutedTextBrush" Color="#93A8D6" />
-                    <SolidColorBrush x:Key="DashboardCaptionBrush" Color="#A9B1B9" />
-                    <SolidColorBrush x:Key="DashboardBedtimeBrush" Color="#A3B8E0" />
-                    <SolidColorBrush x:Key="DashboardSliderTrackBrush" Color="#6C8CD5" />
-                    <SolidColorBrush x:Key="DashboardSliderThumbBorderBrush" Color="#1E2429" />
-                    <SolidColorBrush x:Key="DashboardCurveBrush" Color="#D5DBE0" />
-                    <SolidColorBrush x:Key="DashboardWaveBrush" Opacity="0.05" Color="#FFFFFF" />
-                    <SolidColorBrush x:Key="DashboardMarkerRingBrush" Color="#252B30" />
-                    <x:Double x:Key="DashboardShadeOpacity">0.6</x:Double>
-                </ResourceDictionary>
-            </ResourceDictionary.ThemeDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
-
     <Border
-        Background="{DynamicResource DashboardCanvasBrush}"
-        BorderBrush="{DynamicResource DashboardTitleBarBrush}"
+        Background="{DynamicResource AppBackgroundBrush}"
+        BorderBrush="{DynamicResource CardBorderBrush}"
         BorderThickness="1"
     >
         <dialogHostAvalonia:DialogHost x:Name="DialogHost" CloseOnClickAway="False">
@@ -78,17 +34,19 @@
                     Grid.Row="0"
                     Height="46"
                     Padding="4,0,6,0"
-                    Background="{DynamicResource DashboardTitleBarBrush}"
+                    Background="{DynamicResource AppHeaderBrush}"
+                    BorderBrush="{DynamicResource CardBorderBrush}"
+                    BorderThickness="0,0,0,1"
                     PointerPressed="HeaderBorder_OnPointerPressed"
                 >
-                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="4">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4">
                         <!--  Settings (hamburger menu)  -->
                         <Button
                             Grid.Column="0"
                             Padding="6"
                             VerticalAlignment="Center"
                             Command="{Binding ShowSettingsCommand}"
-                            Foreground="{DynamicResource DashboardTitleBarForegroundBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Theme="{DynamicResource MaterialFlatButton}"
                             ToolTip.Tip="{Binding LocalizationManager.OpenSettingsTooltip}"
                         >
@@ -101,65 +59,21 @@
                             Margin="4,0,8,0"
                             VerticalAlignment="Center"
                             FontSize="14"
-                            Foreground="{DynamicResource DashboardTitleBarForegroundBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Text="{Binding Dashboard.StatusSentence}"
                             TextTrimming="CharacterEllipsis"
                             ToolTip.Tip="{Binding Dashboard.StatusSentence}"
                         />
 
-                        <!--  Color preset  -->
-                        <Border
-                            Grid.Column="2"
-                            Height="30"
-                            VerticalAlignment="Center"
-                            BorderBrush="{DynamicResource DashboardTitleBarOutlineBrush}"
-                            BorderThickness="1"
-                            CornerRadius="3"
-                            ToolTip.Tip="{Binding LocalizationManager.ColorPresetTooltip}"
-                        >
-                            <ComboBox
-                                x:Name="PresetComboBox"
-                                MinWidth="170"
-                                Padding="10,0,4,0"
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                FontSize="13"
-                                Foreground="{DynamicResource DashboardTitleBarForegroundBrush}"
-                                ItemsSource="{Binding PresetOptions}"
-                                SelectedItem="{Binding SelectedPresetOption}"
-                            >
-                                <ComboBox.Styles>
-                                    <!--  The surrounding border replaces the default underline  -->
-                                    <Style Selector="ComboBox /template/ Control#PART_Underline">
-                                        <Setter Property="IsVisible" Value="False" />
-                                    </Style>
-                                    <!--  Items in the drop-down use the regular theme colors, not the title bar ones  -->
-                                    <Style Selector="ComboBoxItem">
-                                        <Setter
-                                            Property="Foreground"
-                                            Value="{DynamicResource MaterialBodyBrush}"
-                                        />
-                                    </Style>
-                                </ComboBox.Styles>
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate x:DataType="models:ColorPresetOption">
-                                        <TextBlock Text="{Binding DisplayName}" />
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </Border>
-
                         <!--  On/off  -->
                         <ToggleButton
-                            Grid.Column="3"
+                            Grid.Column="2"
                             Width="30"
                             Height="30"
-                            Margin="4,0,0,0"
                             Padding="0"
                             VerticalAlignment="Center"
-                            Background="{DynamicResource MaterialSecondaryMidBrush}"
-                            Foreground="{DynamicResource MaterialSecondaryMidForegroundBrush}"
+                            Background="{DynamicResource WarmBrush}"
+                            Foreground="#22262A"
                             IsChecked="{Binding Dashboard.IsEnabled}"
                             Theme="{DynamicResource MaterialIconToggleButton}"
                             ToolTip.Tip="{Binding Dashboard.LocalizationManager.ToggleLightBulbTooltip}"
@@ -182,11 +96,11 @@
                         <!--  Hide to tray  -->
                         <Button
                             x:Name="HideButton"
-                            Grid.Column="4"
+                            Grid.Column="3"
                             Padding="4"
                             VerticalAlignment="Center"
                             Click="HideButton_OnClick"
-                            Foreground="{DynamicResource DashboardTitleBarForegroundBrush}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
                             Theme="{DynamicResource MaterialFlatButton}"
                             ToolTip.Tip="{Binding Dashboard.LocalizationManager.HideToTrayTooltip}"
                         >

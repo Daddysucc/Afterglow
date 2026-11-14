@@ -49,19 +49,16 @@ public partial class SettingsService()
     public double MaximumBrightness => 1;
 
     [ObservableProperty]
-    public partial ColorConfiguration DayConfiguration { get; set; } =
-        ColorPresetDefinition.Recommended.Day;
+    public partial ColorConfiguration DayConfiguration { get; set; } = new(6600, 1);
 
     [ObservableProperty]
-    public partial ColorConfiguration NightConfiguration { get; set; } =
-        ColorPresetDefinition.Recommended.Night;
+    public partial ColorConfiguration NightConfiguration { get; set; } = new(3900, 0.85);
 
     [ObservableProperty]
     public partial bool IsEveningConfigurationEnabled { get; set; } = true;
 
     [ObservableProperty]
-    public partial ColorConfiguration EveningConfiguration { get; set; } =
-        ColorPresetDefinition.Recommended.Evening;
+    public partial ColorConfiguration EveningConfiguration { get; set; } = new(4500, 0.95);
 
     [ObservableProperty]
     public partial TimeOnly NightStartTime { get; set; } = new(22, 00);
@@ -96,14 +93,15 @@ public partial class SettingsService()
     // Advanced
 
     [ObservableProperty]
-    public partial ThemeVariant Theme { get; set; }
-
-    [ObservableProperty]
     public partial Language Language { get; set; }
 
     [ObservableProperty]
     [JsonIgnore] // comes from registry
     public partial bool IsAutoStartEnabled { get; set; }
+
+    // Hide to the system tray on launch, even when not started automatically with Windows
+    [ObservableProperty]
+    public partial bool IsStartMinimizedEnabled { get; set; }
 
     [ObservableProperty]
     public partial bool IsAutoUpdateEnabled { get; set; } = true;
@@ -118,7 +116,13 @@ public partial class SettingsService()
     public partial bool IsPauseWhenFullScreenEnabled { get; set; }
 
     [ObservableProperty]
+    public partial bool IsPauseWhenScreenLockedEnabled { get; set; }
+
+    [ObservableProperty]
     public partial bool IsGammaPollingEnabled { get; set; }
+
+    [ObservableProperty]
+    public partial TimeSpan GammaPollingInterval { get; set; } = TimeSpan.FromSeconds(1);
 
     // Application whitelist
 
@@ -280,34 +284,6 @@ public partial class SettingsService()
             c => c.Brightness,
             (c, v) => c with { Brightness = v }
         );
-
-    public ColorPreset GetMatchingPreset()
-    {
-        if (!IsEveningConfigurationEnabled)
-            return ColorPreset.Custom;
-
-        foreach (var preset in ColorPresetDefinition.All)
-        {
-            if (
-                DayConfiguration == preset.Day
-                && EveningConfiguration == preset.Evening
-                && NightConfiguration == preset.Night
-            )
-            {
-                return preset.Preset;
-            }
-        }
-
-        return ColorPreset.Custom;
-    }
-
-    public void ApplyPreset(ColorPresetDefinition preset)
-    {
-        IsEveningConfigurationEnabled = true;
-        DayConfiguration = preset.Day;
-        EveningConfiguration = preset.Evening;
-        NightConfiguration = preset.Night;
-    }
 
     // Unlike Math.Clamp, this doesn't throw if the bounds are in the wrong order
     private static double ClampBetween(double value, double bound1, double bound2) =>

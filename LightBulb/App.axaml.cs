@@ -1,18 +1,19 @@
 using System;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Platform;
+using Avalonia.Threading;
 using LightBulb.Framework;
 using LightBulb.Localization;
+using LightBulb.PlatformInterop;
 using LightBulb.Services;
 using LightBulb.Utils.Extensions;
 using LightBulb.ViewModels;
 using LightBulb.ViewModels.Components;
 using LightBulb.ViewModels.Components.Settings;
 using LightBulb.ViewModels.Dialogs;
+using LightBulb.Views;
 using Material.Styles.Themes;
 using Microsoft.Extensions.DependencyInjection;
 using PowerKit.Extensions;
@@ -25,7 +26,9 @@ public partial class App : Application, IDisposable
     private readonly SettingsService _settingsService;
     private readonly MainViewModel _mainViewModel;
 
-    private readonly IDisposable _eventSubscription;
+    private NotifyIcon? _notifyIcon;
+    private IDisposable? _notifyIconSubscription;
+    private TrayMenuWindow? _trayMenu;
     private bool _isDisposed;
 
     public App()
@@ -50,31 +53,14 @@ public partial class App : Application, IDisposable
         services.AddSingleton<DashboardViewModel>();
         services.AddTransient<MessageBoxViewModel>();
         services.AddTransient<SettingsViewModel>();
-        services.AddTransient<SettingsTabViewModelBase, AdvancedSettingsTabViewModel>();
-        services.AddTransient<SettingsTabViewModelBase, ApplicationWhitelistSettingsTabViewModel>();
-        services.AddTransient<SettingsTabViewModelBase, GeneralSettingsTabViewModel>();
-        services.AddTransient<SettingsTabViewModelBase, HotKeySettingsTabViewModel>();
-        services.AddTransient<SettingsTabViewModelBase, LocationSettingsTabViewModel>();
+        services.AddTransient<SettingsTabViewModelBase, CycleSettingsTabViewModel>();
+        services.AddTransient<SettingsTabViewModelBase, ScheduleSettingsTabViewModel>();
+        services.AddTransient<SettingsTabViewModelBase, RulesSettingsTabViewModel>();
+        services.AddTransient<SettingsTabViewModelBase, ControlsSettingsTabViewModel>();
 
         _services = services.BuildServiceProvider(true);
         _settingsService = _services.GetRequiredService<SettingsService>();
         _mainViewModel = _services.GetRequiredService<ViewModelManager>().GetMainViewModel();
-
-        // Re-initialize the theme when the user changes it
-        _eventSubscription = _settingsService.WatchProperty(
-            o => o.Theme,
-            v =>
-            {
-                RequestedThemeVariant = v switch
-                {
-                    ThemeVariant.Light => Avalonia.Styling.ThemeVariant.Light,
-                    ThemeVariant.Dark => Avalonia.Styling.ThemeVariant.Dark,
-                    _ => Avalonia.Styling.ThemeVariant.Default,
-                };
-
-                InitializeTheme();
-            }
-        );
     }
 
     public override void Initialize()
@@ -83,23 +69,40 @@ public partial class App : Application, IDisposable
 
         AvaloniaXamlLoader.Load(this);
 
-        // TrayIcon bindings resolve through the application's DataContext
         DataContext = _mainViewModel;
     }
 
+    // The whole application uses a single dark-slate palette, applied on top of the Material theme
+    // so that standard controls (text boxes, drop-downs, scroll bars, sliders, etc.) match it too
     private void InitializeTheme()
     {
-        var actualTheme = RequestedThemeVariant?.Key switch
-        {
-            "Light" => PlatformThemeVariant.Light,
-            "Dark" => PlatformThemeVariant.Dark,
-            _ => PlatformSettings?.GetColorValues().ThemeVariant ?? PlatformThemeVariant.Light,
-        };
+        RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
 
-        this.LocateMaterialTheme<MaterialThemeBase>().CurrentTheme =
-            actualTheme == PlatformThemeVariant.Light
-                ? Theme.Create(Theme.Light, Color.Parse("#343838"), Color.Parse("#F9A825"))
-                : Theme.Create(Theme.Dark, Color.Parse("#E8E8E8"), Color.Parse("#F9A825"));
+        var accent = Color.Parse("#6C8CD5");
+        var theme = Theme.Create(Theme.Dark, accent, accent);
+
+        theme.Background = Color.Parse("#22262A");
+        theme.Paper = Color.Parse("#22262A");
+        theme.CardBackground = Color.Parse("#2B3037");
+        theme.ToolBarBackground = Color.Parse("#1B1E22");
+        theme.Body = Color.Parse("#F0F2F5");
+        theme.BodyLight = Color.Parse("#9AA4B2");
+        theme.Divider = Color.Parse("#383F48");
+        theme.Selection = Color.Parse("#3A4660");
+        theme.CheckBoxOff = Color.Parse("#9AA4B2");
+        theme.CheckBoxDisabled = Color.Parse("#4A525D");
+        theme.ToolTipBackground = Color.Parse("#3A414B");
+        theme.ChipBackground = Color.Parse("#383F48");
+        theme.TextBoxBorder = Color.Parse("#4A525D");
+        theme.TextAreaBorder = Color.Parse("#4A525D");
+        theme.TextAreaInactiveBorder = Color.Parse("#383F48");
+        theme.TextFieldBoxBackground = Color.Parse("#2B3037");
+        theme.TextFieldBoxHoverBackground = Color.Parse("#323840");
+        theme.TextFieldBoxDisabledBackground = Color.Parse("#262A2F");
+        theme.FlatButtonClick = Color.Parse("#3A414B");
+        theme.FlatButtonRipple = Color.Parse("#4A525D");
+
+        this.LocateMaterialTheme<MaterialThemeBase>().CurrentTheme = theme;
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -119,31 +122,61 @@ public partial class App : Application, IDisposable
             // handler to ensure timely disposal as a safeguard.
             // https://github.com/Tyrrrz/YoutubeDownloader/issues/795
             desktop.Exit += (_, _) => Dispose();
+
+            InitializeNotifyIcon();
         }
 
-        // Initialize the theme for the first time; must be done after the main window is created
+        // Initialize the theme; must be done after the main window is created.
+        // The Material theme also applies its own (XAML-defined) palette in a deferred manner
+        // during startup, so apply the custom palette again once that has happened.
         InitializeTheme();
+        Dispatcher.UIThread.Post(InitializeTheme, DispatcherPriority.Background);
 
         base.OnFrameworkInitializationCompleted();
     }
 
+    // The Material theme rebuilds its palette from the base settings whenever the theme variant
+    // changes (which also happens during startup), so the custom palette has to be re-applied.
+    // Defer it, so that it runs after the Material theme has processed the change itself.
     private void Application_OnActualThemeVariantChanged(object? sender, EventArgs args) =>
-        // Re-initialize the theme when the system theme changes
-        InitializeTheme();
+        Dispatcher.UIThread.Post(InitializeTheme);
 
-    private void TrayIcon_OnClicked(object? sender, EventArgs args) =>
-        ApplicationLifetime?.TryGetMainWindow()?.Toggle();
-
-    private void TrayToggleWindowMenuItem_OnClick(object? sender, EventArgs args) =>
-        ApplicationLifetime?.TryGetMainWindow()?.Toggle();
-
-    private void TrayShowSettingsMenuItem_OnClick(object? sender, EventArgs args)
+    private void InitializeNotifyIcon()
     {
-        ApplicationLifetime?.TryGetMainWindow()?.ShowActivateFocus();
-        _mainViewModel.ShowSettingsCommand.Execute(null);
+        _notifyIcon = new NotifyIcon(_mainViewModel.Dashboard.StatusText);
+
+        // Left click toggles the main window
+        _notifyIcon.LeftClicked += (_, _) =>
+            Dispatcher.UIThread.Post(() => ApplicationLifetime?.TryGetMainWindow()?.Toggle());
+
+        // Right click opens the tray menu at the cursor
+        _notifyIcon.RightClicked += (_, position) =>
+            Dispatcher.UIThread.Post(() => ShowTrayMenu(new PixelPoint(position.X, position.Y)));
+
+        _notifyIconSubscription = _mainViewModel.Dashboard.WatchProperty(
+            o => o.StatusText,
+            v =>
+            {
+                if (_notifyIcon is not null)
+                    _notifyIcon.ToolTip = v;
+            }
+        );
     }
 
-    private void TrayExitMenuItem_OnClick(object? sender, EventArgs args) => Shutdown();
+    private void ShowTrayMenu(PixelPoint position)
+    {
+        _trayMenu?.Close();
+
+        var trayMenu = new TrayMenuWindow { DataContext = _mainViewModel };
+        trayMenu.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(_trayMenu, trayMenu))
+                _trayMenu = null;
+        };
+
+        _trayMenu = trayMenu;
+        trayMenu.ShowAt(position);
+    }
 
     public void Dispose()
     {
@@ -152,7 +185,9 @@ public partial class App : Application, IDisposable
 
         _isDisposed = true;
 
-        _eventSubscription.Dispose();
+        _trayMenu?.Close();
+        _notifyIconSubscription?.Dispose();
+        _notifyIcon?.Dispose();
         _services.Dispose();
     }
 }

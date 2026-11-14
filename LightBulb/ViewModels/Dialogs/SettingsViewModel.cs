@@ -58,17 +58,11 @@ public partial class SettingsViewModel : DialogViewModelBase
     [RelayCommand]
     private void Reset() => _settingsService.Reset();
 
+    // Settings are applied live, so going back to the dashboard just persists them
     [RelayCommand]
-    private void Save()
+    private void Back()
     {
         _settingsService.Save();
         Close(true);
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        _settingsService.Load();
-        Close(false);
     }
 }

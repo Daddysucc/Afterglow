@@ -35,6 +35,7 @@ public partial class DashboardViewModel : ViewModelBase
 
     private IDisposable? _enableAfterDelayRegistration;
     private IDisposable? _pendingSaveRegistration;
+    private bool _isPausedForLockedScreen;
     private ColorConfiguration? _configurationSmoothingSource;
     private ColorConfiguration? _configurationSmoothingTarget;
 
@@ -122,12 +123,16 @@ public partial class DashboardViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(IsActive))]
     [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    [NotifyPropertyChangedFor(nameof(TrayStatusText))]
+    [NotifyPropertyChangedFor(nameof(StatusIndicator))]
     public partial bool IsEnabled { get; set; } = true;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsActive))]
     [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    [NotifyPropertyChangedFor(nameof(TrayStatusText))]
+    [NotifyPropertyChangedFor(nameof(StatusIndicator))]
     public partial bool IsPaused { get; set; }
 
     [ObservableProperty]
@@ -151,11 +156,11 @@ public partial class DashboardViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(StatusSentence))]
     [NotifyPropertyChangedFor(nameof(SolarTimingText))]
     [NotifyPropertyChangedFor(nameof(ActivePhaseCaption))]
-    [NotifyPropertyChangedFor(nameof(IsEveningConfigurationEnabled))]
-    [NotifyPropertyChangedFor(nameof(NightStartTimeText))]
     [NotifyPropertyChangedFor(nameof(LocationText))]
     [NotifyPropertyChangedFor(nameof(CycleCurve))]
     [NotifyPropertyChangedFor(nameof(DayProgress))]
+    [NotifyPropertyChangedFor(nameof(TrayStatusText))]
+    [NotifyPropertyChangedFor(nameof(StatusIndicator))]
     public partial DateTimeOffset Instant { get; set; } = DateTimeOffset.Now;
 
     [ObservableProperty]
@@ -173,6 +178,7 @@ public partial class DashboardViewModel : ViewModelBase
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(StatusText))]
     [NotifyPropertyChangedFor(nameof(ActivePhaseCaption))]
+    [NotifyPropertyChangedFor(nameof(TrayStatusText))]
     public partial ColorConfiguration CurrentConfiguration { get; set; } =
         ColorConfiguration.Default;
 
@@ -433,10 +439,28 @@ public partial class DashboardViewModel : ViewModelBase
             CurrentConfiguration.Brightness.ToString("P0", CultureInfo.CurrentCulture)
         );
 
-    public bool IsEveningConfigurationEnabled => _settingsService.IsEveningConfigurationEnabled;
+    // e.g. "Evening · 5000 K · 100%", as shown at the top of the tray menu
+    public string TrayStatusText =>
+        (
+            !IsEnabled ? LocalizationManager.PausedStateLabel
+            : IsPaused ? LocalizationManager.AutoPausedStateLabel
+            : GetPhaseName(Phase)
+        )
+        + " · "
+        + CurrentConfiguration.Temperature.ToString("F0", CultureInfo.CurrentCulture)
+        + " K · "
+        + CurrentConfiguration.Brightness.ToString("P0", CultureInfo.CurrentCulture);
 
-    public string NightStartTimeText =>
-        _settingsService.NightStartTime.ToString("t", CultureInfo.CurrentCulture);
+    public StatusIndicatorKind StatusIndicator =>
+        !IsEnabled || IsPaused
+            ? StatusIndicatorKind.Paused
+            : Phase switch
+            {
+                { IsTransitioning: true } => StatusIndicatorKind.Transition,
+                { Stage: CycleStage.Day } => StatusIndicatorKind.Day,
+                { Stage: CycleStage.Evening } => StatusIndicatorKind.Evening,
+                _ => StatusIndicatorKind.Night,
+            };
 
     public string LocationText
     {
@@ -664,6 +688,22 @@ public partial class DashboardViewModel : ViewModelBase
 
     private void UpdateIsPaused()
     {
+        // Pause while the screen is locked
+        if (_settingsService.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked())
+        {
+            IsPaused = true;
+            _isPausedForLockedScreen = true;
+            return;
+        }
+
+        // Resume right after unlocking. The checks below may not change the paused state
+        // on their own (e.g. if the desktop or taskbar is focused right after unlocking).
+        if (_isPausedForLockedScreen)
+        {
+            _isPausedForLockedScreen = false;
+            IsPaused = false;
+        }
+
         // Pause on fullscreen applications
         if (
             _settingsService.IsPauseWhenFullScreenEnabled
@@ -731,38 +771,14 @@ public partial class DashboardViewModel : ViewModelBase
     private void Toggle() => IsEnabled = !IsEnabled;
 
     [RelayCommand]
+    private void TogglePreview() => IsCyclePreviewEnabled = !IsCyclePreviewEnabled;
+
+    [RelayCommand]
     private void ResetConfigurationOffset()
     {
         TemperatureOffset = 0;
         BrightnessOffset = 0;
     }
-
-    // Moves the night start time to the next/previous quarter of an hour
-    private void ShiftNightStartTime(bool isLater)
-    {
-        var step = TimeSpan.FromMinutes(15);
-        var current = _settingsService.NightStartTime.ToTimeSpan();
-        var aligned = TimeSpan.FromTicks(current.Ticks / step.Ticks * step.Ticks);
-
-        var shifted =
-            isLater ? aligned + step
-            : aligned == current ? aligned - step
-            : aligned;
-
-        // Adding to a time of day wraps around midnight
-        _settingsService.NightStartTime = TimeOnly.MinValue.Add(shifted);
-        QueueSave();
-
-        OnPropertyChanged(nameof(NightStartTimeText));
-        OnPropertyChanged(nameof(TargetConfiguration));
-        OnPropertyChanged(nameof(CycleCurve));
-    }
-
-    [RelayCommand]
-    private void IncreaseNightStartTime() => ShiftNightStartTime(true);
-
-    [RelayCommand]
-    private void DecreaseNightStartTime() => ShiftNightStartTime(false);
 
     protected override void Dispose(bool disposing)
     {

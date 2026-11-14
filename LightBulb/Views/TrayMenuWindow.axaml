@@ -1,0 +1,305 @@
+<Window
+    x:Class="LightBulb.Views.TrayMenuWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:LightBulb.Converters"
+    xmlns:lightBulb="clr-namespace:LightBulb"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+    xmlns:viewModels="clr-namespace:LightBulb.ViewModels"
+    Title="{x:Static lightBulb:Program.Name}"
+    x:DataType="viewModels:MainViewModel"
+    Background="Transparent"
+    CanResize="False"
+    Deactivated="Window_OnDeactivated"
+    KeyDown="Window_OnKeyDown"
+    ShowInTaskbar="False"
+    SizeToContent="WidthAndHeight"
+    Topmost="True"
+    TransparencyLevelHint="Transparent"
+    WindowDecorations="None"
+>
+    <Window.Styles>
+        <!--  Menu row  -->
+        <Style Selector="Button.menu-item">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="Padding" Value="10,7" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Normal" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter
+                            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                        />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:pointerover, ^:focus-visible">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}" />
+            </Style>
+
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource CardBorderBrush}" />
+            </Style>
+        </Style>
+
+        <!--  Small pill button (e.g. pause durations)  -->
+        <Style Selector="Button.chip">
+            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8,2" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:pointerover, ^:focus-visible">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Style>
+        </Style>
+
+        <Style Selector="Button.menu-item materialIcons|MaterialIcon.row-icon">
+            <Setter Property="Width" Value="16" />
+            <Setter Property="Height" Value="16" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </Window.Styles>
+
+    <Border
+        Width="284"
+        Padding="6"
+        Background="{DynamicResource TrayMenuBrush}"
+        BorderBrush="{DynamicResource CardBorderBrush}"
+        BorderThickness="1"
+        CornerRadius="10"
+    >
+        <StackPanel Orientation="Vertical" Spacing="1">
+            <!--  Status header  -->
+            <Grid Margin="10,8,10,8" ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <Ellipse
+                    Grid.Column="0"
+                    Width="9"
+                    Height="9"
+                    VerticalAlignment="Center"
+                    Fill="{Binding Dashboard.StatusIndicator, Converter={x:Static converters:StatusIndicatorKindToBrushConverter.Instance}}"
+                />
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <TextBlock
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Text="{Binding Dashboard.TrayStatusText}"
+                        TextTrimming="CharacterEllipsis"
+                    />
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{x:Static lightBulb:Program.Name}"
+                    />
+                </StackPanel>
+            </Grid>
+
+            <Border Margin="4,2,4,4" Classes="divider" />
+
+            <!--  Open main window  -->
+            <Button
+                Classes="menu-item"
+                Click="MenuItem_OnClick"
+                Command="{Binding ShowWindowCommand}"
+            >
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <materialIcons:MaterialIcon
+                        Grid.Column="0"
+                        Classes="row-icon"
+                        Kind="WindowRestore"
+                    />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding LocalizationManager.TrayOpenMenuItem}"
+                    />
+                </Grid>
+            </Button>
+
+            <!--  Pause / resume  -->
+            <Button
+                Classes="menu-item"
+                Click="MenuItem_OnClick"
+                Command="{Binding Dashboard.ToggleCommand}"
+            >
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <Panel Grid.Column="0">
+                        <materialIcons:MaterialIcon
+                            Classes="row-icon"
+                            IsVisible="{Binding Dashboard.IsEnabled}"
+                            Kind="Pause"
+                        />
+                        <materialIcons:MaterialIcon
+                            Classes="row-icon"
+                            IsVisible="{Binding !Dashboard.IsEnabled}"
+                            Kind="Play"
+                        />
+                    </Panel>
+                    <Panel Grid.Column="1">
+                        <TextBlock
+                            IsVisible="{Binding Dashboard.IsEnabled}"
+                            Text="{Binding LocalizationManager.TrayPauseMenuItem}"
+                        />
+                        <TextBlock
+                            IsVisible="{Binding !Dashboard.IsEnabled}"
+                            Text="{Binding LocalizationManager.TrayResumeMenuItem}"
+                        />
+                    </Panel>
+                    <!--  Active indicator: shown while paused  -->
+                    <Border
+                        Grid.Column="2"
+                        Padding="6,1"
+                        Background="{DynamicResource AmberBrush}"
+                        CornerRadius="8"
+                        IsVisible="{Binding !Dashboard.IsEnabled}"
+                    >
+                        <TextBlock
+                            FontSize="10"
+                            FontWeight="SemiBold"
+                            Foreground="#22262A"
+                            Text="{Binding LocalizationManager.PausedStateLabel}"
+                        />
+                    </Border>
+                </Grid>
+            </Button>
+
+            <!--  Pause for a while  -->
+            <WrapPanel
+                Margin="36,0,8,4"
+                IsVisible="{Binding Dashboard.IsEnabled}"
+                ItemSpacing="4"
+                LineSpacing="4"
+                Orientation="Horizontal"
+            >
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.DisableTemporarilyCommand}"
+                    Content="{Binding LocalizationManager.PauseFor15MinutesChip}"
+                >
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.00:15:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.DisableTemporarilyCommand}"
+                    Content="{Binding LocalizationManager.PauseFor1HourChip}"
+                >
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.01:00:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.DisableTemporarilyCommand}"
+                    Content="{Binding LocalizationManager.PauseFor3HoursChip}"
+                >
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.03:00:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.DisableUntilSunriseCommand}"
+                    Content="{Binding LocalizationManager.TrayDisableUntilSunriseMenuItem}"
+                />
+            </WrapPanel>
+
+            <!--  Cycle preview  -->
+            <Button
+                Classes="menu-item"
+                Click="MenuItem_OnClick"
+                Command="{Binding Dashboard.TogglePreviewCommand}"
+            >
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                    <materialIcons:MaterialIcon
+                        Grid.Column="0"
+                        Classes="row-icon"
+                        Kind="PlayCircleOutline"
+                    />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding LocalizationManager.TrayPreviewMenuItem}"
+                    />
+                    <materialIcons:MaterialIcon
+                        Grid.Column="2"
+                        Width="16"
+                        Height="16"
+                        Foreground="{DynamicResource AccentTextBrush}"
+                        IsVisible="{Binding Dashboard.IsCyclePreviewEnabled}"
+                        Kind="Check"
+                    />
+                </Grid>
+            </Button>
+
+            <!--  Settings  -->
+            <Button
+                Classes="menu-item"
+                Click="MenuItem_OnClick"
+                Command="{Binding ShowWindowWithSettingsCommand}"
+            >
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <materialIcons:MaterialIcon
+                        Grid.Column="0"
+                        Classes="row-icon"
+                        Kind="CogOutline"
+                    />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding LocalizationManager.TraySettingsMenuItem}"
+                    />
+                </Grid>
+            </Button>
+
+            <Border Margin="4,4,4,4" Classes="divider" />
+
+            <!--  Exit  -->
+            <Button Classes="menu-item" Click="MenuItem_OnClick" Command="{Binding ExitCommand}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <materialIcons:MaterialIcon Grid.Column="0" Classes="row-icon" Kind="Power" />
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding LocalizationManager.TrayExitMenuItem}"
+                    />
+                </Grid>
+            </Button>
+        </StackPanel>
+    </Border>
+</Window>

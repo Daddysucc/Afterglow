@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,11 +10,11 @@ using PowerKit.Extensions;
 
 namespace LightBulb.ViewModels.Components.Settings;
 
-public partial class LocationSettingsTabViewModel : SettingsTabViewModelBase
+public partial class ScheduleSettingsTabViewModel : SettingsTabViewModelBase
 {
     private readonly IDisposable _eventSubscription;
 
-    public LocationSettingsTabViewModel(
+    public ScheduleSettingsTabViewModel(
         SettingsService settingsService,
         LocalizationManager localizationManager
     )
@@ -26,12 +27,38 @@ public partial class LocationSettingsTabViewModel : SettingsTabViewModelBase
         );
     }
 
-    public override string DisplayName => LocalizationManager.LocationTabName;
+    public override string DisplayName => LocalizationManager.ScheduleTabName;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AutoResolveLocationCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResolveLocationCommand))]
     public partial bool IsBusy { get; set; }
+
+    // Times currently in effect: either the manual ones or the ones calculated from the location
+    private SolarTimes EffectiveSolarTimes =>
+        SettingsService is { IsManualSunriseSunsetEnabled: false, Location: { } location }
+            ? SolarTimes.Calculate(location, DateTimeOffset.Now)
+            : new SolarTimes(SettingsService.ManualSunrise, SettingsService.ManualSunset);
+
+    public string SunriseSummaryText =>
+        EffectiveSolarTimes.Sunrise.ToString("t", CultureInfo.CurrentCulture);
+
+    public string SunsetSummaryText =>
+        EffectiveSolarTimes.Sunset.ToString("t", CultureInfo.CurrentCulture);
+
+    public string NightStartSummaryText =>
+        SettingsService.IsEveningConfigurationEnabled
+            ? SettingsService.NightStartTime.ToString("t", CultureInfo.CurrentCulture)
+            : LocalizationManager.OffLabel;
+
+    public string LocationStatusText =>
+        Location is { } location
+            ? string.Format(
+                LocalizationManager.LocationInUseText,
+                location.Latitude.ToString("0.####", CultureInfo.CurrentCulture),
+                location.Longitude.ToString("0.####", CultureInfo.CurrentCulture)
+            )
+            : LocalizationManager.LocationNotSetText;
 
     public bool IsManualSunriseSunsetEnabled
     {
