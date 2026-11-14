@@ -296,7 +296,7 @@ public partial class LocalizationManager
             [nameof(GrayscaleScheduleLabel)] = "自动灰度",
             [nameof(GrayscaleScheduleTooltip)] =
                 "灰度模式何时自动开启。它随时都可以手动切换，手动选择会持续到时间表下一次变化为止。",
-            [nameof(GrayscaleScheduleOffOption)] = "关闭（仅手动）",
+            [nameof(GrayscaleScheduleOffOption)] = "关闭",
             [nameof(GrayscaleScheduleNightOption)] = "仅夜间",
             [nameof(GrayscaleScheduleEveningAndNightOption)] = "傍晚和夜间",
             [nameof(GrayscaleTemperatureShiftLabel)] = "灰度模式下应用色温",

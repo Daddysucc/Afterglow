@@ -328,7 +328,7 @@ public partial class LocalizationManager
             [nameof(GrayscaleScheduleLabel)] = "Automatic grayscale",
             [nameof(GrayscaleScheduleTooltip)] =
                 "When grayscale turns on by itself. It can always be toggled manually, and a manual choice lasts until the schedule next changes.",
-            [nameof(GrayscaleScheduleOffOption)] = "Off (manual only)",
+            [nameof(GrayscaleScheduleOffOption)] = "Off",
             [nameof(GrayscaleScheduleNightOption)] = "Night only",
             [nameof(GrayscaleScheduleEveningAndNightOption)] = "Evening & night",
             [nameof(GrayscaleTemperatureShiftLabel)] = "Shift color temperature in grayscale mode",

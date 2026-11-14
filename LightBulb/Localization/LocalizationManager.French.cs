@@ -321,7 +321,7 @@ public partial class LocalizationManager
         [nameof(GrayscaleScheduleLabel)] = "Niveaux de gris automatiques",
         [nameof(GrayscaleScheduleTooltip)] =
             "Quand les niveaux de gris s'activent d'eux-mêmes. Ils peuvent toujours être basculés manuellement, et un choix manuel dure jusqu'au prochain changement de l'horaire.",
-        [nameof(GrayscaleScheduleOffOption)] = "Désactivé (manuel uniquement)",
+        [nameof(GrayscaleScheduleOffOption)] = "Désactivé",
         [nameof(GrayscaleScheduleNightOption)] = "La nuit uniquement",
         [nameof(GrayscaleScheduleEveningAndNightOption)] = "Le soir et la nuit",
         [nameof(GrayscaleTemperatureShiftLabel)] =

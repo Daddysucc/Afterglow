@@ -289,7 +289,7 @@ public partial class LocalizationManager
             [nameof(GrayscaleScheduleLabel)] = "自動灰階",
             [nameof(GrayscaleScheduleTooltip)] =
                 "灰階模式何時自動開啟。它隨時都能手動切換，手動選擇會持續到排程下一次變化為止。",
-            [nameof(GrayscaleScheduleOffOption)] = "關閉（僅手動）",
+            [nameof(GrayscaleScheduleOffOption)] = "關閉",
             [nameof(GrayscaleScheduleNightOption)] = "僅夜間",
             [nameof(GrayscaleScheduleEveningAndNightOption)] = "傍晚與夜間",
             [nameof(GrayscaleTemperatureShiftLabel)] = "灰階模式下套用色溫",
