@@ -1,0 +1,19 @@
+{
+    // Pressing F5 builds and launches the LightBulb desktop app.
+    // Requires the C# extension (ms-dotnettools.csharp).
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "LightBulb",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build LightBulb",
+            "program": "${workspaceFolder}/LightBulb/bin/Debug/net10.0-windows/LightBulb.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/LightBulb/bin/Debug/net10.0-windows",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "justMyCode": true
+        }
+    ]
+}
