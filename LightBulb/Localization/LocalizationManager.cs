@@ -272,6 +272,12 @@ public partial class LocalizationManager
     public string DisplaysCardSubtitle => Get();
     public string IdentifyButton => Get();
     public string IdentifyTooltip => Get();
+    public string OffsetScalingLabel => Get();
+    public string OffsetScalingTooltip => Get();
+    public string PerceptualOffsetScalingOption => Get();
+    public string FixedOffsetScalingOption => Get();
+    public string PerceptualOffsetScalingDescription => Get();
+    public string FixedOffsetScalingDescription => Get();
     public string NoDisplaysText => Get();
     public string PrimaryBadge => Get();
     public string DisplayEnabledTooltip => Get();

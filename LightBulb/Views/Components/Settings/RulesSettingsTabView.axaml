@@ -135,39 +135,83 @@
         <!--  Connected displays  -->
         <Border Classes="card">
             <StackPanel Orientation="Vertical" Spacing="10">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                    <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="2">
-                        <TextBlock
-                            Classes="card-title"
-                            Text="{Binding LocalizationManager.DisplaysCardTitle}"
-                        />
-                        <TextBlock
-                            Classes="card-subtitle"
-                            Text="{Binding LocalizationManager.DisplaysCardSubtitle}"
-                        />
-                    </StackPanel>
-
-                    <!--  Identify  -->
-                    <Button
-                        Grid.Column="1"
-                        Padding="10,4"
+                <!--  The subtitle spans the full width below, so that the controls don't squeeze it  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="8"
+                    RowDefinitions="Auto,Auto"
+                    RowSpacing="2"
+                >
+                    <TextBlock
+                        Grid.Row="0"
+                        Grid.Column="0"
                         VerticalAlignment="Center"
-                        Click="IdentifyButton_OnClick"
-                        Foreground="{DynamicResource AccentTextBrush}"
-                        IsEnabled="{Binding HasMonitors}"
-                        Theme="{DynamicResource MaterialFlatButton}"
-                        ToolTip.Tip="{Binding LocalizationManager.IdentifyTooltip}"
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.DisplaysCardTitle}"
+                    />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.DisplaysCardSubtitle}"
+                    />
+
+                    <StackPanel
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="8"
                     >
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <materialIcons:MaterialIcon Width="16" Height="16" Kind="MonitorEye" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontSize="12"
-                                Text="{Binding LocalizationManager.IdentifyButton}"
-                            />
-                        </StackPanel>
-                    </Button>
+                        <!--  Offset scaling  -->
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.OffsetScalingLabel}"
+                        />
+                        <ComboBox
+                            MinWidth="170"
+                            VerticalAlignment="Center"
+                            SelectedIndex="{Binding MonitorOffsetScalingIndex}"
+                            ToolTip.Tip="{Binding LocalizationManager.OffsetScalingTooltip}"
+                        >
+                            <ComboBoxItem Content="{Binding LocalizationManager.PerceptualOffsetScalingOption}" />
+                            <ComboBoxItem Content="{Binding LocalizationManager.FixedOffsetScalingOption}" />
+                        </ComboBox>
+
+                        <!--  Identify  -->
+                        <Button
+                            Padding="10,4"
+                            VerticalAlignment="Center"
+                            Click="IdentifyButton_OnClick"
+                            Foreground="{DynamicResource AccentTextBrush}"
+                            IsEnabled="{Binding HasMonitors}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding LocalizationManager.IdentifyTooltip}"
+                        >
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <materialIcons:MaterialIcon
+                                    Width="16"
+                                    Height="16"
+                                    Kind="MonitorEye"
+                                />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Text="{Binding LocalizationManager.IdentifyButton}"
+                                />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
                 </Grid>
+
+                <!--  How offsets are applied, depending on the selected scaling  -->
+                <TextBlock
+                    Classes="setting-hint"
+                    Text="{Binding MonitorOffsetScalingDescription}"
+                    TextWrapping="Wrap"
+                />
 
                 <TextBlock
                     Classes="setting-hint"
@@ -308,8 +352,8 @@
                                                 LargeChange="250"
                                                 Maximum="{Binding MaxTemperatureOffset}"
                                                 Minimum="{Binding MinTemperatureOffset}"
-                                                SmallChange="50"
-                                                TickFrequency="50"
+                                                SmallChange="{Binding TemperatureOffsetStep}"
+                                                TickFrequency="{Binding TemperatureOffsetStep}"
                                                 Value="{Binding TemperatureOffset}"
                                             />
                                         </StackPanel>

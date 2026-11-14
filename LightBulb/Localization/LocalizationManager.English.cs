@@ -265,13 +265,22 @@ public partial class LocalizationManager
                 "Exclude displays or fine-tune their warmth individually. Displays are recognized again when reconnected.",
             [nameof(IdentifyButton)] = "IDENTIFY",
             [nameof(IdentifyTooltip)] = "Show each display's number on its screen",
+            [nameof(OffsetScalingLabel)] = "Offset scaling",
+            [nameof(OffsetScalingTooltip)] =
+                "How each display's temperature offset is applied as the cycle moves from day to night",
+            [nameof(PerceptualOffsetScalingOption)] = "Mireds (Perceptual)",
+            [nameof(FixedOffsetScalingOption)] = "Kelvin (Fixed)",
+            [nameof(PerceptualOffsetScalingDescription)] =
+                "Temperature offsets are exact at your day temperature and scale perceptually toward evening and night, so different panel types stay visually matched.",
+            [nameof(FixedOffsetScalingDescription)] =
+                "Temperature offsets are applied as the same fixed number of Kelvin at all times, without day-to-night scaling.",
             [nameof(NoDisplaysText)] = "No displays detected.",
             [nameof(PrimaryBadge)] = "PRIMARY",
             [nameof(DisplayEnabledTooltip)] =
                 "Apply LightBulb to this display. When excluded, the display is kept at neutral colors.",
             [nameof(MonitorTemperatureOffsetLabel)] = "Temperature offset",
             [nameof(MonitorTemperatureOffsetTooltip)] =
-                "Added to the current color temperature on this display only",
+                "Shifts the color temperature on this display only. With perceptual scaling, this is the shift at your day temperature.",
             [nameof(MonitorBrightnessOffsetLabel)] = "Brightness offset",
             [nameof(MonitorBrightnessOffsetTooltip)] =
                 "Added to the current brightness on this display only",

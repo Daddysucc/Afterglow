@@ -73,6 +73,8 @@ public partial class MonitorItemViewModel(
 
     public double MinTemperatureOffset => -MonitorProfile.MaxTemperatureOffset;
 
+    public double TemperatureOffsetStep => MonitorProfile.TemperatureOffsetStep;
+
     public double MaxBrightnessOffset => MonitorProfile.MaxBrightnessOffset;
 
     public double MinBrightnessOffset => -MonitorProfile.MaxBrightnessOffset;

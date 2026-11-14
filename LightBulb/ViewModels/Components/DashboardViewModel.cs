@@ -799,7 +799,9 @@ public partial class DashboardViewModel : ViewModelBase
             _settingsService.MinimumTemperature,
             _settingsService.MaximumTemperature,
             _settingsService.MinimumBrightness,
-            _settingsService.MaximumBrightness
+            _settingsService.MaximumBrightness,
+            _settingsService.MonitorOffsetScaling,
+            _settingsService.DayConfiguration.Temperature
         );
 
         // The cycle preview overrides pauses, including display-specific ones

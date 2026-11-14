@@ -149,6 +149,18 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial IReadOnlyList<MonitorProfile>? MonitorProfiles { get; set; }
 
+    // Whether display temperature offsets scale perceptually (in mireds) across the cycle, so that
+    // dissimilar panels stay matched at night, rather than being fixed Kelvin values.
+    // Offsets are stored in Kelvin either way, so switching never changes the saved values.
+    [ObservableProperty]
+    public partial bool IsPerceptualMonitorOffsetEnabled { get; set; } = true;
+
+    [JsonIgnore]
+    public MonitorOffsetScaling MonitorOffsetScaling =>
+        IsPerceptualMonitorOffsetEnabled
+            ? MonitorOffsetScaling.Perceptual
+            : MonitorOffsetScaling.Fixed;
+
     [ObservableProperty]
     public partial bool IsGammaPollingEnabled { get; set; }
 

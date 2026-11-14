@@ -12,7 +12,9 @@ public class MonitorSpecs
     // Same bounds as the app's settings
     private static MonitorColorContext CreateContext(
         ColorConfiguration? activeConfiguration = null,
-        bool isGloballyPaused = false
+        bool isGloballyPaused = false,
+        MonitorOffsetScaling offsetScaling = MonitorOffsetScaling.Fixed,
+        double referenceTemperature = 6600
     ) =>
         new(
             activeConfiguration ?? ActiveConfiguration,
@@ -21,7 +23,9 @@ public class MonitorSpecs
             MinimumTemperature: 500,
             MaximumTemperature: 20_000,
             MinimumBrightness: 0.1,
-            MaximumBrightness: 1
+            MaximumBrightness: 1,
+            offsetScaling,
+            referenceTemperature
         );
 
     private static MonitorProfile CreateProfile(
@@ -126,10 +130,13 @@ public class MonitorSpecs
     }
 
     [Theory]
-    [InlineData(137, 150)]
-    [InlineData(-1234, -1000)]
-    [InlineData(24, 0)]
-    public void I_observe_display_temperature_offsets_snapped_to_50_kelvin_steps(
+    [InlineData(137, 125)]
+    [InlineData(-1234, -1225)]
+    [InlineData(12.5, 25)]
+    [InlineData(12, 0)]
+    [InlineData(-2600, -2000)]
+    [InlineData(5000, 2000)]
+    public void I_observe_display_temperature_offsets_snapped_to_25_kelvin_steps_within_2000_kelvin(
         double offset,
         int expectedOffset
     )
