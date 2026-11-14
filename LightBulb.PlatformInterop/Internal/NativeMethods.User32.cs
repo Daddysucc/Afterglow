@@ -113,4 +113,31 @@ internal static partial class NativeMethods
 
     [DllImport(User32, SetLastError = true)]
     public static extern bool UnregisterPowerSettingNotification(nint handle);
+
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern uint RegisterWindowMessage(string lpString);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern bool GetCursorPos(out NativePoint lpPoint);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern nint LoadIcon(nint hInstance, nint lpIconName);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern bool DestroyIcon(nint hIcon);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern nint OpenInputDesktop(uint dwFlags, bool fInherit, uint dwDesiredAccess);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern bool CloseDesktop(nint hDesktop);
+
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern bool GetUserObjectInformation(
+        nint hObj,
+        int nIndex,
+        StringBuilder? pvInfo,
+        int nLength,
+        out int lpnLengthNeeded
+    );
 }

@@ -25,21 +25,12 @@ public partial class LocalizationManager
             [nameof(OpenSettingsTooltip)] = "打开设置",
 
             // Settings dialog (设置对话框)
-            [nameof(ResetButton)] = "重置",
             [nameof(ResetTooltip)] = "将所有设置恢复为默认值",
             [nameof(CancelButton)] = "取消",
-            [nameof(SaveButton)] = "保存",
 
             // Settings tabs (设置选项卡)
-            [nameof(GeneralTabName)] = "常规",
-            [nameof(LocationTabName)] = "位置",
-            [nameof(AdvancedTabName)] = "高级",
-            [nameof(AppWhitelistTabName)] = "应用白名单",
-            [nameof(HotkeysTabName)] = "快捷键",
 
             // Advanced settings tab (高级设置选项卡)
-            [nameof(ThemeLabel)] = "主题",
-            [nameof(ThemeTooltip)] = "首选用户界面主题",
             [nameof(LanguageLabel)] = "语言",
             [nameof(LanguageTooltip)] = "首选用户界面语言",
             [nameof(StartWithWindowsLabel)] = "随 Windows 启动",
@@ -57,37 +48,28 @@ public partial class LocalizationManager
             [nameof(GammaPollingTooltip)] = "定期强制刷新显示器伽马值，防止其他程序覆盖它",
 
             // General settings tab (常规设置选项卡)
-            [nameof(DayTemperatureLabel)] = "日间色温：",
             [nameof(DayTemperatureTooltip)] = "白天的色温",
-            [nameof(NightTemperatureLabel)] = "夜间色温：",
             [nameof(NightTemperatureTooltip)] = "夜晚的色温",
-            [nameof(DayBrightnessLabel)] = "日间亮度：",
             [nameof(DayBrightnessTooltip)] = """
                 白天的亮度
 
                 注意：此亮度设置应用于颜色伽马，而非显示器的实际物理亮度。
                 如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 LightBulb 的亮度控制。
                 """,
-            [nameof(NightBrightnessLabel)] = "夜间亮度：",
             [nameof(NightBrightnessTooltip)] = """
                 夜晚的亮度
 
                 注意：此亮度设置应用于颜色伽马，而非显示器的实际物理亮度。
                 如果您的计算机已经能够根据光照条件自动调整屏幕亮度（笔记本电脑常见），建议将两个亮度设置都保持在 100%，从而禁用 LightBulb 的亮度控制。
                 """,
-            [nameof(TransitionDurationLabel)] = "过渡时长：",
             [nameof(TransitionDurationTooltip)] = "从日间配置切换到夜间配置所需的时间",
-            [nameof(TransitionOffsetLabel)] = "过渡偏移：",
             [nameof(TransitionOffsetTooltip)] = "指定过渡开始时间相对于日出和日落的提前或延后量",
 
             // Location settings tab (位置设置选项卡)
-            [nameof(SolarConfigLabel)] = "太阳配置：",
             [nameof(ManualLabel)] = "手动",
             [nameof(ManualTooltip)] = "手动配置日出和日落时间",
             [nameof(LocationBasedLabel)] = "基于位置",
             [nameof(LocationBasedTooltip)] = "配置您的位置，并以此自动计算日出和日落时间",
-            [nameof(SunriseTimeLabel)] = "日出：",
-            [nameof(SunsetTimeLabel)] = "日落：",
             [nameof(YourLocationLabel)] = "您的位置：",
             [nameof(AutoDetectLocationTooltip)] = "尝试根据您的 IP 地址自动检测位置",
             [nameof(LocationQueryTooltip)] = """
@@ -124,22 +106,8 @@ public partial class LocalizationManager
             [nameof(PauseForWhitelistedTooltip)] = "当选定的应用程序之一处于前台时暂停 LightBulb",
 
             // Tray icon context menu (托盘图标上下文菜单)
-            [nameof(TrayShowMenuItem)] = "显示",
-            [nameof(TrayHideMenuItem)] = "隐藏",
             [nameof(TraySettingsMenuItem)] = "设置",
-            [nameof(TrayEnableMenuItem)] = "启用",
-            [nameof(TrayDisableMenuItem)] = "禁用",
-            [nameof(TrayDisableTemporarilyMenuItem)] = "禁用...",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "直到日出",
-            [nameof(TrayDisableFor1DayMenuItem)] = "禁用 1 天",
-            [nameof(TrayDisableFor12HoursMenuItem)] = "禁用 12 小时",
-            [nameof(TrayDisableFor6HoursMenuItem)] = "禁用 6 小时",
-            [nameof(TrayDisableFor3HoursMenuItem)] = "禁用 3 小时",
-            [nameof(TrayDisableFor1HourMenuItem)] = "禁用 1 小时",
-            [nameof(TrayDisableFor30MinutesMenuItem)] = "禁用 30 分钟",
-            [nameof(TrayDisableFor15MinutesMenuItem)] = "禁用 15 分钟",
-            [nameof(TrayDisableFor5MinutesMenuItem)] = "禁用 5 分钟",
-            [nameof(TrayDisableFor1MinuteMenuItem)] = "禁用 1 分钟",
             [nameof(TrayExitMenuItem)] = "退出",
             [nameof(TrayTooltipDisabled)] = "已禁用",
 

@@ -23,19 +23,10 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "預覽 24 小時週期",
             [nameof(OpenSettingsTooltip)] = "開啟設定",
             // Settings dialog
-            [nameof(ResetButton)] = "重設",
             [nameof(ResetTooltip)] = "將所有設定重設為預設值",
             [nameof(CancelButton)] = "取消",
-            [nameof(SaveButton)] = "儲存",
             // Settings tabs
-            [nameof(GeneralTabName)] = "一般",
-            [nameof(LocationTabName)] = "位置",
-            [nameof(AdvancedTabName)] = "進階",
-            [nameof(AppWhitelistTabName)] = "應用程式白名單",
-            [nameof(HotkeysTabName)] = "快捷鍵",
             // Advanced settings tab
-            [nameof(ThemeLabel)] = "主題",
-            [nameof(ThemeTooltip)] = "偏好的使用者介面主題",
             [nameof(LanguageLabel)] = "語言",
             [nameof(LanguageTooltip)] = "偏好的使用者介面語言",
             [nameof(StartWithWindowsLabel)] = "隨 Windows 啟動",
@@ -54,37 +45,28 @@ public partial class LocalizationManager
             [nameof(GammaPollingTooltip)] =
                 "定期強制重新整理顯示器 Gamma 值，以防止其他程式覆蓋此設定",
             // General settings tab
-            [nameof(DayTemperatureLabel)] = "白天色溫：",
             [nameof(DayTemperatureTooltip)] = "白天時的色溫",
-            [nameof(NightTemperatureLabel)] = "夜晚色溫：",
             [nameof(NightTemperatureTooltip)] = "夜晚時的色溫",
-            [nameof(DayBrightnessLabel)] = "白天亮度：",
             [nameof(DayBrightnessTooltip)] = """
                 白天時的亮度
 
                 請注意，此亮度設定適用於色彩 Gamma 值，而非顯示器的實際硬體亮度。
                 如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 LightBulb 的亮度控制。
                 """,
-            [nameof(NightBrightnessLabel)] = "夜晚亮度：",
             [nameof(NightBrightnessTooltip)] = """
                 夜晚時的亮度
 
                 請注意，此亮度設定適用於色彩 Gamma 值，而非顯示器的實際硬體亮度。
                 如果您的電腦已經能夠根據光線條件自動調整螢幕亮度（常見於筆記型電腦），建議將兩種亮度設定都保持在 100% 以停用 LightBulb 的亮度控制。
                 """,
-            [nameof(TransitionDurationLabel)] = "過渡時間：",
             [nameof(TransitionDurationTooltip)] = "在白天和夜晚設定之間切換所需的時間長度",
-            [nameof(TransitionOffsetLabel)] = "過渡偏移：",
             [nameof(TransitionOffsetTooltip)] =
                 "相對於日出和日落，指定過渡效果提前或延後開始的偏移時間",
             // Location settings tab
-            [nameof(SolarConfigLabel)] = "太陽週期設定：",
             [nameof(ManualLabel)] = "手動",
             [nameof(ManualTooltip)] = "手動設定日出與日落時間",
             [nameof(LocationBasedLabel)] = "基於位置",
             [nameof(LocationBasedTooltip)] = "設定您的位置並自動計算日出與日落時間",
-            [nameof(SunriseTimeLabel)] = "日出：",
-            [nameof(SunsetTimeLabel)] = "日落：",
             [nameof(YourLocationLabel)] = "您的位置：",
             [nameof(AutoDetectLocationTooltip)] = "嘗試根據您的 IP 位址自動偵測位置",
             [nameof(LocationQueryTooltip)] = """
@@ -118,22 +100,8 @@ public partial class LocalizationManager
             [nameof(RefreshAppsTooltip)] = "重新整理執行中的應用程式",
             [nameof(PauseForWhitelistedTooltip)] = "當選定的應用程式之一在前景執行時暫停 LightBulb",
             // Tray icon context menu
-            [nameof(TrayShowMenuItem)] = "顯示",
-            [nameof(TrayHideMenuItem)] = "隱藏",
             [nameof(TraySettingsMenuItem)] = "設定",
-            [nameof(TrayEnableMenuItem)] = "啟用",
-            [nameof(TrayDisableMenuItem)] = "停用",
-            [nameof(TrayDisableTemporarilyMenuItem)] = "暫時停用...",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "直到日出",
-            [nameof(TrayDisableFor1DayMenuItem)] = "停用 1 天",
-            [nameof(TrayDisableFor12HoursMenuItem)] = "停用 12 小時",
-            [nameof(TrayDisableFor6HoursMenuItem)] = "停用 6 小時",
-            [nameof(TrayDisableFor3HoursMenuItem)] = "停用 3 小時",
-            [nameof(TrayDisableFor1HourMenuItem)] = "停用 1 小時",
-            [nameof(TrayDisableFor30MinutesMenuItem)] = "停用 30 分鐘",
-            [nameof(TrayDisableFor15MinutesMenuItem)] = "停用 15 分鐘",
-            [nameof(TrayDisableFor5MinutesMenuItem)] = "停用 5 分鐘",
-            [nameof(TrayDisableFor1MinuteMenuItem)] = "停用 1 分鐘",
             [nameof(TrayExitMenuItem)] = "結束",
             [nameof(TrayTooltipDisabled)] = "已停用",
             // Dialog messages

@@ -15,12 +15,12 @@
             Grid.Row="0"
             Margin="64,10,64,0"
             FontSize="14"
-            Foreground="{DynamicResource DashboardTextBrush}"
+            Foreground="{DynamicResource TextPrimaryBrush}"
             Maximum="{Binding MaximumSliderTemperature}"
             Minimum="{Binding MinimumSliderTemperature}"
-            ThumbBorderBrush="{DynamicResource DashboardSliderThumbBorderBrush}"
+            ThumbBorderBrush="{DynamicResource AppHeaderBrush}"
             ToolTip.Tip="{Binding ActiveStageTemperatureTooltip}"
-            TrackBrush="{DynamicResource DashboardSliderTrackBrush}"
+            TrackBrush="{DynamicResource AccentBrush}"
             Value="{Binding ActiveStageTemperature}"
         />
 
@@ -30,7 +30,7 @@
             Margin="16,0,16,8"
             HorizontalAlignment="Center"
             FontSize="13"
-            Foreground="{DynamicResource DashboardMutedTextBrush}"
+            Foreground="{DynamicResource AccentTextBrush}"
             Text="{Binding SolarTimingText}"
             TextTrimming="CharacterEllipsis"
         />
@@ -38,18 +38,18 @@
         <!--  24-hour graph  -->
         <Border
             Grid.Row="2"
-            Background="{DynamicResource DashboardGraphBrush}"
-            BorderBrush="{DynamicResource DashboardGraphBorderBrush}"
+            Background="{DynamicResource GraphBrush}"
+            BorderBrush="{DynamicResource CardBorderBrush}"
             BorderThickness="0,1,0,0"
         >
             <Panel>
                 <controls:CycleGraph
-                    CurveBrush="{DynamicResource DashboardCurveBrush}"
+                    CurveBrush="{DynamicResource CurveBrush}"
                     Curve="{Binding CycleCurve}"
-                    MarkerRingBrush="{DynamicResource DashboardMarkerRingBrush}"
+                    MarkerRingBrush="{DynamicResource GraphBrush}"
                     Now="{Binding DayProgress}"
-                    ShadeOpacity="{DynamicResource DashboardShadeOpacity}"
-                    WaveBrush="{DynamicResource DashboardWaveBrush}"
+                    ShadeOpacity="0.6"
+                    WaveBrush="{DynamicResource WaveBrush}"
                 />
 
                 <!--  Active phase and current values  -->
@@ -58,7 +58,7 @@
                     HorizontalAlignment="Left"
                     VerticalAlignment="Bottom"
                     FontSize="12"
-                    Foreground="{DynamicResource DashboardCaptionBrush}"
+                    Foreground="{DynamicResource TextMutedBrush}"
                     IsHitTestVisible="False"
                     Text="{Binding ActivePhaseCaption}"
                 />
@@ -104,12 +104,12 @@
                     <materialIcons:MaterialIcon
                         Width="14"
                         Height="14"
-                        Foreground="{DynamicResource DashboardCaptionBrush}"
+                        Foreground="{DynamicResource TextMutedBrush}"
                         Kind="SwapVertical"
                     />
                     <TextBlock
                         FontSize="12"
-                        Foreground="{DynamicResource DashboardCaptionBrush}"
+                        Foreground="{DynamicResource TextMutedBrush}"
                         Text="{Binding LocalizationManager.OffsetLabel}"
                     />
                 </StackPanel>
@@ -117,62 +117,13 @@
         </Border>
 
         <!--  Footer  -->
-        <Grid Grid.Row="3" Height="52" Margin="16,0,8,0" ColumnDefinitions="Auto,Auto,*,Auto">
-            <!--  Bedtime (night start)  -->
-            <StackPanel
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                IsEnabled="{Binding IsEveningConfigurationEnabled}"
-                Orientation="Horizontal"
-                Spacing="6"
-                ToolTip.ShowOnDisabled="True"
-                ToolTip.Tip="{Binding LocalizationManager.BedtimeTooltip}"
-            >
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontSize="24"
-                    Foreground="{DynamicResource DashboardBedtimeBrush}"
-                    Text="{Binding NightStartTimeText}"
-                />
-                <StackPanel VerticalAlignment="Center" Orientation="Vertical">
-                    <Button
-                        Width="22"
-                        Height="16"
-                        Padding="0"
-                        Command="{Binding IncreaseNightStartTimeCommand}"
-                        Foreground="{DynamicResource DashboardBedtimeBrush}"
-                        Theme="{DynamicResource MaterialFlatButton}"
-                        ToolTip.Tip="{Binding LocalizationManager.LaterBedtimeTooltip}"
-                    >
-                        <materialIcons:MaterialIcon Width="18" Height="18" Kind="ChevronUp" />
-                    </Button>
-                    <Button
-                        Width="22"
-                        Height="16"
-                        Padding="0"
-                        Command="{Binding DecreaseNightStartTimeCommand}"
-                        Foreground="{DynamicResource DashboardBedtimeBrush}"
-                        Theme="{DynamicResource MaterialFlatButton}"
-                        ToolTip.Tip="{Binding LocalizationManager.EarlierBedtimeTooltip}"
-                    >
-                        <materialIcons:MaterialIcon Width="18" Height="18" Kind="ChevronDown" />
-                    </Button>
-                </StackPanel>
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontSize="14"
-                    Foreground="{DynamicResource DashboardTextBrush}"
-                    Text="{Binding LocalizationManager.BedtimeSuffixText}"
-                />
-            </StackPanel>
-
-            <!--  Cycle preview  -->
+        <Grid Grid.Row="3" Height="48" Margin="4,0,8,0" ColumnDefinitions="Auto,*,Auto">
+            <!--  Cycle preview (content lines up with the graph caption)  -->
             <ToggleButton
-                Grid.Column="1"
-                Margin="16,0,0,0"
+                Grid.Column="0"
                 Padding="8,4"
                 VerticalAlignment="Center"
-                Foreground="{DynamicResource DashboardCaptionBrush}"
+                Foreground="{DynamicResource TextMutedBrush}"
                 IsChecked="{Binding IsCyclePreviewEnabled}"
                 Theme="{DynamicResource MaterialFlatToggleButton}"
             >
@@ -183,6 +134,10 @@
                                 Property="ToolTip.Tip"
                                 Value="{Binding LocalizationManager.StopPreviewTooltip}"
                             />
+                            <Setter
+                                Property="Foreground"
+                                Value="{DynamicResource AccentTextBrush}"
+                            />
                         </Style>
                         <Style Selector="^:unchecked">
                             <Setter
@@ -192,7 +147,7 @@
                         </Style>
                     </Style>
                 </ToggleButton.Styles>
-                <StackPanel Orientation="Horizontal" Spacing="4">
+                <StackPanel Orientation="Horizontal" Spacing="6">
                     <materialIcons:MaterialIcon Width="18" Height="18">
                         <materialIcons:MaterialIcon.Styles>
                             <Style Selector="ToggleButton materialIcons|MaterialIcon">
@@ -213,11 +168,11 @@
 
             <!--  Location (opens location settings)  -->
             <Button
-                Grid.Column="3"
+                Grid.Column="2"
                 Padding="8,4"
                 VerticalAlignment="Center"
                 Command="{Binding $parent[Window].((viewModels:MainViewModel)DataContext).ShowLocationSettingsCommand}"
-                Foreground="{DynamicResource DashboardTextBrush}"
+                Foreground="{DynamicResource TextPrimaryBrush}"
                 Theme="{DynamicResource MaterialFlatButton}"
                 ToolTip.Tip="{Binding LocalizationManager.OpenLocationSettingsTooltip}"
             >
@@ -225,7 +180,7 @@
                     <materialIcons:MaterialIcon
                         Width="16"
                         Height="16"
-                        Foreground="{DynamicResource DashboardMutedTextBrush}"
+                        Foreground="{DynamicResource AccentTextBrush}"
                         Kind="NavigationVariant"
                     />
                     <TextBlock

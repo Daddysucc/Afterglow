@@ -20,11 +20,10 @@ public partial class ViewManager
             DashboardViewModel => new DashboardView(),
             MessageBoxViewModel => new MessageBoxView(),
             SettingsViewModel => new SettingsView(),
-            AdvancedSettingsTabViewModel => new AdvancedSettingsTabView(),
-            ApplicationWhitelistSettingsTabViewModel => new ApplicationWhitelistSettingsTabView(),
-            GeneralSettingsTabViewModel => new GeneralSettingsTabView(),
-            HotKeySettingsTabViewModel => new HotKeySettingsTabView(),
-            LocationSettingsTabViewModel => new LocationSettingsTabView(),
+            RulesSettingsTabViewModel => new RulesSettingsTabView(),
+            CycleSettingsTabViewModel => new CycleSettingsTabView(),
+            ControlsSettingsTabViewModel => new ControlsSettingsTabView(),
+            ScheduleSettingsTabViewModel => new ScheduleSettingsTabView(),
             _ => null,
         };
 

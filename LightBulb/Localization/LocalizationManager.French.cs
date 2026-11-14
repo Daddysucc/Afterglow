@@ -23,17 +23,8 @@ public partial class LocalizationManager
         [nameof(StopPreviewTooltip)] = "Arrêter l'aperçu",
         [nameof(StartPreviewTooltip)] = "Aperçu du cycle de 24 heures",
         [nameof(OpenSettingsTooltip)] = "Ouvrir les paramètres",
-        [nameof(ResetButton)] = "RÉINITIALISER",
         [nameof(ResetTooltip)] = "Réinitialiser tous les paramètres à leurs valeurs par défaut",
         [nameof(CancelButton)] = "ANNULER",
-        [nameof(SaveButton)] = "ENREGISTRER",
-        [nameof(GeneralTabName)] = "Général",
-        [nameof(LocationTabName)] = "Emplacement",
-        [nameof(AdvancedTabName)] = "Avancé",
-        [nameof(AppWhitelistTabName)] = "Liste blanche",
-        [nameof(HotkeysTabName)] = "Raccourcis",
-        [nameof(ThemeLabel)] = "Thème",
-        [nameof(ThemeTooltip)] = "Thème d'interface préféré",
         [nameof(LanguageLabel)] = "Langue",
         [nameof(LanguageTooltip)] = "Langue d'interface préférée",
         [nameof(StartWithWindowsLabel)] = "Démarrer avec Windows",
@@ -53,38 +44,29 @@ public partial class LocalizationManager
         [nameof(GammaPollingLabel)] = "Interrogation gamma",
         [nameof(GammaPollingTooltip)] =
             "Forcer le rafraîchissement du gamma du moniteur à intervalles réguliers pour empêcher d'autres programmes de le remplacer",
-        [nameof(DayTemperatureLabel)] = "Température de couleur diurne :",
         [nameof(DayTemperatureTooltip)] = "Température de couleur pendant la journée",
-        [nameof(NightTemperatureLabel)] = "Température de couleur nocturne :",
         [nameof(NightTemperatureTooltip)] = "Température de couleur pendant la nuit",
-        [nameof(DayBrightnessLabel)] = "Luminosité diurne :",
         [nameof(DayBrightnessTooltip)] = """
             Luminosité pendant la journée
 
             Ce réglage de luminosité s'applique au gamma des couleurs, pas à la luminosité réelle du moniteur.
             Si votre ordinateur est déjà capable d'ajuster automatiquement la luminosité de l'écran en fonction des conditions d'éclairage (courant sur les ordinateurs portables), il est recommandé de désactiver le contrôle de luminosité de LightBulb en maintenant les deux réglages à 100%.
             """,
-        [nameof(NightBrightnessLabel)] = "Luminosité nocturne :",
         [nameof(NightBrightnessTooltip)] = """
             Luminosité pendant la nuit
 
             Ce réglage de luminosité s'applique au gamma des couleurs, pas à la luminosité réelle du moniteur.
             Si votre ordinateur est déjà capable d'ajuster automatiquement la luminosité de l'écran en fonction des conditions d'éclairage (courant sur les ordinateurs portables), il est recommandé de désactiver le contrôle de luminosité de LightBulb en maintenant les deux réglages à 100%.
             """,
-        [nameof(TransitionDurationLabel)] = "Durée de transition :",
         [nameof(TransitionDurationTooltip)] =
             "Durée nécessaire pour passer de la configuration diurne à nocturne",
-        [nameof(TransitionOffsetLabel)] = "Décalage de transition :",
         [nameof(TransitionOffsetTooltip)] =
             "Décalage qui spécifie l'avance ou le retard du début de la transition par rapport au lever et coucher de soleil",
-        [nameof(SolarConfigLabel)] = "Configuration solaire :",
         [nameof(ManualLabel)] = "Manuel",
         [nameof(ManualTooltip)] = "Configurer manuellement le lever et coucher de soleil",
         [nameof(LocationBasedLabel)] = "Basé sur la localisation",
         [nameof(LocationBasedTooltip)] =
             "Configurer votre emplacement pour calculer automatiquement les heures de lever et coucher de soleil",
-        [nameof(SunriseTimeLabel)] = "Lever de soleil :",
-        [nameof(SunsetTimeLabel)] = "Coucher de soleil :",
         [nameof(YourLocationLabel)] = "Votre emplacement :",
         [nameof(AutoDetectLocationTooltip)] =
             "Essayer de détecter automatiquement l'emplacement via votre adresse IP",
@@ -124,22 +106,8 @@ public partial class LocalizationManager
         [nameof(RefreshAppsTooltip)] = "Actualiser les applications en cours d'exécution",
         [nameof(PauseForWhitelistedTooltip)] =
             "Mettre LightBulb en pause quand une des applications sélectionnées est au premier plan",
-        [nameof(TrayShowMenuItem)] = "Afficher",
-        [nameof(TrayHideMenuItem)] = "Masquer",
         [nameof(TraySettingsMenuItem)] = "Paramètres",
-        [nameof(TrayEnableMenuItem)] = "Activer",
-        [nameof(TrayDisableMenuItem)] = "Désactiver",
-        [nameof(TrayDisableTemporarilyMenuItem)] = "Désactiver...",
         [nameof(TrayDisableUntilSunriseMenuItem)] = "Jusqu'au lever du soleil",
-        [nameof(TrayDisableFor1DayMenuItem)] = "Pour 1 jour",
-        [nameof(TrayDisableFor12HoursMenuItem)] = "Pour 12 heures",
-        [nameof(TrayDisableFor6HoursMenuItem)] = "Pour 6 heures",
-        [nameof(TrayDisableFor3HoursMenuItem)] = "Pour 3 heures",
-        [nameof(TrayDisableFor1HourMenuItem)] = "Pour 1 heure",
-        [nameof(TrayDisableFor30MinutesMenuItem)] = "Pour 30 minutes",
-        [nameof(TrayDisableFor15MinutesMenuItem)] = "Pour 15 minutes",
-        [nameof(TrayDisableFor5MinutesMenuItem)] = "Pour 5 minutes",
-        [nameof(TrayDisableFor1MinuteMenuItem)] = "Pour 1 minute",
         [nameof(TrayExitMenuItem)] = "Quitter",
         [nameof(TrayTooltipDisabled)] = "Désactivé",
         [nameof(UpdateAvailableTitle)] = "Mise à jour disponible",

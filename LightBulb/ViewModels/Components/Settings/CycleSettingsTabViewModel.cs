@@ -8,12 +8,12 @@ namespace LightBulb.ViewModels.Components.Settings;
 
 // Day, evening, and night values are kept in order (day >= evening >= night) by the settings
 // service, so changing one of them may push the others along with it.
-public class GeneralSettingsTabViewModel(
+public class CycleSettingsTabViewModel(
     SettingsService settingsService,
     LocalizationManager localizationManager
 ) : SettingsTabViewModelBase(settingsService, localizationManager, 0)
 {
-    public override string DisplayName => LocalizationManager.GeneralTabName;
+    public override string DisplayName => LocalizationManager.CycleTabName;
 
     // This value is used for slider bounds, but it's not an actual restriction
     public double RecommendedMaximumDayTemperature => Math.Max(6600, DayTemperature);

@@ -13,11 +13,10 @@ public class SettingsTabToMaterialIconKindConverter : IValueConverter
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         value switch
         {
-            GeneralSettingsTabViewModel => MaterialIconKind.Settings,
-            LocationSettingsTabViewModel => MaterialIconKind.Globe,
-            AdvancedSettingsTabViewModel => MaterialIconKind.CheckboxesMarked,
-            ApplicationWhitelistSettingsTabViewModel => MaterialIconKind.Apps,
-            HotKeySettingsTabViewModel => MaterialIconKind.Keyboard,
+            CycleSettingsTabViewModel => MaterialIconKind.Palette,
+            ScheduleSettingsTabViewModel => MaterialIconKind.MapMarkerOutline,
+            RulesSettingsTabViewModel => MaterialIconKind.PauseCircleOutline,
+            ControlsSettingsTabViewModel => MaterialIconKind.Tune,
             // Shouldn't happen
             _ => MaterialIconKind.QuestionMark,
         };

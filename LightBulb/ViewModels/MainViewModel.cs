@@ -50,58 +50,8 @@ public partial class MainViewModel(
 
     public DashboardViewModel Dashboard { get; } = dashboard;
 
-    private IDisposable? _eventSubscription;
-
     [ObservableProperty]
     public partial bool IsOpen { get; set; }
-
-    public IReadOnlyList<ColorPresetOption> PresetOptions =>
-        [
-            new(ColorPreset.Recommended, LocalizationManager.RecommendedPresetName),
-            new(ColorPreset.LateNight, LocalizationManager.LateNightPresetName),
-            new(ColorPreset.Daylight, LocalizationManager.DaylightPresetName),
-            new(ColorPreset.Custom, LocalizationManager.CustomPresetName),
-        ];
-
-    // Reflects whichever preset matches the current settings
-    public ColorPresetOption? SelectedPresetOption
-    {
-        get
-        {
-            var preset = settingsService.GetMatchingPreset();
-            return PresetOptions.First(o => o.Preset == preset);
-        }
-        set
-        {
-            // The selector may briefly clear its selection when the options are refreshed
-            if (value is null)
-                return;
-
-            // The selector also echoes back the selection it receives from this property
-            // (e.g. when it's first bound, or when the settings change and the matching
-            // preset becomes 'Custom'). Only an actual change by the user should do anything,
-            // otherwise this would re-save the settings or pop up the settings dialog.
-            if (value.Preset == settingsService.GetMatchingPreset())
-                return;
-
-            if (value.Preset == ColorPreset.Custom)
-            {
-                // Custom colors are configured in settings. Until they're changed there,
-                // the selector keeps showing the preset that matches the current settings.
-                Dispatcher.UIThread.Post(() => ShowGeneralSettingsCommand.Execute(null));
-            }
-            else
-            {
-                settingsService.ApplyPreset(
-                    ColorPresetDefinition.All.First(d => d.Preset == value.Preset)
-                );
-
-                settingsService.Save();
-            }
-
-            OnPropertyChanged();
-        }
-    }
 
     private async Task FinalizePendingUpdateAsync()
     {
@@ -187,28 +137,13 @@ public partial class MainViewModel(
             return;
 
         var settingsDialog = viewModelManager.GetSettingsViewModel();
-        settingsDialog.ActivateTab<LocationSettingsTabViewModel>();
+        settingsDialog.ActivateTab<ScheduleSettingsTabViewModel>();
 
         await dialogManager.ShowDialogAsync(settingsDialog);
     }
 
     public override async Task InitializeAsync()
     {
-        _eventSubscription = PowerKit.Disposable.Merge(
-            // Keep the preset selector in sync with changes made elsewhere (e.g. in settings)
-            settingsService.WatchAllProperties(() =>
-                OnPropertyChanged(nameof(SelectedPresetOption))
-            ),
-            LocalizationManager.WatchProperty(
-                o => o.Language,
-                _ =>
-                {
-                    OnPropertyChanged(nameof(PresetOptions));
-                    OnPropertyChanged(nameof(SelectedPresetOption));
-                }
-            )
-        );
-
         await FinalizePendingUpdateAsync();
 
         await ShowDevelopmentBuildMessageAsync();
@@ -221,36 +156,63 @@ public partial class MainViewModel(
     private async Task ShowSettingsTabAsync<TTab>()
         where TTab : SettingsTabViewModelBase
     {
-        // Persist any pending changes made on the dashboard first, otherwise they'd be
-        // discarded if the user cancels the settings dialog (which reloads settings from disk)
+        // Settings can be requested from several places (e.g. the tray menu) while already open
+        if (_isSettingsOpen)
+            return;
+
+        // Persist any pending changes made on the dashboard first, so that they're not
+        // overwritten or lost while the settings page is open
         Dashboard.FlushPendingSave();
 
         var settingsDialog = viewModelManager.GetSettingsViewModel();
         settingsDialog.ActivateTab<TTab>();
 
-        await dialogManager.ShowDialogAsync(settingsDialog);
+        _isSettingsOpen = true;
+        try
+        {
+            await dialogManager.ShowDialogAsync(settingsDialog);
+        }
+        finally
+        {
+            _isSettingsOpen = false;
+        }
     }
+
+    private bool _isSettingsOpen;
 
     [RelayCommand]
     private async Task ShowSettingsAsync() =>
-        await ShowSettingsTabAsync<GeneralSettingsTabViewModel>();
-
-    [RelayCommand]
-    private async Task ShowGeneralSettingsAsync() =>
-        await ShowSettingsTabAsync<GeneralSettingsTabViewModel>();
+        await ShowSettingsTabAsync<CycleSettingsTabViewModel>();
 
     [RelayCommand]
     private async Task ShowLocationSettingsAsync() =>
-        await ShowSettingsTabAsync<LocationSettingsTabViewModel>();
+        await ShowSettingsTabAsync<ScheduleSettingsTabViewModel>();
 
     [RelayCommand]
     private void ShowAbout() => Process.StartShellExecute(Program.ProjectUrl);
+
+    // Whether the window should be hidden to the system tray right after launch
+    public bool IsStartHidden =>
+        StartOptions.Current.IsInitiallyHidden || settingsService.IsStartMinimizedEnabled;
+
+    [RelayCommand]
+    private void ShowWindow() =>
+        Application.Current?.ApplicationLifetime?.TryGetMainWindow()?.ShowActivateFocus();
+
+    [RelayCommand]
+    private async Task ShowWindowWithSettingsAsync()
+    {
+        ShowWindow();
+        await ShowSettingsAsync();
+    }
+
+    [RelayCommand]
+    private void Exit() => App.Shutdown();
 
     protected override void Dispose(bool disposing)
     {
         if (disposing)
         {
-            _eventSubscription?.Dispose();
             _checkForUpdatesTimer.Dispose();
         }
 

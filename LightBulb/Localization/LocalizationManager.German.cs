@@ -23,17 +23,8 @@ public partial class LocalizationManager
         [nameof(StopPreviewTooltip)] = "Vorschau beenden",
         [nameof(StartPreviewTooltip)] = "24-Stunden-Zyklus vorschauen",
         [nameof(OpenSettingsTooltip)] = "Einstellungen öffnen",
-        [nameof(ResetButton)] = "ZURÜCKSETZEN",
         [nameof(ResetTooltip)] = "Alle Einstellungen auf die Standardwerte zurücksetzen",
         [nameof(CancelButton)] = "ABBRECHEN",
-        [nameof(SaveButton)] = "SPEICHERN",
-        [nameof(GeneralTabName)] = "Allgemein",
-        [nameof(LocationTabName)] = "Standort",
-        [nameof(AdvancedTabName)] = "Erweitert",
-        [nameof(AppWhitelistTabName)] = "App-Whitelist",
-        [nameof(HotkeysTabName)] = "Tastenkombinationen",
-        [nameof(ThemeLabel)] = "Design",
-        [nameof(ThemeTooltip)] = "Bevorzugtes Oberflächendesign",
         [nameof(LanguageLabel)] = "Sprache",
         [nameof(LanguageTooltip)] = "Bevorzugte Sprache der Benutzeroberfläche",
         [nameof(StartWithWindowsLabel)] = "Mit Windows starten",
@@ -52,38 +43,29 @@ public partial class LocalizationManager
         [nameof(GammaPollingLabel)] = "Gamma-Abfrage",
         [nameof(GammaPollingTooltip)] =
             "Monitor-Gamma in regelmäßigen Abständen auffrischen, um andere Programme daran zu hindern, es zu überschreiben",
-        [nameof(DayTemperatureLabel)] = "Tages-Farbtemperatur:",
         [nameof(DayTemperatureTooltip)] = "Farbtemperatur tagsüber",
-        [nameof(NightTemperatureLabel)] = "Nacht-Farbtemperatur:",
         [nameof(NightTemperatureTooltip)] = "Farbtemperatur nachts",
-        [nameof(DayBrightnessLabel)] = "Tageshelligkeit:",
         [nameof(DayBrightnessTooltip)] = """
             Helligkeit tagsüber
 
             Diese Helligkeitseinstellung wirkt auf das Farbgamma, nicht auf die tatsächliche Bildschirmhelligkeit.
             Wenn Ihr Computer bereits in der Lage ist, die Bildschirmhelligkeit automatisch anzupassen (häufig bei Laptops), wird empfohlen, die Helligkeitssteuerung von LightBulb zu deaktivieren, indem beide Helligkeitswerte auf 100% gesetzt werden.
             """,
-        [nameof(NightBrightnessLabel)] = "Nachthelligkeit:",
         [nameof(NightBrightnessTooltip)] = """
             Helligkeit nachts
 
             Diese Helligkeitseinstellung wirkt auf das Farbgamma, nicht auf die tatsächliche Bildschirmhelligkeit.
             Wenn Ihr Computer bereits in der Lage ist, die Bildschirmhelligkeit automatisch anzupassen (häufig bei Laptops), wird empfohlen, die Helligkeitssteuerung von LightBulb zu deaktivieren, indem beide Helligkeitswerte auf 100% gesetzt werden.
             """,
-        [nameof(TransitionDurationLabel)] = "Übergangsdauer:",
         [nameof(TransitionDurationTooltip)] =
             "Zeitdauer für den Wechsel zwischen Tages- und Nachtkonfiguration",
-        [nameof(TransitionOffsetLabel)] = "Übergangsversatz:",
         [nameof(TransitionOffsetTooltip)] =
             "Versatz, der angibt, wie früh oder spät der Übergang relativ zu Sonnenaufgang und Sonnenuntergang beginnt",
-        [nameof(SolarConfigLabel)] = "Solarkonfiguration:",
         [nameof(ManualLabel)] = "Manuell",
         [nameof(ManualTooltip)] = "Sonnenaufgang und Sonnenuntergang manuell konfigurieren",
         [nameof(LocationBasedLabel)] = "Standortbasiert",
         [nameof(LocationBasedTooltip)] =
             "Standort konfigurieren und zur automatischen Berechnung der Sonnenzeiten nutzen",
-        [nameof(SunriseTimeLabel)] = "Sonnenaufgang:",
-        [nameof(SunsetTimeLabel)] = "Sonnenuntergang:",
         [nameof(YourLocationLabel)] = "Ihr Standort:",
         [nameof(AutoDetectLocationTooltip)] =
             "Standort automatisch anhand Ihrer IP-Adresse erkennen",
@@ -123,22 +105,8 @@ public partial class LocalizationManager
         [nameof(RefreshAppsTooltip)] = "Laufende Anwendungen aktualisieren",
         [nameof(PauseForWhitelistedTooltip)] =
             "LightBulb pausieren, wenn eine der ausgewählten Anwendungen im Vordergrund ist",
-        [nameof(TrayShowMenuItem)] = "Anzeigen",
-        [nameof(TrayHideMenuItem)] = "Ausblenden",
         [nameof(TraySettingsMenuItem)] = "Einstellungen",
-        [nameof(TrayEnableMenuItem)] = "Aktivieren",
-        [nameof(TrayDisableMenuItem)] = "Deaktivieren",
-        [nameof(TrayDisableTemporarilyMenuItem)] = "Deaktivieren...",
         [nameof(TrayDisableUntilSunriseMenuItem)] = "Bis Sonnenaufgang",
-        [nameof(TrayDisableFor1DayMenuItem)] = "Für 1 Tag",
-        [nameof(TrayDisableFor12HoursMenuItem)] = "Für 12 Stunden",
-        [nameof(TrayDisableFor6HoursMenuItem)] = "Für 6 Stunden",
-        [nameof(TrayDisableFor3HoursMenuItem)] = "Für 3 Stunden",
-        [nameof(TrayDisableFor1HourMenuItem)] = "Für 1 Stunde",
-        [nameof(TrayDisableFor30MinutesMenuItem)] = "Für 30 Minuten",
-        [nameof(TrayDisableFor15MinutesMenuItem)] = "Für 15 Minuten",
-        [nameof(TrayDisableFor5MinutesMenuItem)] = "Für 5 Minuten",
-        [nameof(TrayDisableFor1MinuteMenuItem)] = "Für 1 Minute",
         [nameof(TrayExitMenuItem)] = "Beenden",
         [nameof(TrayTooltipDisabled)] = "Deaktiviert",
         [nameof(UpdateAvailableTitle)] = "Update verfügbar",

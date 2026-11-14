@@ -115,19 +115,10 @@ public partial class LocalizationManager
     public string DurationHoursText => Get();
     public string ActivePhaseCaption => Get();
     public string ActiveStageTemperatureTooltip => Get();
-    public string BedtimeSuffixText => Get();
-    public string BedtimeTooltip => Get();
-    public string LaterBedtimeTooltip => Get();
-    public string EarlierBedtimeTooltip => Get();
     public string ManualScheduleText => Get();
     public string LocationNotSetText => Get();
     public string LocationCoordinatesText => Get();
     public string OpenLocationSettingsTooltip => Get();
-    public string ColorPresetTooltip => Get();
-    public string RecommendedPresetName => Get();
-    public string LateNightPresetName => Get();
-    public string DaylightPresetName => Get();
-    public string CustomPresetName => Get();
     public string OffsetTooltipHeader => Get();
     public string TemperatureOffsetLabel => Get();
     public string BrightnessOffsetLabel => Get();
@@ -145,23 +136,13 @@ public partial class LocalizationManager
 
     // ---- Settings dialog ----
 
-    public string ResetButton => Get();
     public string ResetTooltip => Get();
     public string CancelButton => Get();
-    public string SaveButton => Get();
 
     // ---- Settings tabs ----
 
-    public string GeneralTabName => Get();
-    public string LocationTabName => Get();
-    public string AdvancedTabName => Get();
-    public string AppWhitelistTabName => Get();
-    public string HotkeysTabName => Get();
-
     // ---- Advanced settings tab ----
 
-    public string ThemeLabel => Get();
-    public string ThemeTooltip => Get();
     public string LanguageLabel => Get();
     public string LanguageTooltip => Get();
     public string StartWithWindowsLabel => Get();
@@ -179,36 +160,23 @@ public partial class LocalizationManager
 
     // ---- General settings tab ----
 
-    public string DayTemperatureLabel => Get();
     public string DayTemperatureTooltip => Get();
-    public string NightTemperatureLabel => Get();
     public string NightTemperatureTooltip => Get();
-    public string DayBrightnessLabel => Get();
     public string DayBrightnessTooltip => Get();
-    public string NightBrightnessLabel => Get();
     public string NightBrightnessTooltip => Get();
-    public string TransitionDurationLabel => Get();
     public string TransitionDurationTooltip => Get();
-    public string TransitionOffsetLabel => Get();
     public string TransitionOffsetTooltip => Get();
-    public string EveningStageLabel => Get();
     public string EveningStageTooltip => Get();
-    public string EveningTemperatureLabel => Get();
     public string EveningTemperatureTooltip => Get();
-    public string EveningBrightnessLabel => Get();
     public string EveningBrightnessTooltip => Get();
-    public string NightStartTimeLabel => Get();
     public string NightStartTimeTooltip => Get();
 
     // ---- Location settings tab ----
 
-    public string SolarConfigLabel => Get();
     public string ManualLabel => Get();
     public string ManualTooltip => Get();
     public string LocationBasedLabel => Get();
     public string LocationBasedTooltip => Get();
-    public string SunriseTimeLabel => Get();
-    public string SunsetTimeLabel => Get();
     public string YourLocationLabel => Get();
     public string AutoDetectLocationTooltip => Get();
     public string LocationQueryTooltip => Get();
@@ -240,22 +208,8 @@ public partial class LocalizationManager
 
     // ---- Tray icon context menu ----
 
-    public string TrayShowMenuItem => Get();
-    public string TrayHideMenuItem => Get();
     public string TraySettingsMenuItem => Get();
-    public string TrayEnableMenuItem => Get();
-    public string TrayDisableMenuItem => Get();
-    public string TrayDisableTemporarilyMenuItem => Get();
     public string TrayDisableUntilSunriseMenuItem => Get();
-    public string TrayDisableFor1DayMenuItem => Get();
-    public string TrayDisableFor12HoursMenuItem => Get();
-    public string TrayDisableFor6HoursMenuItem => Get();
-    public string TrayDisableFor3HoursMenuItem => Get();
-    public string TrayDisableFor1HourMenuItem => Get();
-    public string TrayDisableFor30MinutesMenuItem => Get();
-    public string TrayDisableFor15MinutesMenuItem => Get();
-    public string TrayDisableFor5MinutesMenuItem => Get();
-    public string TrayDisableFor1MinuteMenuItem => Get();
     public string TrayExitMenuItem => Get();
 
     public string TrayTooltipDisabled => Get();
@@ -275,4 +229,62 @@ public partial class LocalizationManager
     public string WelcomeTitle => Get();
     public string WelcomeMessage => Get();
     public string OkButton => Get();
+
+    // ---- Settings page ----
+
+    public string BackTooltip => Get();
+    public string CycleTabName => Get();
+    public string ScheduleTabName => Get();
+    public string RulesTabName => Get();
+    public string ControlsTabName => Get();
+
+    // Cycle & colors
+    public string DayCardSubtitle => Get();
+    public string EveningCardSubtitle => Get();
+    public string NightCardSubtitle => Get();
+    public string TemperatureLabel => Get();
+    public string BrightnessLabel => Get();
+    public string BedtimeNightStartLabel => Get();
+    public string TransitionsCardTitle => Get();
+    public string DurationLabel => Get();
+    public string TransitionOffsetShortLabel => Get();
+
+    // Schedule & location
+    public string LocationCardTitle => Get();
+    public string LocationCardSubtitle => Get();
+    public string LocationInUseText => Get();
+    public string SolarScheduleCardTitle => Get();
+    public string SolarScheduleCardSubtitle => Get();
+    public string OffLabel => Get();
+
+    // Rules & whitelist
+    public string AutoPauseCardTitle => Get();
+    public string AutoPauseCardSubtitle => Get();
+    public string PauseWhenScreenLockedLabel => Get();
+    public string PauseWhenScreenLockedTooltip => Get();
+    public string WhitelistCardSubtitle => Get();
+
+    // Controls & app
+    public string HotkeysCardTitle => Get();
+    public string HotkeysCardSubtitle => Get();
+    public string SystemPreferencesCardTitle => Get();
+    public string StartMinimizedLabel => Get();
+    public string StartMinimizedTooltip => Get();
+    public string ExtendedGammaRangeLabel => Get();
+    public string ExtendedGammaRangeTooltip => Get();
+    public string GammaPollingIntervalLabel => Get();
+    public string GammaPollingIntervalTooltip => Get();
+    public string SecondsValueText => Get();
+
+    // ---- Tray menu ----
+
+    public string TrayOpenMenuItem => Get();
+    public string TrayPauseMenuItem => Get();
+    public string TrayResumeMenuItem => Get();
+    public string TrayPreviewMenuItem => Get();
+    public string PauseFor15MinutesChip => Get();
+    public string PauseFor1HourChip => Get();
+    public string PauseFor3HoursChip => Get();
+    public string PausedStateLabel => Get();
+    public string AutoPausedStateLabel => Get();
 }

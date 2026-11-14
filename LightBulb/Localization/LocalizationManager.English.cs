@@ -40,20 +40,10 @@ public partial class LocalizationManager
             [nameof(ActivePhaseCaption)] = "Active phase: {0} · {1} K ({2} brightness)",
             [nameof(ActiveStageTemperatureTooltip)] =
                 "Drag to adjust the color temperature of the current stage ({0})",
-            [nameof(BedtimeSuffixText)] = "is my bedtime",
-            [nameof(BedtimeTooltip)] =
-                "When the evening stage ends and the night stage begins. Requires the evening stage to be enabled in settings.",
-            [nameof(LaterBedtimeTooltip)] = "Later (+15 minutes)",
-            [nameof(EarlierBedtimeTooltip)] = "Earlier (−15 minutes)",
             [nameof(ManualScheduleText)] = "Manual schedule",
             [nameof(LocationNotSetText)] = "Location: not set",
             [nameof(LocationCoordinatesText)] = "Location: {0}",
             [nameof(OpenLocationSettingsTooltip)] = "Change location settings",
-            [nameof(ColorPresetTooltip)] = "Color preset",
-            [nameof(RecommendedPresetName)] = "Recommended Colors",
-            [nameof(LateNightPresetName)] = "Late Night",
-            [nameof(DaylightPresetName)] = "Daylight",
-            [nameof(CustomPresetName)] = "Custom",
             [nameof(OffsetTooltipHeader)] =
                 "Current temperature and brightness values are adjusted by an offset:",
             [nameof(TemperatureOffsetLabel)] = "Temperature offset:",
@@ -68,19 +58,10 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "Preview 24-hour cycle",
             [nameof(OpenSettingsTooltip)] = "Open settings",
             // Settings dialog
-            [nameof(ResetButton)] = "RESET",
             [nameof(ResetTooltip)] = "Reset all settings to their defaults",
             [nameof(CancelButton)] = "CANCEL",
-            [nameof(SaveButton)] = "SAVE",
             // Settings tabs
-            [nameof(GeneralTabName)] = "General",
-            [nameof(LocationTabName)] = "Location",
-            [nameof(AdvancedTabName)] = "Advanced",
-            [nameof(AppWhitelistTabName)] = "Application whitelist",
-            [nameof(HotkeysTabName)] = "Hotkeys",
             // Advanced settings tab
-            [nameof(ThemeLabel)] = "Theme",
-            [nameof(ThemeTooltip)] = "Preferred user interface theme",
             [nameof(LanguageLabel)] = "Language",
             [nameof(LanguageTooltip)] = "Preferred user interface language",
             [nameof(StartWithWindowsLabel)] = "Start with Windows",
@@ -101,57 +82,44 @@ public partial class LocalizationManager
             [nameof(GammaPollingTooltip)] =
                 "Force-refresh monitor gamma at regular intervals to prevent other programs from overriding it",
             // General settings tab
-            [nameof(DayTemperatureLabel)] = "Day-time color temperature:",
             [nameof(DayTemperatureTooltip)] = "Color temperature during the day",
-            [nameof(NightTemperatureLabel)] = "Night-time color temperature:",
             [nameof(NightTemperatureTooltip)] = "Color temperature during the night",
-            [nameof(DayBrightnessLabel)] = "Day-time brightness:",
             [nameof(DayBrightnessTooltip)] = """
                 Brightness during the day
 
                 Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
                 If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable LightBulb's brightness control by keeping both brightness settings at 100%.
                 """,
-            [nameof(NightBrightnessLabel)] = "Night-time brightness:",
             [nameof(NightBrightnessTooltip)] = """
                 Brightness during the night
 
                 Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
                 If your computer is already capable of auto-adjusting screen brightness based on lighting conditions (common for laptops), then it's recommended to disable LightBulb's brightness control by keeping both brightness settings at 100%.
                 """,
-            [nameof(TransitionDurationLabel)] = "Transition duration:",
             [nameof(TransitionDurationTooltip)] =
                 "Duration of time it takes to switch between day-time and night-time configurations",
-            [nameof(TransitionOffsetLabel)] = "Transition offset:",
             [nameof(TransitionOffsetTooltip)] =
                 "Offset that specifies how early or late the transition starts, relative to the sunrise and sunset",
-            [nameof(EveningStageLabel)] = "Evening stage",
             [nameof(EveningStageTooltip)] =
                 "Use an intermediate evening configuration from sunset until the night start time, instead of switching straight to the night-time configuration at sunset",
-            [nameof(EveningTemperatureLabel)] = "Evening color temperature:",
             [nameof(EveningTemperatureTooltip)] =
                 "Color temperature between the sunset and the night start time",
-            [nameof(EveningBrightnessLabel)] = "Evening brightness:",
             [nameof(EveningBrightnessTooltip)] = """
                 Brightness between the sunset and the night start time
 
                 Note that this brightness setting applies to the color gamma, not to the actual brightness of the monitor.
                 """,
-            [nameof(NightStartTimeLabel)] = "Night start time:",
             [nameof(NightStartTimeTooltip)] = """
                 Time when the transition from the evening configuration to the night-time configuration begins (adjusted by the transition offset, the same way as the sunset)
 
                 If the night starts before the sunset transition has finished, the evening stage is skipped for that day.
                 """,
             // Location settings tab
-            [nameof(SolarConfigLabel)] = "Solar configuration:",
             [nameof(ManualLabel)] = "Manual",
             [nameof(ManualTooltip)] = "Configure sunrise and sunset manually",
             [nameof(LocationBasedLabel)] = "Location-based",
             [nameof(LocationBasedTooltip)] =
                 "Configure your location and use it to automatically calculate the sunrise and sunset times",
-            [nameof(SunriseTimeLabel)] = "Sunrise:",
-            [nameof(SunsetTimeLabel)] = "Sunset:",
             [nameof(YourLocationLabel)] = "Your location:",
             [nameof(AutoDetectLocationTooltip)] =
                 "Try to detect the location automatically based on your IP address",
@@ -193,22 +161,8 @@ public partial class LocalizationManager
             [nameof(PauseForWhitelistedTooltip)] =
                 "Pause LightBulb when one of the selected applications is in the foreground",
             // Tray icon context menu
-            [nameof(TrayShowMenuItem)] = "Show",
-            [nameof(TrayHideMenuItem)] = "Hide",
             [nameof(TraySettingsMenuItem)] = "Settings",
-            [nameof(TrayEnableMenuItem)] = "Enable",
-            [nameof(TrayDisableMenuItem)] = "Disable",
-            [nameof(TrayDisableTemporarilyMenuItem)] = "Disable...",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Until sunrise",
-            [nameof(TrayDisableFor1DayMenuItem)] = "For 1 day",
-            [nameof(TrayDisableFor12HoursMenuItem)] = "For 12 hours",
-            [nameof(TrayDisableFor6HoursMenuItem)] = "For 6 hours",
-            [nameof(TrayDisableFor3HoursMenuItem)] = "For 3 hours",
-            [nameof(TrayDisableFor1HourMenuItem)] = "For 1 hour",
-            [nameof(TrayDisableFor30MinutesMenuItem)] = "For 30 minutes",
-            [nameof(TrayDisableFor15MinutesMenuItem)] = "For 15 minutes",
-            [nameof(TrayDisableFor5MinutesMenuItem)] = "For 5 minutes",
-            [nameof(TrayDisableFor1MinuteMenuItem)] = "For 1 minute",
             [nameof(TrayExitMenuItem)] = "Exit",
             [nameof(TrayTooltipDisabled)] = "Disabled",
             // Dialog messages
@@ -242,5 +196,64 @@ public partial class LocalizationManager
                 Press OK to open settings.
                 """,
             [nameof(OkButton)] = "OK",
+            // Settings page
+            [nameof(BackTooltip)] = "Back to the dashboard (changes are saved)",
+            [nameof(CycleTabName)] = "Cycle & Colors",
+            [nameof(ScheduleTabName)] = "Schedule & Location",
+            [nameof(RulesTabName)] = "Rules & Whitelist",
+            [nameof(ControlsTabName)] = "Controls & App",
+            // Cycle & colors
+            [nameof(DayCardSubtitle)] = "Sunrise to sunset",
+            [nameof(EveningCardSubtitle)] = "Sunset to bedtime",
+            [nameof(NightCardSubtitle)] = "Bedtime to sunrise",
+            [nameof(TemperatureLabel)] = "Temperature",
+            [nameof(BrightnessLabel)] = "Brightness",
+            [nameof(BedtimeNightStartLabel)] = "Bedtime (night start)",
+            [nameof(TransitionsCardTitle)] = "Transitions",
+            [nameof(DurationLabel)] = "Duration",
+            [nameof(TransitionOffsetShortLabel)] = "Offset",
+            // Schedule & location
+            [nameof(LocationCardTitle)] = "Location & Coordinates",
+            [nameof(LocationCardSubtitle)] =
+                "Used to calculate sunrise and sunset. Search for a place, enter coordinates, or detect it automatically.",
+            [nameof(LocationInUseText)] = "Using {0}, {1}",
+            [nameof(SolarScheduleCardTitle)] = "Solar Schedule",
+            [nameof(SolarScheduleCardSubtitle)] =
+                "Calculate sunrise and sunset from your location, or set them manually.",
+            [nameof(OffLabel)] = "Off",
+            // Rules & whitelist
+            [nameof(AutoPauseCardTitle)] = "Smart Auto-Pause",
+            [nameof(AutoPauseCardSubtitle)] =
+                "Temporarily restore normal colors in these situations.",
+            [nameof(PauseWhenScreenLockedLabel)] = "Pause when the screen is locked",
+            [nameof(PauseWhenScreenLockedTooltip)] =
+                "Pause LightBulb while the workstation is locked",
+            [nameof(WhitelistCardSubtitle)] =
+                "Pause LightBulb while any of the selected programs is in the foreground.",
+            // Controls & app
+            [nameof(HotkeysCardTitle)] = "Global Hotkeys",
+            [nameof(HotkeysCardSubtitle)] =
+                "Click a field and press a key combination to assign it.",
+            [nameof(SystemPreferencesCardTitle)] = "System Preferences",
+            [nameof(StartMinimizedLabel)] = "Start minimized",
+            [nameof(StartMinimizedTooltip)] =
+                "Hide LightBulb to the system tray when it starts, even when launched manually",
+            [nameof(ExtendedGammaRangeLabel)] = "Extended gamma range",
+            [nameof(ExtendedGammaRangeTooltip)] =
+                "Unlock the full gamma range in Windows, which allows warmer color temperatures and lower brightness. Changing this requires administrator privileges.",
+            [nameof(GammaPollingIntervalLabel)] = "Refresh every",
+            [nameof(GammaPollingIntervalTooltip)] =
+                "How often gamma is force-refreshed when gamma polling is enabled",
+            [nameof(SecondsValueText)] = "{0} s",
+            // Tray menu
+            [nameof(TrayOpenMenuItem)] = "Open LightBulb",
+            [nameof(TrayPauseMenuItem)] = "Pause",
+            [nameof(TrayResumeMenuItem)] = "Resume",
+            [nameof(TrayPreviewMenuItem)] = "Preview 24h cycle",
+            [nameof(PauseFor15MinutesChip)] = "15 min",
+            [nameof(PauseFor1HourChip)] = "1 hr",
+            [nameof(PauseFor3HoursChip)] = "3 hrs",
+            [nameof(PausedStateLabel)] = "Paused",
+            [nameof(AutoPausedStateLabel)] = "Auto-paused",
         };
 }

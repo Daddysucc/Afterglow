@@ -21,17 +21,8 @@ public partial class LocalizationManager
             [nameof(StopPreviewTooltip)] = "Detener vista previa",
             [nameof(StartPreviewTooltip)] = "Vista previa del ciclo de 24 horas",
             [nameof(OpenSettingsTooltip)] = "Abrir ajustes",
-            [nameof(ResetButton)] = "RESTABLECER",
             [nameof(ResetTooltip)] = "Restablecer todos los ajustes a sus valores predeterminados",
             [nameof(CancelButton)] = "CANCELAR",
-            [nameof(SaveButton)] = "GUARDAR",
-            [nameof(GeneralTabName)] = "General",
-            [nameof(LocationTabName)] = "Ubicación",
-            [nameof(AdvancedTabName)] = "Avanzado",
-            [nameof(AppWhitelistTabName)] = "Lista blanca",
-            [nameof(HotkeysTabName)] = "Atajos de teclado",
-            [nameof(ThemeLabel)] = "Tema",
-            [nameof(ThemeTooltip)] = "Tema de interfaz preferido",
             [nameof(LanguageLabel)] = "Idioma",
             [nameof(LanguageTooltip)] = "Idioma de interfaz preferido",
             [nameof(StartWithWindowsLabel)] = "Iniciar con Windows",
@@ -51,38 +42,29 @@ public partial class LocalizationManager
             [nameof(GammaPollingLabel)] = "Sondeo de gamma",
             [nameof(GammaPollingTooltip)] =
                 "Actualizar forzosamente el gamma del monitor a intervalos regulares para evitar que otros programas lo sobreescriban",
-            [nameof(DayTemperatureLabel)] = "Temperatura de color diurna:",
             [nameof(DayTemperatureTooltip)] = "Temperatura de color durante el día",
-            [nameof(NightTemperatureLabel)] = "Temperatura de color nocturna:",
             [nameof(NightTemperatureTooltip)] = "Temperatura de color durante la noche",
-            [nameof(DayBrightnessLabel)] = "Brillo diurno:",
             [nameof(DayBrightnessTooltip)] = """
                 Brillo durante el día
 
                 Este ajuste de brillo se aplica al gamma de colores, no al brillo real del monitor.
                 Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de LightBulb manteniendo ambos ajustes de brillo al 100%.
                 """,
-            [nameof(NightBrightnessLabel)] = "Brillo nocturno:",
             [nameof(NightBrightnessTooltip)] = """
                 Brillo durante la noche
 
                 Este ajuste de brillo se aplica al gamma de colores, no al brillo real del monitor.
                 Si su ordenador ya puede ajustar automáticamente el brillo de la pantalla según las condiciones de iluminación (común en portátiles), se recomienda deshabilitar el control de brillo de LightBulb manteniendo ambos ajustes de brillo al 100%.
                 """,
-            [nameof(TransitionDurationLabel)] = "Duración de transición:",
             [nameof(TransitionDurationTooltip)] =
                 "Duración del tiempo que tarda en cambiar entre las configuraciones diurna y nocturna",
-            [nameof(TransitionOffsetLabel)] = "Desplazamiento de transición:",
             [nameof(TransitionOffsetTooltip)] =
                 "Desplazamiento que especifica cuán temprano o tarde comienza la transición, relativo al amanecer y al atardecer",
-            [nameof(SolarConfigLabel)] = "Configuración solar:",
             [nameof(ManualLabel)] = "Manual",
             [nameof(ManualTooltip)] = "Configurar el amanecer y el atardecer manualmente",
             [nameof(LocationBasedLabel)] = "Basado en ubicación",
             [nameof(LocationBasedTooltip)] =
                 "Configurar tu ubicación para calcular automáticamente las horas de amanecer y atardecer",
-            [nameof(SunriseTimeLabel)] = "Amanecer:",
-            [nameof(SunsetTimeLabel)] = "Atardecer:",
             [nameof(YourLocationLabel)] = "Tu ubicación:",
             [nameof(AutoDetectLocationTooltip)] =
                 "Intentar detectar la ubicación automáticamente según tu dirección IP",
@@ -122,22 +104,8 @@ public partial class LocalizationManager
             [nameof(RefreshAppsTooltip)] = "Actualizar aplicaciones en ejecución",
             [nameof(PauseForWhitelistedTooltip)] =
                 "Pausar LightBulb cuando una de las aplicaciones seleccionadas esté en primer plano",
-            [nameof(TrayShowMenuItem)] = "Mostrar",
-            [nameof(TrayHideMenuItem)] = "Ocultar",
             [nameof(TraySettingsMenuItem)] = "Ajustes",
-            [nameof(TrayEnableMenuItem)] = "Activar",
-            [nameof(TrayDisableMenuItem)] = "Desactivar",
-            [nameof(TrayDisableTemporarilyMenuItem)] = "Desactivar...",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Hasta el amanecer",
-            [nameof(TrayDisableFor1DayMenuItem)] = "Durante 1 día",
-            [nameof(TrayDisableFor12HoursMenuItem)] = "Durante 12 horas",
-            [nameof(TrayDisableFor6HoursMenuItem)] = "Durante 6 horas",
-            [nameof(TrayDisableFor3HoursMenuItem)] = "Durante 3 horas",
-            [nameof(TrayDisableFor1HourMenuItem)] = "Durante 1 hora",
-            [nameof(TrayDisableFor30MinutesMenuItem)] = "Durante 30 minutos",
-            [nameof(TrayDisableFor15MinutesMenuItem)] = "Durante 15 minutos",
-            [nameof(TrayDisableFor5MinutesMenuItem)] = "Durante 5 minutos",
-            [nameof(TrayDisableFor1MinuteMenuItem)] = "Durante 1 minuto",
             [nameof(TrayExitMenuItem)] = "Salir",
             [nameof(TrayTooltipDisabled)] = "Desactivado",
             [nameof(UpdateAvailableTitle)] = "Actualización disponible",

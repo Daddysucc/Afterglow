@@ -95,7 +95,7 @@ public partial class GammaService : IDisposable
         // If polling is enabled, assume gamma is stale after some time has passed since the last update
         if (
             _settingsService.IsGammaPollingEnabled
-            && (instant - _lastUpdateTimestamp).Duration() > TimeSpan.FromSeconds(1)
+            && (instant - _lastUpdateTimestamp).Duration() > _settingsService.GammaPollingInterval
         )
         {
             return true;
