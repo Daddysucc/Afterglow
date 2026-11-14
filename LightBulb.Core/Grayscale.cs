@@ -1,3 +1,5 @@
+using System;
+
 namespace LightBulb.Core;
 
 /// <summary>
@@ -13,6 +15,9 @@ public enum GrayscaleSchedule
 
     /// <summary>During the evening and night stages.</summary>
     EveningAndNight,
+
+    /// <summary>Always (during every stage).</summary>
+    On,
 }
 
 /// <summary>
@@ -30,6 +35,19 @@ public class GrayscaleController
 
     private bool? _lastScheduledState;
 
+    /// <summary>
+    /// Whether the schedule turns grayscale on and off by itself as the day goes on. Grayscale can
+    /// then be disabled until the next schedule change; otherwise only for a while.
+    /// </summary>
+    public static bool HasScheduleChanges(GrayscaleSchedule schedule) =>
+        schedule is GrayscaleSchedule.NightOnly or GrayscaleSchedule.EveningAndNight;
+
+    /// <summary>
+    /// Whether grayscale is temporarily disabled for a while (until the given time).
+    /// </summary>
+    public static bool IsSnoozed(DateTimeOffset? snoozedUntil, DateTimeOffset instant) =>
+        snoozedUntil is { } until && instant < until;
+
     public static bool IsScheduled(GrayscaleSchedule schedule, CyclePhase phase) =>
         schedule switch
         {
@@ -37,6 +55,7 @@ public class GrayscaleController
             GrayscaleSchedule.EveningAndNight => phase.Stage
                 is CycleStage.Evening
                     or CycleStage.Night,
+            GrayscaleSchedule.On => true,
             _ => false,
         };
 

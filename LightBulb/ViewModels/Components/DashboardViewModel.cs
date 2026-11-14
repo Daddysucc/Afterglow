@@ -54,6 +54,7 @@ public partial class DashboardViewModel : ViewModelBase
 
     private readonly GrayscaleController _grayscaleController = new();
     private bool _isGrayscaleWanted;
+    private DateTimeOffset? _grayscaleSnoozedUntil;
 
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
@@ -97,6 +98,11 @@ public partial class DashboardViewModel : ViewModelBase
                     // Grayscale is suspended while paused manually, and restored when resumed
                     UpdateGrayscale();
                 }
+            ),
+            // A new grayscale schedule replaces any temporary disable
+            settingsService.WatchProperty(
+                o => o.GrayscaleSchedule,
+                _ => _grayscaleSnoozedUntil = null
             ),
             // Apply grayscale settings right away, rather than on the next update
             settingsService.WatchProperties(
@@ -482,7 +488,9 @@ public partial class DashboardViewModel : ViewModelBase
                 _settingsService.NightConfiguration,
                 IsGrayscaleActive,
                 _settingsService.IsGrayscaleTemperatureShiftEnabled,
-                _settingsService.IsDefaultToDayConfigurationEnabled
+                _settingsService.IsDefaultToDayConfigurationEnabled,
+                _grayscaleSnoozedUntil - DateTimeOffset.Now,
+                IsGrayscaleHeldUntilScheduleChange
             ),
             LocalizationManager
         );
@@ -938,15 +946,70 @@ public partial class DashboardViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsGrayscaleEnabled));
         }
 
+        // A temporary disable ends by itself once its time is up
+        if (!GrayscaleController.IsSnoozed(_grayscaleSnoozedUntil, DateTimeOffset.Now))
+            _grayscaleSnoozedUntil = null;
+
+        // Disabled until the next schedule change, which is a manual override that the
+        // schedule clears by itself
+        IsGrayscaleHeldUntilScheduleChange = isScheduled && manualOverride == false;
+        IsGrayscaleSnoozed =
+            _grayscaleSnoozedUntil is not null || IsGrayscaleHeldUntilScheduleChange;
+        HasGrayscaleScheduleChanges = GrayscaleController.HasScheduleChanges(
+            _settingsService.GrayscaleSchedule
+        );
+
         // Suspended while paused, and while a display is paused on its own for a fullscreen
         // application (grayscale can't be limited to the other displays)
         IsGrayscaleActive = GrayscaleController.IsApplied(
-            isWanted,
+            isWanted && _grayscaleSnoozedUntil is null,
             IsActive,
             !IsCyclePreviewEnabled && PausedMonitor is not null
         );
 
         _grayscaleService.SetEnabled(IsGrayscaleActive);
+    }
+
+    // Grayscale is temporarily disabled (for a while, or until the next schedule change)
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    public partial bool IsGrayscaleSnoozed { get; private set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StatusSentence))]
+    public partial bool IsGrayscaleHeldUntilScheduleChange { get; private set; }
+
+    // Whether grayscale can be disabled until the next schedule change, rather than for a while
+    [ObservableProperty]
+    public partial bool HasGrayscaleScheduleChanges { get; private set; }
+
+    [RelayCommand]
+    private void SnoozeGrayscale(TimeSpan duration)
+    {
+        _grayscaleSnoozedUntil = DateTimeOffset.Now + duration;
+        UpdateGrayscale();
+    }
+
+    // Same as turning grayscale off: a manual choice already lasts until the next schedule change
+    [RelayCommand]
+    private void SnoozeGrayscaleUntilScheduleChange()
+    {
+        if (IsGrayscaleEnabled)
+            ToggleGrayscale();
+    }
+
+    [RelayCommand]
+    private void ResumeGrayscale()
+    {
+        _grayscaleSnoozedUntil = null;
+
+        if (IsGrayscaleHeldUntilScheduleChange)
+        {
+            _settingsService.GrayscaleOverride = null;
+            QueueSave();
+        }
+
+        UpdateGrayscale();
     }
 
     [RelayCommand]
@@ -965,6 +1028,9 @@ public partial class DashboardViewModel : ViewModelBase
             isScheduled,
             manualOverride
         );
+
+        // Toggling replaces any temporary disable
+        _grayscaleSnoozedUntil = null;
 
         QueueSave();
         UpdateGrayscale();

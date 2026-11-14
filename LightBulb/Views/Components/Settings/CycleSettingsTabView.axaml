@@ -413,6 +413,7 @@
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleOffOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleNightOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleEveningAndNightOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleOnOption}" />
                     </ComboBox>
                 </Grid>
 

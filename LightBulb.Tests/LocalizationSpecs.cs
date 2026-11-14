@@ -102,6 +102,7 @@ public class LocalizationSpecs : IDisposable
         nameof(LocalizationManager.StatusPausedAutomaticallyDayText),
         nameof(LocalizationManager.StatusGrayscaleText),
         nameof(LocalizationManager.StatusGrayscaleNeutralText),
+        nameof(LocalizationManager.StatusGrayscaleHeldText),
         nameof(LocalizationManager.StatusPreviewText),
     ];
 
@@ -169,6 +170,38 @@ public class LocalizationSpecs : IDisposable
                 s.Should().NotContainAny("·", "—", "–");
                 s.Trim().Should().Be(s);
             });
+    }
+
+    [Theory]
+    [MemberData(nameof(AllLanguages))]
+    public void I_can_read_how_long_grayscale_stays_disabled_in_full_in_the_dashboard_header(
+        Language language
+    )
+    {
+        // Arrange
+        var localization = LocalizationManager.GetLocalization(language);
+        string Get(string key) => LocalizationManager.Resolve(localization, key);
+
+        // The longest durations a snooze can show
+        var durations = new[]
+        {
+            string.Format(Get(nameof(LocalizationManager.DurationMinutesText)), 59),
+            Get(nameof(LocalizationManager.DurationHourText)),
+        };
+
+        // Act
+        var sentences = durations
+            .Select(d =>
+                string.Format(Get(nameof(LocalizationManager.StatusGrayscaleSnoozedText)), d)
+            )
+            .ToArray();
+
+        // Assert
+        var maxLength =
+            language == Language.English ? MaxEnglishStatusSentenceLength : MaxStatusSentenceLength;
+
+        sentences.Should().AllSatisfy(s => s.Length.Should().BeLessThanOrEqualTo(maxLength, s));
+        sentences.Should().AllSatisfy(s => s.Should().NotContainAny("·", "—", "–"));
     }
 
     [Fact]

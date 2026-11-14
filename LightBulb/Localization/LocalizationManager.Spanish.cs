@@ -174,6 +174,9 @@ public partial class LocalizationManager
             [nameof(StatusGrayscaleText)] = "Escala de grises activa a {0} K y {1} % de brillo.",
             [nameof(StatusGrayscaleNeutralText)] =
                 "Escala de grises activa con punto blanco neutro.",
+            [nameof(StatusGrayscaleSnoozedText)] = "Escala de grises desactivada durante {0}.",
+            [nameof(StatusGrayscaleHeldText)] =
+                "Escala de grises desactivada hasta el próximo cambio de horario.",
             [nameof(StatusPreviewText)] = "Vista previa de las próximas 24 horas…",
             [nameof(PausedRemoteStreamingLabel)] = "En pausa (transmisión remota)",
             [nameof(PausedScreenLockedLabel)] = "En pausa (pantalla bloqueada)",
@@ -328,5 +331,10 @@ public partial class LocalizationManager
                 "Aplicar la temperatura de color en escala de grises",
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Seguir aplicando la temperatura de color sobre la escala de grises, para un aspecto monocromo ámbar y cálido. Si está desactivado, la escala de grises usa un punto blanco neutro y el brillo se sigue aplicando.",
+            [nameof(GrayscaleScheduleOnOption)] = "Activada",
+            [nameof(TrayDisableGrayscaleMenuItem)] = "Desactivar temporalmente la escala de grises",
+            [nameof(PauseFor30MinutesChip)] = "30 min",
+            [nameof(GrayscaleUntilScheduleChangeChip)] = "Hasta el próximo cambio de horario",
+            [nameof(TrayResumeGrayscaleMenuItem)] = "Reanudar escala de grises",
         };
 }

@@ -554,6 +554,10 @@ public partial class SettingsService : SettingsBase
         if (!Enum.IsDefined(GrayscaleSchedule))
             GrayscaleSchedule = GrayscaleSchedule.Off;
 
+        // With grayscale always on, turning it off manually only lasts for the session
+        if (GrayscaleSchedule == GrayscaleSchedule.On)
+            GrayscaleOverride = null;
+
         // Drop entries without a device path (which can't be matched to any display) and
         // duplicates (keeping the last one), and keep offsets within the supported range
         if (MonitorProfiles is not null)

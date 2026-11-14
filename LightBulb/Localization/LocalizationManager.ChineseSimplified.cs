@@ -165,6 +165,8 @@ public partial class LocalizationManager
             [nameof(StatusPausedAutomaticallyDayText)] = "已自动暂停，已恢复白天配置。",
             [nameof(StatusGrayscaleText)] = "灰度模式已启用，色温 {0} K，亮度 {1}%。",
             [nameof(StatusGrayscaleNeutralText)] = "灰度模式已启用，使用中性白点。",
+            [nameof(StatusGrayscaleSnoozedText)] = "灰度已暂时停用，剩余 {0}。",
+            [nameof(StatusGrayscaleHeldText)] = "灰度已停用，直到下次时间表变化。",
             [nameof(StatusPreviewText)] = "正在预览接下来的 24 小时…",
             [nameof(PausedRemoteStreamingLabel)] = "已暂停（远程串流）",
             [nameof(PausedScreenLockedLabel)] = "已暂停（屏幕已锁定）",
@@ -302,5 +304,10 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftLabel)] = "灰度模式下应用色温",
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "在灰度之上继续应用色温，呈现温暖的琥珀色单色效果。关闭后，灰度模式使用中性白点，亮度设置仍然生效。",
+            [nameof(GrayscaleScheduleOnOption)] = "开启",
+            [nameof(TrayDisableGrayscaleMenuItem)] = "暂时停用灰度",
+            [nameof(PauseFor30MinutesChip)] = "30 分钟",
+            [nameof(GrayscaleUntilScheduleChangeChip)] = "直到下次时间表变化",
+            [nameof(TrayResumeGrayscaleMenuItem)] = "恢复灰度",
         };
 }

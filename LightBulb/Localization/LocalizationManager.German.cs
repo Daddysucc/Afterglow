@@ -168,6 +168,8 @@ public partial class LocalizationManager
             "Automatisch pausiert, Tageskonfiguration wiederhergestellt.",
         [nameof(StatusGrayscaleText)] = "Graustufen aktiv mit {0} K und {1} % Helligkeit.",
         [nameof(StatusGrayscaleNeutralText)] = "Graustufen aktiv mit neutralem Weißpunkt.",
+        [nameof(StatusGrayscaleSnoozedText)] = "Graustufen vorübergehend deaktiviert für {0}.",
+        [nameof(StatusGrayscaleHeldText)] = "Graustufen deaktiviert bis zur nächsten Planänderung.",
         [nameof(StatusPreviewText)] = "Vorschau der nächsten 24 Stunden…",
         [nameof(PausedRemoteStreamingLabel)] = "Pausiert (Remote-Streaming)",
         [nameof(PausedScreenLockedLabel)] = "Pausiert (Bildschirm gesperrt)",
@@ -320,5 +322,10 @@ public partial class LocalizationManager
         [nameof(GrayscaleTemperatureShiftLabel)] = "Farbtemperatur im Graustufenmodus anwenden",
         [nameof(GrayscaleTemperatureShiftTooltip)] =
             "Die Farbtemperatur weiterhin über den Graustufen anwenden, für einen warmen, bernsteinfarbenen Monochrom-Look. Wenn aus, verwenden die Graustufen einen neutralen Weißpunkt, und die Helligkeit gilt weiterhin.",
+        [nameof(GrayscaleScheduleOnOption)] = "Ein",
+        [nameof(TrayDisableGrayscaleMenuItem)] = "Graustufen vorübergehend deaktivieren",
+        [nameof(PauseFor30MinutesChip)] = "30 Min.",
+        [nameof(GrayscaleUntilScheduleChangeChip)] = "Bis zur nächsten Planänderung",
+        [nameof(TrayResumeGrayscaleMenuItem)] = "Graustufen fortsetzen",
     };
 }
