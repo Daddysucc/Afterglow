@@ -24,13 +24,10 @@ public partial class LocalizationManager
         [nameof(StartPreviewTooltip)] = "24-Stunden-Zyklus vorschauen",
         [nameof(OpenSettingsTooltip)] = "Einstellungen öffnen",
         [nameof(ResetTooltip)] = "Alle Einstellungen auf die Standardwerte zurücksetzen",
-        [nameof(CancelButton)] = "ABBRECHEN",
         [nameof(LanguageLabel)] = "Sprache",
         [nameof(LanguageTooltip)] = "Bevorzugte Sprache der Benutzeroberfläche",
         [nameof(StartWithWindowsLabel)] = "Mit Windows starten",
         [nameof(StartWithWindowsTooltip)] = "LightBulb beim Windows-Start automatisch starten",
-        [nameof(AutoUpdateLabel)] = "Automatische Updates",
-        [nameof(AutoUpdateTooltip)] = "LightBulb automatisch auf die neueste Version aktualisieren",
         [nameof(DefaultToDayConfigLabel)] = "Zur Tageskonfiguration zurückkehren",
         [nameof(DefaultToDayConfigTooltip)] =
             "Wenn LightBulb deaktiviert oder pausiert ist, die konfigurierte Tagestemperatur und -helligkeit anstelle des Standard-Monitor-Gammas wiederherstellen",
@@ -109,12 +106,6 @@ public partial class LocalizationManager
         [nameof(TrayDisableUntilSunriseMenuItem)] = "Bis Sonnenaufgang",
         [nameof(TrayExitMenuItem)] = "Beenden",
         [nameof(TrayTooltipDisabled)] = "Deaktiviert",
-        [nameof(UpdateAvailableTitle)] = "Update verfügbar",
-        [nameof(UpdateAvailableMessage)] = """
-            Update auf {0} v{1} wurde heruntergeladen.
-            Möchten Sie es jetzt installieren?
-            """,
-        [nameof(InstallButton)] = "INSTALLIEREN",
         [nameof(CloseButton)] = "SCHLIESSEN",
         [nameof(UnstableBuildTitle)] = "Warnung: Instabiler Build",
         [nameof(UnstableBuildMessage)] = """

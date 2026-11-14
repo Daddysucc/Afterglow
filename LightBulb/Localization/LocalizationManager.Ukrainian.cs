@@ -22,13 +22,10 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
             [nameof(OpenSettingsTooltip)] = "Відкрити налаштування",
             [nameof(ResetTooltip)] = "Скинути всі налаштування до типових",
-            [nameof(CancelButton)] = "СКАСУВАТИ",
             [nameof(LanguageLabel)] = "Мова",
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",
             [nameof(StartWithWindowsTooltip)] = "Запускати LightBulb при старті Windows",
-            [nameof(AutoUpdateLabel)] = "Авто-оновлення",
-            [nameof(AutoUpdateTooltip)] = "Автоматично оновлювати LightBulb до останньої версії",
             [nameof(DefaultToDayConfigLabel)] = "Повертатись до денної конфігурації",
             [nameof(DefaultToDayConfigTooltip)] =
                 "Коли LightBulb вимкнено або призупинено, відновлювати налаштовану денну температуру та яскравість замість гами монітора за замовчуванням",
@@ -107,12 +104,6 @@ public partial class LocalizationManager
             [nameof(TrayDisableUntilSunriseMenuItem)] = "До сходу сонця",
             [nameof(TrayExitMenuItem)] = "Вийти",
             [nameof(TrayTooltipDisabled)] = "Вимкнено",
-            [nameof(UpdateAvailableTitle)] = "Доступне оновлення",
-            [nameof(UpdateAvailableMessage)] = """
-                Оновлення до {0} v{1} завантажено.
-                Встановити зараз?
-                """,
-            [nameof(InstallButton)] = "ВСТАНОВИТИ",
             [nameof(CloseButton)] = "ЗАКРИТИ",
             [nameof(UnstableBuildTitle)] = "Попередження про нестабільну збірку",
             [nameof(UnstableBuildMessage)] = """

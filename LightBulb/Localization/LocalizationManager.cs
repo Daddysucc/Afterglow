@@ -95,15 +95,14 @@ public partial class LocalizationManager
     public string SunriseTransitionPhaseLabel => Get();
     public string SunsetTransitionPhaseLabel => Get();
     public string NightTransitionPhaseLabel => Get();
-    public string StatusDayText => Get();
-    public string StatusSunriseText => Get();
-    public string StatusSunsetToEveningText => Get();
-    public string StatusEveningText => Get();
-    public string StatusBedtimeText => Get();
-    public string StatusLateNightText => Get();
-    public string StatusSunsetToNightText => Get();
-    public string StatusNightText => Get();
+    public string StatusDayPhrases => Get();
+    public string StatusEveningPhrases => Get();
+    public string StatusNightPhrases => Get();
+    public string StatusTransitionToDayText => Get();
+    public string StatusTransitionToEveningText => Get();
+    public string StatusTransitionToNightText => Get();
     public string StatusDisabledText => Get();
+    public string StatusDisabledDayConfigText => Get();
     public string StatusPausedText => Get();
     public string StatusPreviewText => Get();
     public string SolarEventPastText => Get();
@@ -137,7 +136,6 @@ public partial class LocalizationManager
     // ---- Settings dialog ----
 
     public string ResetTooltip => Get();
-    public string CancelButton => Get();
 
     // ---- Settings tabs ----
 
@@ -147,8 +145,6 @@ public partial class LocalizationManager
     public string LanguageTooltip => Get();
     public string StartWithWindowsLabel => Get();
     public string StartWithWindowsTooltip => Get();
-    public string AutoUpdateLabel => Get();
-    public string AutoUpdateTooltip => Get();
     public string DefaultToDayConfigLabel => Get();
     public string DefaultToDayConfigTooltip => Get();
     public string PauseWhenFullscreenLabel => Get();
@@ -216,9 +212,6 @@ public partial class LocalizationManager
 
     // ---- Dialog messages ----
 
-    public string UpdateAvailableTitle => Get();
-    public string UpdateAvailableMessage => Get();
-    public string InstallButton => Get();
     public string CloseButton => Get();
     public string UnstableBuildTitle => Get();
     public string UnstableBuildMessage => Get();

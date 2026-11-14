@@ -104,9 +104,6 @@ public partial class SettingsService()
     public partial bool IsStartMinimizedEnabled { get; set; }
 
     [ObservableProperty]
-    public partial bool IsAutoUpdateEnabled { get; set; } = true;
-
-    [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 
     [ObservableProperty]

@@ -17,18 +17,42 @@ public partial class LocalizationManager
             [nameof(SunriseTransitionPhaseLabel)] = "Sunrise transition",
             [nameof(SunsetTransitionPhaseLabel)] = "Sunset transition",
             [nameof(NightTransitionPhaseLabel)] = "Bedtime transition",
-            [nameof(StatusDayText)] = "The sun is up. Daytime profile is active.",
-            [nameof(StatusSunriseText)] = "The sun is rising. Easing back into daytime colors.",
-            [nameof(StatusSunsetToEveningText)] = "The sun is setting. Easing into evening warmth.",
-            [nameof(StatusEveningText)] = "Sunset has passed. Evening warmth is active.",
-            [nameof(StatusBedtimeText)] = "It's almost bedtime. Easing into bedtime warmth.",
-            [nameof(StatusLateNightText)] = "Late night. Bedtime warmth is active.",
-            [nameof(StatusSunsetToNightText)] =
-                "The sun is setting. Easing into night-time warmth.",
-            [nameof(StatusNightText)] = "The sun is down. Night-time warmth is active.",
-            [nameof(StatusDisabledText)] = "LightBulb is off. Your screen shows its normal colors.",
+            // Status phrases: one per line, a random one is shown for each stage
+            [nameof(StatusDayPhrases)] = """
+                Daytime hours. Colors are balanced for work and accurate contrast.
+                Full daylight spectrum is active for sharp text and clear visuals.
+                Neutral white balance is running to match bright daytime rooms.
+                Standard daytime calibration is active for editing and browsing.
+                Screen colors are set to clean, unshifted daylight.
+                Afternoon focus mode. Display is tuned for maximum clarity.
+                Daylight profile is running with full brightness and natural whites.
+                """,
+            [nameof(StatusEveningPhrases)] = """
+                Sunset has passed. Easing screen glare down for the evening.
+                Evening hours. Harsh blue light is dialed back while you unwind.
+                Dusk has settled. Display is shifted to a comfortable evening warmth.
+                After work hours. Screen tone is softened for relaxing and browsing.
+                Evening warmth is active to take the sharp edge off bright whites.
+                Transitioned past sunset. Colors are warmer for easy evening viewing.
+                Twilight schedule is active. Balanced warmth without heavy tinting.
+                """,
+            [nameof(StatusNightPhrases)] = """
+                Late night hours. Deep warmth is active for dark rooms.
+                Bedtime schedule is running. Blue light is cut to a minimum.
+                Screen is tuned to a dim, heavy amber for late night reading.
+                Quiet hours. Display glare is kept low until morning.
+                Midnight mode is active to protect your eyes in a dark room.
+                Late hours. Warmest color profile is running before sleep.
+                Night schedule is active. Harsh whites are replaced with soft amber.
+                """,
+            [nameof(StatusTransitionToDayText)] = "Transitioning to daytime color...",
+            [nameof(StatusTransitionToEveningText)] = "Transitioning to evening warmth...",
+            [nameof(StatusTransitionToNightText)] = "Transitioning to night warmth...",
+            [nameof(StatusDisabledText)] = "LightBulb is paused. Display is at neutral daylight.",
+            [nameof(StatusDisabledDayConfigText)] =
+                "LightBulb is paused. Display is at your daytime colors.",
             [nameof(StatusPausedText)] =
-                "Paused while a fullscreen or whitelisted application is in focus.",
+                "Paused automatically for a fullscreen or whitelisted app.",
             [nameof(StatusPreviewText)] = "Previewing the next 24 hours…",
             [nameof(SolarEventPastText)] = "{0}: {1} ago",
             [nameof(SolarEventFutureText)] = "{0}: in {1}",
@@ -59,16 +83,12 @@ public partial class LocalizationManager
             [nameof(OpenSettingsTooltip)] = "Open settings",
             // Settings dialog
             [nameof(ResetTooltip)] = "Reset all settings to their defaults",
-            [nameof(CancelButton)] = "CANCEL",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "Language",
             [nameof(LanguageTooltip)] = "Preferred user interface language",
             [nameof(StartWithWindowsLabel)] = "Start with Windows",
             [nameof(StartWithWindowsTooltip)] = "Launch LightBulb at Windows startup",
-            [nameof(AutoUpdateLabel)] = "Auto-update",
-            [nameof(AutoUpdateTooltip)] =
-                "Keep LightBulb updated by automatically installing new versions as they become available",
             [nameof(DefaultToDayConfigLabel)] = "Default to day-time configuration",
             [nameof(DefaultToDayConfigTooltip)] =
                 "When LightBulb is disabled or paused, restore the configured day-time temperature and brightness instead of the default monitor gamma",
@@ -166,12 +186,6 @@ public partial class LocalizationManager
             [nameof(TrayExitMenuItem)] = "Exit",
             [nameof(TrayTooltipDisabled)] = "Disabled",
             // Dialog messages
-            [nameof(UpdateAvailableTitle)] = "Update available",
-            [nameof(UpdateAvailableMessage)] = """
-                Update to {0} v{1} has been downloaded.
-                Do you want to install it now?
-                """,
-            [nameof(InstallButton)] = "INSTALL",
             [nameof(CloseButton)] = "CLOSE",
             [nameof(UnstableBuildTitle)] = "Unstable build warning",
             [nameof(UnstableBuildMessage)] = """
