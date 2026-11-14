@@ -36,14 +36,6 @@ public class ControlsSettingsTabViewModel(
         set => SettingsService.IsStartMinimizedEnabled = value;
     }
 
-    public bool IsAutoUpdateAllowed { get; } = StartOptions.Current.IsAutoUpdateAllowed;
-
-    public bool IsAutoUpdateEnabled
-    {
-        get => SettingsService.IsAutoUpdateEnabled;
-        set => SettingsService.IsAutoUpdateEnabled = value;
-    }
-
     public bool IsConfigurationSmoothingEnabled
     {
         get => SettingsService.IsConfigurationSmoothingEnabled;

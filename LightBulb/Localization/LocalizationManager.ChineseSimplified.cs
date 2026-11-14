@@ -26,7 +26,6 @@ public partial class LocalizationManager
 
             // Settings dialog (设置对话框)
             [nameof(ResetTooltip)] = "将所有设置恢复为默认值",
-            [nameof(CancelButton)] = "取消",
 
             // Settings tabs (设置选项卡)
 
@@ -35,8 +34,6 @@ public partial class LocalizationManager
             [nameof(LanguageTooltip)] = "首选用户界面语言",
             [nameof(StartWithWindowsLabel)] = "随 Windows 启动",
             [nameof(StartWithWindowsTooltip)] = "在 Windows 启动时运行 LightBulb",
-            [nameof(AutoUpdateLabel)] = "自动更新",
-            [nameof(AutoUpdateTooltip)] = "自动将 LightBulb 更新至最新版本",
             [nameof(DefaultToDayConfigLabel)] = "默认为日间配置",
             [nameof(DefaultToDayConfigTooltip)] =
                 "当 LightBulb 被禁用或暂停时，恢复配置的日间色温和亮度，而不是默认的显示器伽马值",
@@ -112,12 +109,6 @@ public partial class LocalizationManager
             [nameof(TrayTooltipDisabled)] = "已禁用",
 
             // Dialog messages (对话框消息)
-            [nameof(UpdateAvailableTitle)] = "可用更新",
-            [nameof(UpdateAvailableMessage)] = """
-                已下载更新至 {0} v{1}。
-                您想现在安装吗？
-                """,
-            [nameof(InstallButton)] = "安装",
             [nameof(CloseButton)] = "关闭",
             [nameof(UnstableBuildTitle)] = "不稳定版本警告",
             [nameof(UnstableBuildMessage)] = """

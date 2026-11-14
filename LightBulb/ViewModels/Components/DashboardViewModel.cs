@@ -14,6 +14,7 @@ using LightBulb.Localization;
 using LightBulb.Models;
 using LightBulb.PlatformInterop;
 using LightBulb.Services;
+using LightBulb.Utils;
 using LightBulb.Utils.Extensions;
 using PowerKit;
 using PowerKit.Extensions;
@@ -36,6 +37,7 @@ public partial class DashboardViewModel : ViewModelBase
     private IDisposable? _enableAfterDelayRegistration;
     private IDisposable? _pendingSaveRegistration;
     private bool _isPausedForLockedScreen;
+    private readonly PhrasePicker<CycleStage> _statusPhrasePicker = new();
     private ColorConfiguration? _configurationSmoothingSource;
     private ColorConfiguration? _configurationSmoothingTarget;
 
@@ -339,7 +341,25 @@ public partial class DashboardViewModel : ViewModelBase
                 : LocalizationManager.SunsetTransitionPhaseLabel,
         };
 
-    // Plain-language description of what's going on right now
+    // Each phrase pool is a localized string with one phrase per line
+    private static IReadOnlyList<string> SplitPhrases(string phrases) =>
+        phrases.Split(
+            ['\r', '\n'],
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+        );
+
+    private IReadOnlyList<string> GetStagePhrases(CycleStage stage) =>
+        SplitPhrases(
+            stage switch
+            {
+                CycleStage.Day => LocalizationManager.StatusDayPhrases,
+                CycleStage.Evening => LocalizationManager.StatusEveningPhrases,
+                _ => LocalizationManager.StatusNightPhrases,
+            }
+        );
+
+    // Plain-language description of what's going on right now.
+    // A new random phrase is only picked when the stage changes, not on every refresh.
     public string StatusSentence
     {
         get
@@ -348,27 +368,23 @@ public partial class DashboardViewModel : ViewModelBase
                 return LocalizationManager.StatusPreviewText;
 
             if (!IsEnabled)
-                return LocalizationManager.StatusDisabledText;
+            {
+                return _settingsService.IsDefaultToDayConfigurationEnabled
+                    ? LocalizationManager.StatusDisabledDayConfigText
+                    : LocalizationManager.StatusDisabledText;
+            }
 
             if (IsPaused)
                 return LocalizationManager.StatusPausedText;
 
-            var isEveningIncluded = Schedule.IsEveningIncluded;
-
             return Phase switch
             {
-                { Stage: CycleStage.Day, IsTransitioning: false } =>
-                    LocalizationManager.StatusDayText,
-                { Stage: CycleStage.Day } => LocalizationManager.StatusSunriseText,
-                { Stage: CycleStage.Evening, IsTransitioning: false } =>
-                    LocalizationManager.StatusEveningText,
-                { Stage: CycleStage.Evening } => LocalizationManager.StatusSunsetToEveningText,
-                { IsTransitioning: false } => isEveningIncluded
-                    ? LocalizationManager.StatusLateNightText
-                    : LocalizationManager.StatusNightText,
-                _ => isEveningIncluded
-                    ? LocalizationManager.StatusBedtimeText
-                    : LocalizationManager.StatusSunsetToNightText,
+                { IsTransitioning: true, Stage: CycleStage.Day } =>
+                    LocalizationManager.StatusTransitionToDayText,
+                { IsTransitioning: true, Stage: CycleStage.Evening } =>
+                    LocalizationManager.StatusTransitionToEveningText,
+                { IsTransitioning: true } => LocalizationManager.StatusTransitionToNightText,
+                var phase => _statusPhrasePicker.Get(phase.Stage, GetStagePhrases(phase.Stage)),
             };
         }
     }

@@ -46,7 +46,6 @@ public partial class App : Application, IDisposable
         services.AddSingleton<GammaService>();
         services.AddSingleton<HotKeyService>();
         services.AddSingleton<SettingsService>();
-        services.AddSingleton<UpdateService>();
 
         // View models
         services.AddTransient<MainViewModel>();

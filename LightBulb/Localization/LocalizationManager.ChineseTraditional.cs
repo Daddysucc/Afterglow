@@ -24,15 +24,12 @@ public partial class LocalizationManager
             [nameof(OpenSettingsTooltip)] = "開啟設定",
             // Settings dialog
             [nameof(ResetTooltip)] = "將所有設定重設為預設值",
-            [nameof(CancelButton)] = "取消",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "語言",
             [nameof(LanguageTooltip)] = "偏好的使用者介面語言",
             [nameof(StartWithWindowsLabel)] = "隨 Windows 啟動",
             [nameof(StartWithWindowsTooltip)] = "在 Windows 啟動時自動執行 LightBulb",
-            [nameof(AutoUpdateLabel)] = "自動更新",
-            [nameof(AutoUpdateTooltip)] = "當有新版本可用時自動安裝，保持 LightBulb 為最新狀態",
             [nameof(DefaultToDayConfigLabel)] = "預設採用白天設定",
             [nameof(DefaultToDayConfigTooltip)] =
                 "當 LightBulb 停用或暫停時，還原為設定的白天色溫與亮度，而非預設的顯示器 Gamma 值",
@@ -105,12 +102,6 @@ public partial class LocalizationManager
             [nameof(TrayExitMenuItem)] = "結束",
             [nameof(TrayTooltipDisabled)] = "已停用",
             // Dialog messages
-            [nameof(UpdateAvailableTitle)] = "有可用更新",
-            [nameof(UpdateAvailableMessage)] = """
-                {0} v{1} 更新已下載完成。
-                您現在要安裝嗎？
-                """,
-            [nameof(InstallButton)] = "安裝",
             [nameof(CloseButton)] = "關閉",
             [nameof(UnstableBuildTitle)] = "不穩定版本警告",
             [nameof(UnstableBuildMessage)] = """

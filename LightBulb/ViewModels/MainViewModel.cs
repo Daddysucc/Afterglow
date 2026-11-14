@@ -25,57 +25,15 @@ public partial class MainViewModel(
     ViewModelManager viewModelManager,
     DialogManager dialogManager,
     SettingsService settingsService,
-    LocalizationManager localizationManager,
-    UpdateService updateService
+    LocalizationManager localizationManager
 ) : ViewModelBase
 {
-    private readonly Timer _checkForUpdatesTimer = new(
-        TimeSpan.FromHours(3),
-        async () =>
-        {
-            try
-            {
-                var updateVersion = await updateService.CheckForUpdatesAsync();
-                if (updateVersion is not null)
-                    await updateService.PrepareUpdateAsync(updateVersion);
-            }
-            catch
-            {
-                // Failure to update shouldn't crash the application
-            }
-        }
-    );
-
     public LocalizationManager LocalizationManager { get; } = localizationManager;
 
     public DashboardViewModel Dashboard { get; } = dashboard;
 
     [ObservableProperty]
     public partial bool IsOpen { get; set; }
-
-    private async Task FinalizePendingUpdateAsync()
-    {
-        var updateVersion = updateService.TryGetLastPreparedUpdate();
-        if (updateVersion is null)
-            return;
-
-        var dialog = viewModelManager.GetMessageBoxViewModel(
-            LocalizationManager.UpdateAvailableTitle,
-            string.Format(LocalizationManager.UpdateAvailableMessage, Program.Name, updateVersion),
-            LocalizationManager.InstallButton,
-            LocalizationManager.CancelButton
-        );
-
-        // Bring the user's attention to this dialog, even if the app is hidden
-        Application.Current?.ApplicationLifetime?.TryGetMainWindow()?.ShowActivateFocus();
-
-        if (await dialogManager.ShowDialogAsync(dialog) != true)
-            return;
-
-        updateService.FinalizeUpdate(updateVersion);
-
-        App.Shutdown(2);
-    }
 
     private async Task ShowDevelopmentBuildMessageAsync()
     {
@@ -144,13 +102,9 @@ public partial class MainViewModel(
 
     public override async Task InitializeAsync()
     {
-        await FinalizePendingUpdateAsync();
-
         await ShowDevelopmentBuildMessageAsync();
         await ShowGammaRangeMessageAsync();
         await ShowFirstTimeExperienceMessageAsync();
-
-        _checkForUpdatesTimer.Start();
     }
 
     private async Task ShowSettingsTabAsync<TTab>()
@@ -208,14 +162,4 @@ public partial class MainViewModel(
 
     [RelayCommand]
     private void Exit() => App.Shutdown();
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _checkForUpdatesTimer.Dispose();
-        }
-
-        base.Dispose(disposing);
-    }
 }
