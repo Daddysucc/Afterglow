@@ -335,8 +335,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Keep applying the color temperature on top of grayscale, for a warm amber monochrome look. When off, grayscale uses a neutral white point, and brightness still applies.",
             [nameof(GrayscaleScheduleOnOption)] = "On",
-            [nameof(PauseFor30MinutesChip)] = "30 min",
-            [nameof(GrayscaleUntilScheduleChangeChip)] = "Until next schedule change",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Resume grayscale",
         };
 }

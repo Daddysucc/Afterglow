@@ -955,9 +955,6 @@ public partial class DashboardViewModel : ViewModelBase
         IsGrayscaleHeldUntilScheduleChange = isScheduled && manualOverride == false;
         IsGrayscaleSnoozed =
             _grayscaleSnoozedUntil is not null || IsGrayscaleHeldUntilScheduleChange;
-        HasGrayscaleScheduleChanges = GrayscaleController.HasScheduleChanges(
-            _settingsService.GrayscaleSchedule
-        );
 
         // Suspended while paused, and while a display is paused on its own for a fullscreen
         // application (grayscale can't be limited to the other displays)
@@ -979,10 +976,6 @@ public partial class DashboardViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(StatusSentence))]
     public partial bool IsGrayscaleHeldUntilScheduleChange { get; private set; }
 
-    // Whether grayscale can be disabled until the next schedule change, rather than for a while
-    [ObservableProperty]
-    public partial bool HasGrayscaleScheduleChanges { get; private set; }
-
     [RelayCommand]
     private void SnoozeGrayscale(TimeSpan duration)
     {
@@ -990,13 +983,8 @@ public partial class DashboardViewModel : ViewModelBase
         UpdateGrayscale();
     }
 
-    // Same as turning grayscale off: a manual choice already lasts until the next schedule change
     [RelayCommand]
-    private void SnoozeGrayscaleUntilScheduleChange()
-    {
-        if (IsGrayscaleEnabled)
-            ToggleGrayscale();
-    }
+    private void SnoozeGrayscaleUntilSunrise() => SnoozeGrayscale(GetTimeUntilSunrise());
 
     // The grayscale row in the tray menu resumes grayscale while it's temporarily disabled,
     // and toggles it otherwise (like the pause row does for LightBulb itself)
@@ -1071,13 +1059,14 @@ public partial class DashboardViewModel : ViewModelBase
         );
     }
 
-    [RelayCommand]
-    private void DisableUntilSunrise()
+    private TimeSpan GetTimeUntilSunrise()
     {
         var now = DateTimeOffset.Now;
-        var timeUntilSunrise = SolarTimes.Sunrise.NextAfter(now) - now;
-        DisableTemporarily(timeUntilSunrise);
+        return SolarTimes.Sunrise.NextAfter(now) - now;
     }
+
+    [RelayCommand]
+    private void DisableUntilSunrise() => DisableTemporarily(GetTimeUntilSunrise());
 
     [RelayCommand]
     private void Toggle() => IsEnabled = !IsEnabled;

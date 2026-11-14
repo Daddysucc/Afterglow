@@ -330,8 +330,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Seguir aplicando la temperatura de color sobre la escala de grises, para un aspecto monocromo ámbar y cálido. Si está desactivado, la escala de grises usa un punto blanco neutro y el brillo se sigue aplicando.",
             [nameof(GrayscaleScheduleOnOption)] = "Activada",
-            [nameof(PauseFor30MinutesChip)] = "30 min",
-            [nameof(GrayscaleUntilScheduleChangeChip)] = "Hasta el próximo cambio de horario",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Reanudar escala de grises",
         };
 }

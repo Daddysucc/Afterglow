@@ -296,8 +296,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "在灰階之上繼續套用色溫，呈現溫暖的琥珀色單色效果。關閉後，灰階模式使用中性白點，亮度設定仍然生效。",
             [nameof(GrayscaleScheduleOnOption)] = "開啟",
-            [nameof(PauseFor30MinutesChip)] = "30 分鐘",
-            [nameof(GrayscaleUntilScheduleChangeChip)] = "直到下次排程變化",
             [nameof(TrayResumeGrayscaleMenuItem)] = "恢復灰階",
         };
 }

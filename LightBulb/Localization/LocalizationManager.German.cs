@@ -321,8 +321,6 @@ public partial class LocalizationManager
         [nameof(GrayscaleTemperatureShiftTooltip)] =
             "Die Farbtemperatur weiterhin über den Graustufen anwenden, für einen warmen, bernsteinfarbenen Monochrom-Look. Wenn aus, verwenden die Graustufen einen neutralen Weißpunkt, und die Helligkeit gilt weiterhin.",
         [nameof(GrayscaleScheduleOnOption)] = "Ein",
-        [nameof(PauseFor30MinutesChip)] = "30 Min.",
-        [nameof(GrayscaleUntilScheduleChangeChip)] = "Bis zur nächsten Planänderung",
         [nameof(TrayResumeGrayscaleMenuItem)] = "Graustufen fortsetzen",
     };
 }

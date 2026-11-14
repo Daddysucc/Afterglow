@@ -36,13 +36,6 @@ public class GrayscaleController
     private bool? _lastScheduledState;
 
     /// <summary>
-    /// Whether the schedule turns grayscale on and off by itself as the day goes on. Grayscale can
-    /// then be disabled until the next schedule change; otherwise only for a while.
-    /// </summary>
-    public static bool HasScheduleChanges(GrayscaleSchedule schedule) =>
-        schedule is GrayscaleSchedule.NightOnly or GrayscaleSchedule.EveningAndNight;
-
-    /// <summary>
     /// Whether grayscale is temporarily disabled for a while (until the given time).
     /// </summary>
     public static bool IsSnoozed(DateTimeOffset? snoozedUntil, DateTimeOffset instant) =>

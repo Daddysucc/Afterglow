@@ -327,8 +327,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Продовжувати застосовувати колірну температуру поверх відтінків сірого для теплого бурштинового монохромного вигляду. Якщо вимкнено, використовується нейтральна точка білого, а яскравість і далі застосовується.",
             [nameof(GrayscaleScheduleOnOption)] = "Увімк.",
-            [nameof(PauseFor30MinutesChip)] = "30 хв",
-            [nameof(GrayscaleUntilScheduleChangeChip)] = "До наступної зміни розкладу",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Відновити відтінки сірого",
         };
 }
