@@ -1,3 +1,5 @@
+using System;
+
 namespace LightBulb.Core;
 
 /// <summary>
@@ -6,6 +8,8 @@ namespace LightBulb.Core;
 /// <param name="ActiveConfiguration">Configuration of the cycle, used while LightBulb is active.</param>
 /// <param name="PausedConfiguration">Configuration used while paused (neutral, or day-time if configured so).</param>
 /// <param name="IsGloballyPaused">Whether all displays are paused (disabled, streaming, locked, etc).</param>
+/// <param name="OffsetScaling">How temperature offsets are applied across the cycle.</param>
+/// <param name="ReferenceTemperature">Temperature at which offsets are exact (the day temperature).</param>
 public readonly record struct MonitorColorContext(
     ColorConfiguration ActiveConfiguration,
     ColorConfiguration PausedConfiguration,
@@ -13,7 +17,9 @@ public readonly record struct MonitorColorContext(
     double MinimumTemperature,
     double MaximumTemperature,
     double MinimumBrightness,
-    double MaximumBrightness
+    double MaximumBrightness,
+    MonitorOffsetScaling OffsetScaling,
+    double ReferenceTemperature
 );
 
 public static class MonitorColorResolver
@@ -49,16 +55,23 @@ public static class MonitorColorResolver
         if (profile is null || isPrimary)
             return context.ActiveConfiguration;
 
-        return context
-            .ActiveConfiguration.WithOffset(
+        var active = context.ActiveConfiguration;
+
+        return new ColorConfiguration(
+            MonitorTemperatureOffset.Apply(
+                active.Temperature,
                 MonitorProfile.NormalizeTemperatureOffset(profile.TemperatureOffset),
-                MonitorProfile.NormalizeBrightnessOffset(profile.BrightnessOffset)
-            )
-            .Clamp(
+                context.OffsetScaling,
+                context.ReferenceTemperature,
                 context.MinimumTemperature,
-                context.MaximumTemperature,
+                context.MaximumTemperature
+            ),
+            Math.Clamp(
+                active.Brightness
+                    + MonitorProfile.NormalizeBrightnessOffset(profile.BrightnessOffset),
                 context.MinimumBrightness,
                 context.MaximumBrightness
-            );
+            )
+        );
     }
 }

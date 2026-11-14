@@ -133,6 +133,24 @@ public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
 
     public bool HasMonitors => Monitors.Count > 0;
 
+    // Index into the offset scaling selector: Mireds (perceptual) first, then Kelvin (fixed)
+    public int MonitorOffsetScalingIndex
+    {
+        get => SettingsService.IsPerceptualMonitorOffsetEnabled ? 0 : 1;
+        set
+        {
+            if (value is not (0 or 1))
+                return;
+
+            SettingsService.IsPerceptualMonitorOffsetEnabled = value == 0;
+        }
+    }
+
+    public string MonitorOffsetScalingDescription =>
+        SettingsService.IsPerceptualMonitorOffsetEnabled
+            ? LocalizationManager.PerceptualOffsetScalingDescription
+            : LocalizationManager.FixedOffsetScalingDescription;
+
     public bool HasDisconnectedMonitors => DisconnectedMonitors.Count > 0;
 
     public string DisconnectedMonitorsHeader =>

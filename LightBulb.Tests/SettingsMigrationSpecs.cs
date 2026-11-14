@@ -155,7 +155,7 @@ public class SettingsMigrationSpecs : IDisposable
                 { "LastKnownName": "No device path", "TemperatureOffset": 100 },
                 { "DevicePath": "", "LastKnownName": "Empty device path" },
                 { "DevicePath": "\\\\?\\DISPLAY#A#1", "LastKnownName": "First", "TemperatureOffset": 5000, "BrightnessOffset": -2 },
-                { "DevicePath": "\\\\?\\display#a#1", "LastKnownName": "Duplicate", "TemperatureOffset": 125 },
+                { "DevicePath": "\\\\?\\display#a#1", "LastKnownName": "Duplicate", "TemperatureOffset": 137 },
                 { "DevicePath": "\\\\?\\DISPLAY#B#2", "LastKnownName": "Second", "IsEnabled": false }
               ]
             }
@@ -173,9 +173,102 @@ public class SettingsMigrationSpecs : IDisposable
         var first = settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1");
         first.Should().NotBeNull();
         first!.LastKnownName.Should().Be("Duplicate");
-        first.TemperatureOffset.Should().Be(150);
+        first.TemperatureOffset.Should().Be(125);
 
         settings.TryGetMonitorProfile(@"\\?\DISPLAY#B#2")!.IsEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void I_can_load_a_settings_file_from_before_offset_scaling_existed_and_get_perceptual_scaling()
+    {
+        // Act
+        // Saved by an earlier version: offsets in 50 K steps of up to 1000 K, and no scaling setting
+        var settings = Load(
+            """
+            {
+              "IsFirstTimeExperienceEnabled": false,
+              "DayConfiguration": { "Temperature": 6600, "Brightness": 1 },
+              "MonitorProfiles": [
+                { "DevicePath": "\\\\?\\DISPLAY#A#1", "LastKnownName": "TV", "TemperatureOffset": 1000, "BrightnessOffset": -0.1 },
+                { "DevicePath": "\\\\?\\DISPLAY#B#2", "LastKnownName": "Monitor", "TemperatureOffset": -350 }
+              ]
+            }
+            """,
+            out var wasLoaded
+        );
+
+        // Assert
+        wasLoaded.Should().BeTrue();
+        settings.IsPerceptualMonitorOffsetEnabled.Should().BeTrue();
+        settings.MonitorOffsetScaling.Should().Be(MonitorOffsetScaling.Perceptual);
+
+        // Existing offsets are kept exactly as they were
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1")!.TemperatureOffset.Should().Be(1000);
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#B#2")!.TemperatureOffset.Should().Be(-350);
+
+        // Profiles that don't say otherwise are enabled
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1")!.IsEnabled.Should().BeTrue();
+    }
+
+    [Fact]
+    public void I_can_load_a_settings_file_with_fixed_offset_scaling()
+    {
+        // Act
+        var settings = Load("""{ "IsPerceptualMonitorOffsetEnabled": false }""", out var wasLoaded);
+
+        // Assert
+        wasLoaded.Should().BeTrue();
+        settings.IsPerceptualMonitorOffsetEnabled.Should().BeFalse();
+        settings.MonitorOffsetScaling.Should().Be(MonitorOffsetScaling.Fixed);
+    }
+
+    [Fact]
+    public void I_can_load_display_offsets_beyond_2000_kelvin_and_get_them_limited()
+    {
+        // Act
+        var settings = Load(
+            """
+            {
+              "MonitorProfiles": [
+                { "DevicePath": "\\\\?\\DISPLAY#A#1", "TemperatureOffset": 3000 },
+                { "DevicePath": "\\\\?\\DISPLAY#B#2", "TemperatureOffset": -2600 },
+                { "DevicePath": "\\\\?\\DISPLAY#C#3", "TemperatureOffset": 1975 }
+              ]
+            }
+            """,
+            out _
+        );
+
+        // Assert
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1")!.TemperatureOffset.Should().Be(2000);
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#B#2")!.TemperatureOffset.Should().Be(-2000);
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#C#3")!.TemperatureOffset.Should().Be(1975);
+    }
+
+    [Fact]
+    public void I_can_switch_offset_scaling_back_and_forth_without_changing_saved_offsets()
+    {
+        // Arrange
+        var settings = Load(
+            """
+            {
+              "MonitorProfiles": [
+                { "DevicePath": "\\\\?\\DISPLAY#A#1", "TemperatureOffset": -1975, "BrightnessOffset": 0.07 }
+              ]
+            }
+            """,
+            out _
+        );
+
+        var original = settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1");
+
+        // Act
+        settings.IsPerceptualMonitorOffsetEnabled = false;
+        settings.IsPerceptualMonitorOffsetEnabled = true;
+        settings.IsPerceptualMonitorOffsetEnabled = false;
+
+        // Assert
+        settings.TryGetMonitorProfile(@"\\?\DISPLAY#A#1").Should().Be(original);
     }
 
     [Theory]
