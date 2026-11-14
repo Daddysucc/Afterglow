@@ -270,11 +270,11 @@
                 </Grid>
             </Button>
 
-            <!--  Grayscale  -->
+            <!--  Grayscale (same layout as pause): toggles it, or resumes it while it's temporarily disabled  -->
             <Button
                 Classes="menu-item"
                 Click="MenuItem_OnClick"
-                Command="{Binding Dashboard.ToggleGrayscaleCommand}"
+                Command="{Binding Dashboard.ToggleOrResumeGrayscaleCommand}"
             >
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <materialIcons:MaterialIcon
@@ -282,99 +282,93 @@
                         Classes="row-icon"
                         Kind="CircleHalfFull"
                     />
-                    <TextBlock
-                        Grid.Column="1"
-                        Text="{Binding LocalizationManager.TrayGrayscaleMenuItem}"
-                    />
-                    <materialIcons:MaterialIcon
-                        Grid.Column="2"
-                        Width="16"
-                        Height="16"
-                        Foreground="{DynamicResource AccentTextBrush}"
-                        IsVisible="{Binding Dashboard.IsGrayscaleEnabled}"
-                        Kind="Check"
-                    />
+                    <Panel Grid.Column="1">
+                        <TextBlock
+                            IsVisible="{Binding !Dashboard.IsGrayscaleSnoozed}"
+                            Text="{Binding LocalizationManager.TrayGrayscaleMenuItem}"
+                        />
+                        <TextBlock
+                            IsVisible="{Binding Dashboard.IsGrayscaleSnoozed}"
+                            Text="{Binding LocalizationManager.TrayResumeGrayscaleMenuItem}"
+                        />
+                    </Panel>
+                    <Panel Grid.Column="2">
+                        <!--  On  -->
+                        <materialIcons:MaterialIcon
+                            Width="16"
+                            Height="16"
+                            Foreground="{DynamicResource AccentTextBrush}"
+                            IsVisible="{Binding Dashboard.IsGrayscaleEnabled}"
+                            Kind="Check"
+                        />
+                        <!--  Active indicator: shown while temporarily disabled  -->
+                        <Border
+                            Padding="6,1"
+                            Background="{DynamicResource AmberBrush}"
+                            CornerRadius="8"
+                            IsVisible="{Binding Dashboard.IsGrayscaleSnoozed}"
+                        >
+                            <TextBlock
+                                FontSize="10"
+                                FontWeight="SemiBold"
+                                Foreground="#22262A"
+                                Text="{Binding LocalizationManager.PausedStateLabel}"
+                            />
+                        </Border>
+                    </Panel>
                 </Grid>
             </Button>
 
-            <!--  Temporarily disable grayscale (while it's on)  -->
-            <StackPanel
+            <!--  Disable grayscale for a while (while it's on)  -->
+            <WrapPanel
                 Margin="36,0,8,4"
                 IsVisible="{Binding Dashboard.IsGrayscaleActive}"
-                Orientation="Vertical"
-                Spacing="4"
+                ItemSpacing="4"
+                LineSpacing="4"
+                Orientation="Horizontal"
             >
-                <TextBlock
-                    FontSize="12"
-                    Foreground="{DynamicResource TextMutedBrush}"
-                    Text="{Binding LocalizationManager.TrayDisableGrayscaleMenuItem}"
-                />
                 <!--  Schedules without changes during the day can only be disabled for a while  -->
-                <WrapPanel
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
+                    Content="{Binding LocalizationManager.PauseFor15MinutesChip}"
                     IsVisible="{Binding !Dashboard.HasGrayscaleScheduleChanges}"
-                    ItemSpacing="4"
-                    LineSpacing="4"
-                    Orientation="Horizontal"
                 >
-                    <Button
-                        Classes="chip"
-                        Click="MenuItem_OnClick"
-                        Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
-                        Content="{Binding LocalizationManager.PauseFor15MinutesChip}"
-                    >
-                        <Button.CommandParameter>
-                            <sys:TimeSpan>0.00:15:00</sys:TimeSpan>
-                        </Button.CommandParameter>
-                    </Button>
-                    <Button
-                        Classes="chip"
-                        Click="MenuItem_OnClick"
-                        Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
-                        Content="{Binding LocalizationManager.PauseFor30MinutesChip}"
-                    >
-                        <Button.CommandParameter>
-                            <sys:TimeSpan>0.00:30:00</sys:TimeSpan>
-                        </Button.CommandParameter>
-                    </Button>
-                    <Button
-                        Classes="chip"
-                        Click="MenuItem_OnClick"
-                        Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
-                        Content="{Binding LocalizationManager.PauseFor1HourChip}"
-                    >
-                        <Button.CommandParameter>
-                            <sys:TimeSpan>0.01:00:00</sys:TimeSpan>
-                        </Button.CommandParameter>
-                    </Button>
-                </WrapPanel>
-                <WrapPanel
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.00:15:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
+                    Content="{Binding LocalizationManager.PauseFor30MinutesChip}"
+                    IsVisible="{Binding !Dashboard.HasGrayscaleScheduleChanges}"
+                >
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.00:30:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.SnoozeGrayscaleCommand}"
+                    Content="{Binding LocalizationManager.PauseFor1HourChip}"
+                    IsVisible="{Binding !Dashboard.HasGrayscaleScheduleChanges}"
+                >
+                    <Button.CommandParameter>
+                        <sys:TimeSpan>0.01:00:00</sys:TimeSpan>
+                    </Button.CommandParameter>
+                </Button>
+                <Button
+                    Classes="chip"
+                    Click="MenuItem_OnClick"
+                    Command="{Binding Dashboard.SnoozeGrayscaleUntilScheduleChangeCommand}"
+                    Content="{Binding LocalizationManager.GrayscaleUntilScheduleChangeChip}"
                     IsVisible="{Binding Dashboard.HasGrayscaleScheduleChanges}"
-                    Orientation="Horizontal"
-                >
-                    <Button
-                        Classes="chip"
-                        Click="MenuItem_OnClick"
-                        Command="{Binding Dashboard.SnoozeGrayscaleUntilScheduleChangeCommand}"
-                        Content="{Binding LocalizationManager.GrayscaleUntilScheduleChangeChip}"
-                    />
-                </WrapPanel>
-            </StackPanel>
-
-            <!--  Resume grayscale (while it's temporarily disabled)  -->
-            <Button
-                Classes="menu-item"
-                Click="MenuItem_OnClick"
-                Command="{Binding Dashboard.ResumeGrayscaleCommand}"
-                IsVisible="{Binding Dashboard.IsGrayscaleSnoozed}"
-            >
-                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
-                    <materialIcons:MaterialIcon Grid.Column="0" Classes="row-icon" Kind="Restore" />
-                    <TextBlock
-                        Grid.Column="1"
-                        Text="{Binding LocalizationManager.TrayResumeGrayscaleMenuItem}"
-                    />
-                </Grid>
-            </Button>
+                />
+            </WrapPanel>
 
             <!--  Settings  -->
             <Button

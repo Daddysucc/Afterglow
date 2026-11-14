@@ -281,8 +281,6 @@ public partial class LocalizationManager
             [nameof(PauseFor3HoursChip)] = "3 小時",
             [nameof(PausedStateLabel)] = "已暫停",
             // Grayscale
-            [nameof(GrayscaleButton)] = "灰階",
-            [nameof(GrayscaleTooltip)] = "開啟或關閉灰階模式",
             [nameof(TrayGrayscaleMenuItem)] = "灰階模式",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "切換灰階模式",
             [nameof(ToggleGrayscaleHotkeyTooltip)] = "用於開啟/關閉灰階模式的全域快捷鍵",
@@ -298,7 +296,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "在灰階之上繼續套用色溫，呈現溫暖的琥珀色單色效果。關閉後，灰階模式使用中性白點，亮度設定仍然生效。",
             [nameof(GrayscaleScheduleOnOption)] = "開啟",
-            [nameof(TrayDisableGrayscaleMenuItem)] = "暫時停用灰階",
             [nameof(PauseFor30MinutesChip)] = "30 分鐘",
             [nameof(GrayscaleUntilScheduleChangeChip)] = "直到下次排程變化",
             [nameof(TrayResumeGrayscaleMenuItem)] = "恢復灰階",

@@ -998,7 +998,17 @@ public partial class DashboardViewModel : ViewModelBase
             ToggleGrayscale();
     }
 
+    // The grayscale row in the tray menu resumes grayscale while it's temporarily disabled,
+    // and toggles it otherwise (like the pause row does for LightBulb itself)
     [RelayCommand]
+    private void ToggleOrResumeGrayscale()
+    {
+        if (IsGrayscaleSnoozed)
+            ResumeGrayscale();
+        else
+            ToggleGrayscale();
+    }
+
     private void ResumeGrayscale()
     {
         _grayscaleSnoozedUntil = null;

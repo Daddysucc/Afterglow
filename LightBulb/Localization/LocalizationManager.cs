@@ -340,8 +340,6 @@ public partial class LocalizationManager
 
     // ---- Grayscale ----
 
-    public string GrayscaleButton => Get();
-    public string GrayscaleTooltip => Get();
     public string TrayGrayscaleMenuItem => Get();
     public string ToggleGrayscaleHotkeyLabel => Get();
     public string ToggleGrayscaleHotkeyTooltip => Get();
@@ -355,7 +353,6 @@ public partial class LocalizationManager
     public string GrayscaleTemperatureShiftLabel => Get();
     public string GrayscaleTemperatureShiftTooltip => Get();
     public string GrayscaleScheduleOnOption => Get();
-    public string TrayDisableGrayscaleMenuItem => Get();
     public string PauseFor30MinutesChip => Get();
     public string GrayscaleUntilScheduleChangeChip => Get();
     public string TrayResumeGrayscaleMenuItem => Get();

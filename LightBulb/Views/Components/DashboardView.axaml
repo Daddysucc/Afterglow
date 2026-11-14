@@ -117,7 +117,7 @@
         </Border>
 
         <!--  Footer  -->
-        <Grid Grid.Row="3" Height="48" Margin="4,0,8,0" ColumnDefinitions="Auto,Auto,*,Auto">
+        <Grid Grid.Row="3" Height="48" Margin="4,0,8,0" ColumnDefinitions="Auto,*,Auto">
             <!--  Cycle preview (content lines up with the graph caption)  -->
             <ToggleButton
                 Grid.Column="0"
@@ -166,34 +166,9 @@
                 </StackPanel>
             </ToggleButton>
 
-            <!--  Grayscale  -->
-            <ToggleButton
-                Grid.Column="1"
-                Padding="8,4"
-                VerticalAlignment="Center"
-                Foreground="{DynamicResource TextMutedBrush}"
-                IsChecked="{Binding IsGrayscaleEnabled}"
-                Theme="{DynamicResource MaterialFlatToggleButton}"
-                ToolTip.Tip="{Binding LocalizationManager.GrayscaleTooltip}"
-            >
-                <ToggleButton.Styles>
-                    <Style Selector="ToggleButton:checked">
-                        <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
-                    </Style>
-                </ToggleButton.Styles>
-                <StackPanel Orientation="Horizontal" Spacing="6">
-                    <materialIcons:MaterialIcon Width="18" Height="18" Kind="CircleHalfFull" />
-                    <TextBlock
-                        VerticalAlignment="Center"
-                        FontSize="12"
-                        Text="{Binding LocalizationManager.GrayscaleButton}"
-                    />
-                </StackPanel>
-            </ToggleButton>
-
             <!--  Location (opens location settings)  -->
             <Button
-                Grid.Column="3"
+                Grid.Column="2"
                 Padding="8,4"
                 VerticalAlignment="Center"
                 Command="{Binding $parent[Window].((viewModels:MainViewModel)DataContext).ShowLocationSettingsCommand}"

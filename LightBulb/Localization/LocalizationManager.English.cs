@@ -319,8 +319,6 @@ public partial class LocalizationManager
             [nameof(PauseFor3HoursChip)] = "3 hrs",
             [nameof(PausedStateLabel)] = "Paused",
             // Grayscale
-            [nameof(GrayscaleButton)] = "GRAYSCALE",
-            [nameof(GrayscaleTooltip)] = "Turn grayscale mode on or off",
             [nameof(TrayGrayscaleMenuItem)] = "Grayscale",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Toggle grayscale",
             [nameof(ToggleGrayscaleHotkeyTooltip)] = "Global hotkey to turn grayscale mode on/off",
@@ -337,7 +335,6 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Keep applying the color temperature on top of grayscale, for a warm amber monochrome look. When off, grayscale uses a neutral white point, and brightness still applies.",
             [nameof(GrayscaleScheduleOnOption)] = "On",
-            [nameof(TrayDisableGrayscaleMenuItem)] = "Temporarily disable grayscale",
             [nameof(PauseFor30MinutesChip)] = "30 min",
             [nameof(GrayscaleUntilScheduleChangeChip)] = "Until next schedule change",
             [nameof(TrayResumeGrayscaleMenuItem)] = "Resume grayscale",
