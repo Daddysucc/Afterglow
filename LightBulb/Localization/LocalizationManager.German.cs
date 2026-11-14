@@ -314,7 +314,7 @@ public partial class LocalizationManager
         [nameof(GrayscaleScheduleLabel)] = "Automatische Graustufen",
         [nameof(GrayscaleScheduleTooltip)] =
             "Wann sich die Graustufen von selbst einschalten. Sie lassen sich jederzeit manuell umschalten, und eine manuelle Wahl gilt bis zur nächsten Änderung durch den Zeitplan.",
-        [nameof(GrayscaleScheduleOffOption)] = "Aus (nur manuell)",
+        [nameof(GrayscaleScheduleOffOption)] = "Aus",
         [nameof(GrayscaleScheduleNightOption)] = "Nur nachts",
         [nameof(GrayscaleScheduleEveningAndNightOption)] = "Abends & nachts",
         [nameof(GrayscaleTemperatureShiftLabel)] = "Farbtemperatur im Graustufenmodus anwenden",

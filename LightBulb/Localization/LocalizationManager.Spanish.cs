@@ -322,7 +322,7 @@ public partial class LocalizationManager
             [nameof(GrayscaleScheduleLabel)] = "Escala de grises automática",
             [nameof(GrayscaleScheduleTooltip)] =
                 "Cuándo se activa la escala de grises por sí sola. Siempre se puede alternar manualmente, y una elección manual dura hasta el siguiente cambio del horario.",
-            [nameof(GrayscaleScheduleOffOption)] = "Desactivada (solo manual)",
+            [nameof(GrayscaleScheduleOffOption)] = "Desactivada",
             [nameof(GrayscaleScheduleNightOption)] = "Solo de noche",
             [nameof(GrayscaleScheduleEveningAndNightOption)] = "Tarde y noche",
             [nameof(GrayscaleTemperatureShiftLabel)] =

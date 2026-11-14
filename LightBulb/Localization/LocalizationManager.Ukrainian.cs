@@ -319,7 +319,7 @@ public partial class LocalizationManager
             [nameof(GrayscaleScheduleLabel)] = "Автоматичні відтінки сірого",
             [nameof(GrayscaleScheduleTooltip)] =
                 "Коли відтінки сірого вмикаються самі. Їх завжди можна перемкнути вручну, і ручний вибір діє до наступної зміни за розкладом.",
-            [nameof(GrayscaleScheduleOffOption)] = "Вимк. (лише вручну)",
+            [nameof(GrayscaleScheduleOffOption)] = "Вимк.",
             [nameof(GrayscaleScheduleNightOption)] = "Лише вночі",
             [nameof(GrayscaleScheduleEveningAndNightOption)] = "Увечері та вночі",
             [nameof(GrayscaleTemperatureShiftLabel)] =
