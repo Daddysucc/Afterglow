@@ -128,5 +128,185 @@ public partial class LocalizationManager
                 Presiona OK para abrir los ajustes.
                 """,
             [nameof(OkButton)] = "OK",
+            // Dashboard
+            [nameof(BedtimeLabel)] = "Hora de dormir",
+            [nameof(DayStateLabel)] = "Día",
+            [nameof(EveningStateLabel)] = "Tarde",
+            [nameof(NightStateLabel)] = "Noche",
+            [nameof(SunriseTransitionPhaseLabel)] = "Transición del amanecer",
+            [nameof(SunsetTransitionPhaseLabel)] = "Transición del atardecer",
+            [nameof(NightTransitionPhaseLabel)] = "Transición a la noche",
+            [nameof(StatusDayPhrases)] = """
+                Horas de día. Colores equilibrados para trabajar con buen contraste.
+                Espectro completo de luz diurna para un texto nítido y claro.
+                Balance de blancos neutro para habitaciones luminosas de día.
+                La calibración diurna estándar está activa para editar y navegar.
+                Colores de pantalla ajustados a una luz diurna limpia y sin alterar.
+                Modo concentración de tarde. Pantalla ajustada a la máxima claridad.
+                Perfil de luz diurna activo, con brillo completo y blancos naturales.
+                """,
+            [nameof(StatusEveningPhrases)] = """
+                Ya se puso el sol. El deslumbramiento se suaviza para la tarde.
+                Horas de la tarde. La luz azul intensa se atenúa mientras descansas.
+                Llegó el anochecer. La pantalla pasa a una calidez cómoda.
+                Fin de la jornada. Tono suavizado para descansar y navegar.
+                La calidez de la tarde suaviza los blancos brillantes.
+                Tras la puesta de sol, colores más cálidos para ver con comodidad.
+                Horario del crepúsculo activo. Calidez equilibrada sin tinte fuerte.
+                """,
+            [nameof(StatusNightPhrases)] = """
+                Altas horas de la noche. Calidez profunda para habitaciones oscuras.
+                Horario para dormir en marcha. La luz azul se reduce al mínimo.
+                Pantalla ajustada a un ámbar tenue para leer de noche.
+                Horas tranquilas. El deslumbramiento se mantiene bajo hasta la mañana.
+                El modo medianoche protege tus ojos en una habitación oscura.
+                Horas tardías. El perfil más cálido está activo antes de dormir.
+                Horario nocturno activo. Un ámbar suave sustituye al blanco intenso.
+                """,
+            [nameof(StatusTransitionToDayText)] = "Pasando a los colores de día...",
+            [nameof(StatusTransitionToEveningText)] = "Pasando a la calidez de la tarde...",
+            [nameof(StatusTransitionToNightText)] = "Pasando a la calidez de la noche...",
+            [nameof(StatusDisabledText)] =
+                "LightBulb está en pausa. La pantalla muestra luz diurna neutra.",
+            [nameof(StatusDisabledDayConfigText)] =
+                "LightBulb está en pausa. La pantalla muestra tus colores de día.",
+            [nameof(StatusPausedText)] =
+                "En pausa automática por una aplicación en pantalla completa o de la lista blanca.",
+            [nameof(StatusPreviewText)] = "Vista previa de las próximas 24 horas…",
+            [nameof(StatusRemoteStreamingPausedText)] =
+                "En pausa mientras haya una sesión de transmisión remota activa.",
+            [nameof(PausedRemoteStreamingLabel)] = "En pausa (transmisión remota)",
+            [nameof(PausedScreenLockedLabel)] = "En pausa (pantalla bloqueada)",
+            [nameof(PausedFullScreenLabel)] = "En pausa (aplicación en pantalla completa)",
+            [nameof(PausedWhitelistLabel)] = "En pausa (aplicación de la lista blanca)",
+            [nameof(PausedCaption)] = "{0} · {1} K (brillo {2})",
+            [nameof(SolarEventPastText)] = "{0}: hace {1}",
+            [nameof(SolarEventFutureText)] = "{0}: en {1}",
+            [nameof(SolarEventNowText)] = "{0}: ahora",
+            [nameof(DurationMinuteText)] = "1 minuto",
+            [nameof(DurationMinutesText)] = "{0} minutos",
+            [nameof(DurationHourText)] = "1 hora",
+            [nameof(DurationHoursText)] = "{0} horas",
+            [nameof(ActivePhaseCaption)] = "Fase activa: {0} · {1} K (brillo {2})",
+            [nameof(ActiveStageTemperatureTooltip)] =
+                "Arrastra para ajustar la temperatura de color de la etapa actual ({0})",
+            [nameof(ManualScheduleText)] = "Horario manual",
+            [nameof(LocationNotSetText)] = "Ubicación: sin definir",
+            [nameof(LocationCoordinatesText)] = "Ubicación: {0}",
+            [nameof(OpenLocationSettingsTooltip)] = "Cambiar los ajustes de ubicación",
+            // Cycle
+            [nameof(EveningStageTooltip)] =
+                "Usar una configuración intermedia de tarde desde la puesta de sol hasta el inicio de la noche, en lugar de cambiar directamente a la configuración nocturna al ponerse el sol",
+            [nameof(EveningTemperatureTooltip)] =
+                "Temperatura de color entre la puesta de sol y el inicio de la noche",
+            [nameof(EveningBrightnessTooltip)] = """
+                Brillo entre la puesta de sol y el inicio de la noche
+
+                Ten en cuenta que este ajuste de brillo se aplica a la gamma de color, no al brillo real del monitor.
+                """,
+            [nameof(NightStartTimeTooltip)] = """
+                Hora en la que comienza la transición de la configuración de tarde a la nocturna (ajustada por el desplazamiento de transición, igual que la puesta de sol)
+
+                Si la noche empieza antes de que termine la transición de la puesta de sol, la etapa de tarde se omite ese día.
+                """,
+            // Settings page
+            [nameof(BackTooltip)] = "Volver al panel (los cambios se guardan)",
+            [nameof(CycleTabName)] = "Ciclo y colores",
+            [nameof(ScheduleTabName)] = "Horario y ubicación",
+            [nameof(RulesTabName)] = "Reglas y lista blanca",
+            [nameof(ControlsTabName)] = "Controles y aplicación",
+            [nameof(DayCardSubtitle)] = "Del amanecer a la puesta de sol",
+            [nameof(EveningCardSubtitle)] = "De la puesta de sol a la hora de dormir",
+            [nameof(NightCardSubtitle)] = "De la hora de dormir al amanecer",
+            [nameof(TemperatureLabel)] = "Temperatura",
+            [nameof(BrightnessLabel)] = "Brillo",
+            [nameof(BedtimeNightStartLabel)] = "Hora de dormir (inicio de la noche)",
+            [nameof(TransitionsCardTitle)] = "Transiciones",
+            [nameof(DurationLabel)] = "Duración",
+            [nameof(TransitionOffsetShortLabel)] = "Desplazamiento",
+            [nameof(LocationCardTitle)] = "Ubicación y coordenadas",
+            [nameof(LocationCardSubtitle)] =
+                "Se usa para calcular el amanecer y la puesta de sol. Busca un lugar, introduce coordenadas o detéctalo automáticamente.",
+            [nameof(LocationInUseText)] = "Usando {0}, {1}",
+            [nameof(SolarScheduleCardTitle)] = "Horario solar",
+            [nameof(SolarScheduleCardSubtitle)] =
+                "Calcula el amanecer y la puesta de sol a partir de tu ubicación, o establécelos manualmente.",
+            [nameof(OffLabel)] = "Desactivado",
+            // Rules & whitelist
+            [nameof(AutoPauseCardTitle)] = "Pausa automática inteligente",
+            [nameof(AutoPauseCardSubtitle)] =
+                "Restablecer temporalmente los colores normales en estas situaciones.",
+            [nameof(PauseWhenScreenLockedLabel)] = "Pausar cuando la pantalla esté bloqueada",
+            [nameof(PauseWhenScreenLockedTooltip)] =
+                "Pausar LightBulb mientras el equipo esté bloqueado",
+            [nameof(WhitelistCardSubtitle)] =
+                "Pausar LightBulb mientras cualquiera de los programas seleccionados esté en primer plano.",
+            [nameof(PerMonitorFullscreenPauseLabel)] =
+                "Pausar solo el monitor en pantalla completa",
+            [nameof(PerMonitorFullscreenPauseTooltip)] =
+                "Cuando una aplicación en pantalla completa esté en primer plano, restablecer los colores normales solo en la pantalla que la muestra y mantener las demás pantallas en el ciclo",
+            [nameof(StreamingAutoPauseLabel)] =
+                "Pausar durante la transmisión remota (Sunshine / RDP)",
+            [nameof(StreamingAutoPauseTooltip)] =
+                "Restablecer los colores normales en todas las pantallas mientras este equipo se transmite con Sunshine o se usa mediante Escritorio remoto",
+            [nameof(StreamingPortsLabel)] = "Puertos TCP de transmisión",
+            [nameof(StreamingPortsTooltip)] =
+                "Escritorio remoto se detecta automáticamente, en cualquier puerto. Sunshine y otras aplicaciones de transmisión se detectan por una conexión activa en uno de estos puertos TCP locales, separados por comas (p. ej., 48010 para Sunshine, o 48010, 27036 para incluir también Steam Remote Play).",
+            [nameof(DisplaysCardTitle)] = "Pantallas conectadas",
+            [nameof(DisplaysCardSubtitle)] =
+                "Excluye pantallas o ajusta su calidez de forma individual. Las pantallas se reconocen de nuevo al volver a conectarlas.",
+            [nameof(IdentifyButton)] = "IDENTIFICAR",
+            [nameof(IdentifyTooltip)] = "Mostrar el número de cada pantalla en ella",
+            [nameof(OffsetScalingLabel)] = "Escalado del desplazamiento",
+            [nameof(OffsetScalingTooltip)] =
+                "Cómo se aplica el desplazamiento de temperatura de cada pantalla a medida que el ciclo pasa del día a la noche",
+            [nameof(PerceptualOffsetScalingOption)] = "Mireds (perceptual)",
+            [nameof(FixedOffsetScalingOption)] = "Kelvin (fijo)",
+            [nameof(PerceptualOffsetScalingDescription)] =
+                "Los desplazamientos de temperatura son exactos a tu temperatura de día y se escalan de forma perceptual hacia la tarde y la noche, para que distintos tipos de pantalla sigan visualmente igualados.",
+            [nameof(FixedOffsetScalingDescription)] =
+                "Los desplazamientos de temperatura se aplican siempre como el mismo número fijo de kelvin, sin escalado entre el día y la noche.",
+            [nameof(NoDisplaysText)] = "No se detectaron pantallas.",
+            [nameof(PrimaryBadge)] = "PRINCIPAL",
+            [nameof(DisplayEnabledTooltip)] =
+                "Aplicar LightBulb a esta pantalla. Una pantalla excluida se mantiene con colores neutros.",
+            [nameof(MonitorTemperatureOffsetLabel)] = "Desplazamiento de temperatura",
+            [nameof(MonitorTemperatureOffsetTooltip)] =
+                "Desplaza la temperatura de color solo en esta pantalla. Con el escalado perceptual, es el desplazamiento a tu temperatura de día.",
+            [nameof(MonitorBrightnessOffsetLabel)] = "Desplazamiento de brillo",
+            [nameof(MonitorBrightnessOffsetTooltip)] =
+                "Se suma al brillo actual solo en esta pantalla",
+            [nameof(ResetOffsetsTooltip)] = "Restablecer desplazamientos",
+            [nameof(ReferenceDisplayNote)] =
+                "Pantalla de referencia · Sigue el horario principal de «Ciclo y colores»",
+            [nameof(EffectiveNowText)] = "Ahora: {0} K · {1}",
+            [nameof(ExcludedNeutralText)] = "Excluida · Neutra 6600 K",
+            [nameof(DisconnectedDisplaysLabel)] = "Pantallas desconectadas guardadas ({0})",
+            [nameof(ForgetButton)] = "OLVIDAR",
+            [nameof(ForgetDisplayTooltip)] = "Eliminar las preferencias guardadas de esta pantalla",
+            // Controls & app
+            [nameof(HotkeysCardTitle)] = "Atajos globales",
+            [nameof(HotkeysCardSubtitle)] =
+                "Haz clic en un campo y pulsa una combinación de teclas para asignarla.",
+            [nameof(SystemPreferencesCardTitle)] = "Preferencias del sistema",
+            [nameof(StartMinimizedLabel)] = "Iniciar minimizado",
+            [nameof(StartMinimizedTooltip)] =
+                "Ocultar LightBulb en la bandeja del sistema al iniciarse, incluso cuando se abre manualmente",
+            [nameof(ExtendedGammaRangeLabel)] = "Rango de gamma ampliado",
+            [nameof(ExtendedGammaRangeTooltip)] =
+                "Desbloquear el rango completo de gamma en Windows, lo que permite temperaturas de color más cálidas y un brillo más bajo. Este cambio requiere privilegios de administrador.",
+            [nameof(GammaPollingIntervalLabel)] = "Actualizar cada",
+            [nameof(GammaPollingIntervalTooltip)] =
+                "Con qué frecuencia se fuerza la actualización de la gamma cuando el sondeo de gamma está activado",
+            [nameof(SecondsValueText)] = "{0} s",
+            // Tray menu
+            [nameof(TrayOpenMenuItem)] = "Abrir LightBulb",
+            [nameof(TrayPauseMenuItem)] = "Pausar",
+            [nameof(TrayResumeMenuItem)] = "Reanudar",
+            [nameof(TrayPreviewMenuItem)] = "Vista previa del ciclo de 24 h",
+            [nameof(PauseFor15MinutesChip)] = "15 min",
+            [nameof(PauseFor1HourChip)] = "1 h",
+            [nameof(PauseFor3HoursChip)] = "3 h",
+            [nameof(PausedStateLabel)] = "En pausa",
         };
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -31,12 +32,13 @@ public partial class LocalizationManager : ObservableObject, IDisposable
     [ObservableProperty]
     public partial Language Language { get; set; } = Language.System;
 
-    private string Get([CallerMemberName] string? key = null)
-    {
-        if (string.IsNullOrWhiteSpace(key))
-            return string.Empty;
+    private string Get([CallerMemberName] string? key = null) =>
+        string.IsNullOrWhiteSpace(key) ? string.Empty : Resolve(GetLocalization(Language), key);
 
-        var localization = Language switch
+    // Translations for the given language (or, for the system language, the one that matches the
+    // current UI culture). Keys that a translation doesn't have fall back to English.
+    internal static IReadOnlyDictionary<string, string> GetLocalization(Language language) =>
+        language switch
         {
             Language.System =>
                 CultureInfo.CurrentUICulture.ThreeLetterISOLanguageName.ToLowerInvariant() switch
@@ -68,13 +70,17 @@ public partial class LocalizationManager : ObservableObject, IDisposable
             _ => EnglishLocalization,
         };
 
-        if (
-            localization.TryGetValue(key, out var value)
-            || EnglishLocalization.TryGetValue(key, out value)
-        )
-        {
+    internal static IReadOnlyDictionary<string, string> EnglishStrings => EnglishLocalization;
+
+    // Falls back to English for keys that are missing (or blank) in the given translation,
+    // so that a partially translated language never shows empty labels
+    internal static string Resolve(IReadOnlyDictionary<string, string> localization, string key)
+    {
+        if (localization.TryGetValue(key, out var value) && !string.IsNullOrWhiteSpace(value))
             return value;
-        }
+
+        if (EnglishLocalization.TryGetValue(key, out value))
+            return value;
 
         return $"Missing localization for '{key}'";
     }

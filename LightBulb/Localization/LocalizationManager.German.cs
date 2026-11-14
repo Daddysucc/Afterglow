@@ -130,5 +130,184 @@ public partial class LocalizationManager
             Drücken Sie OK, um die Einstellungen zu öffnen.
             """,
         [nameof(OkButton)] = "OK",
+        // Dashboard
+        [nameof(BedtimeLabel)] = "Schlafenszeit",
+        [nameof(DayStateLabel)] = "Tag",
+        [nameof(EveningStateLabel)] = "Abend",
+        [nameof(NightStateLabel)] = "Nacht",
+        [nameof(SunriseTransitionPhaseLabel)] = "Übergang (Sonnenaufgang)",
+        [nameof(SunsetTransitionPhaseLabel)] = "Übergang (Sonnenuntergang)",
+        [nameof(NightTransitionPhaseLabel)] = "Übergang (Schlafenszeit)",
+        [nameof(StatusDayPhrases)] = """
+            Tagesstunden. Farben sind für Arbeit und genauen Kontrast abgestimmt.
+            Volles Tageslichtspektrum aktiv für scharfen Text und klare Bilder.
+            Ein neutraler Weißabgleich passt zu hellen Räumen am Tag.
+            Standard-Tageskalibrierung aktiv für Bearbeitung und Surfen.
+            Die Bildschirmfarben zeigen reines, unverändertes Tageslicht.
+            Fokusmodus am Nachmittag. Der Bildschirm zeigt maximale Klarheit.
+            Tageslichtprofil aktiv mit voller Helligkeit und natürlichem Weiß.
+            """,
+        [nameof(StatusEveningPhrases)] = """
+            Sonnenuntergang vorbei. Die Blendung wird für den Abend reduziert.
+            Abendstunden. Grelles Blaulicht wird gedämpft, während Sie entspannen.
+            Die Dämmerung ist da. Der Bildschirm zeigt angenehme Abendwärme.
+            Feierabend. Der Bildschirmton ist zum Entspannen und Surfen sanfter.
+            Die Abendwärme nimmt hellem Weiß die Schärfe.
+            Nach Sonnenuntergang sind die Farben wärmer für entspanntes Sehen.
+            Dämmerungsplan aktiv. Ausgewogene Wärme ohne starke Tönung.
+            """,
+        [nameof(StatusNightPhrases)] = """
+            Späte Nachtstunden. Tiefe Wärme ist für dunkle Räume aktiv.
+            Der Schlafplan läuft. Blaues Licht ist auf ein Minimum reduziert.
+            Der Bildschirm zeigt gedämpftes Bernstein zum Lesen in der Nacht.
+            Ruhezeit. Die Bildschirmblendung bleibt bis zum Morgen gering.
+            Der Mitternachtsmodus schont Ihre Augen in einem dunklen Raum.
+            Späte Stunden. Vor dem Schlafen läuft das wärmste Farbprofil.
+            Nachtplan aktiv. Grelles Weiß wird durch sanftes Bernstein ersetzt.
+            """,
+        [nameof(StatusTransitionToDayText)] = "Übergang zu den Tagesfarben...",
+        [nameof(StatusTransitionToEveningText)] = "Übergang zur Abendwärme...",
+        [nameof(StatusTransitionToNightText)] = "Übergang zur Nachtwärme...",
+        [nameof(StatusDisabledText)] =
+            "LightBulb ist pausiert. Der Bildschirm zeigt neutrales Tageslicht.",
+        [nameof(StatusDisabledDayConfigText)] =
+            "LightBulb ist pausiert. Der Bildschirm zeigt Ihre Tagesfarben.",
+        [nameof(StatusPausedText)] =
+            "Automatisch pausiert wegen einer Vollbild- oder Whitelist-Anwendung.",
+        [nameof(StatusPreviewText)] = "Vorschau der nächsten 24 Stunden…",
+        [nameof(StatusRemoteStreamingPausedText)] =
+            "Pausiert, solange eine Remote-Streaming-Sitzung aktiv ist.",
+        [nameof(PausedRemoteStreamingLabel)] = "Pausiert (Remote-Streaming)",
+        [nameof(PausedScreenLockedLabel)] = "Pausiert (Bildschirm gesperrt)",
+        [nameof(PausedFullScreenLabel)] = "Pausiert (Vollbildanwendung)",
+        [nameof(PausedWhitelistLabel)] = "Pausiert (Whitelist-Anwendung)",
+        [nameof(PausedCaption)] = "{0} · {1} K ({2} Helligkeit)",
+        [nameof(SolarEventPastText)] = "{0}: vor {1}",
+        [nameof(SolarEventFutureText)] = "{0}: in {1}",
+        [nameof(SolarEventNowText)] = "{0}: jetzt",
+        [nameof(DurationMinuteText)] = "1 Minute",
+        [nameof(DurationMinutesText)] = "{0} Minuten",
+        [nameof(DurationHourText)] = "1 Stunde",
+        [nameof(DurationHoursText)] = "{0} Stunden",
+        [nameof(ActivePhaseCaption)] = "Aktive Phase: {0} · {1} K ({2} Helligkeit)",
+        [nameof(ActiveStageTemperatureTooltip)] =
+            "Ziehen, um die Farbtemperatur der aktuellen Phase anzupassen ({0})",
+        [nameof(ManualScheduleText)] = "Manueller Zeitplan",
+        [nameof(LocationNotSetText)] = "Standort: nicht festgelegt",
+        [nameof(LocationCoordinatesText)] = "Standort: {0}",
+        [nameof(OpenLocationSettingsTooltip)] = "Standorteinstellungen ändern",
+        // Cycle
+        [nameof(EveningStageTooltip)] =
+            "Vom Sonnenuntergang bis zum Beginn der Nacht eine Abendkonfiguration als Zwischenstufe verwenden, statt bei Sonnenuntergang direkt zur Nachtkonfiguration zu wechseln",
+        [nameof(EveningTemperatureTooltip)] =
+            "Farbtemperatur zwischen Sonnenuntergang und Beginn der Nacht",
+        [nameof(EveningBrightnessTooltip)] = """
+            Helligkeit zwischen Sonnenuntergang und Beginn der Nacht
+
+            Diese Helligkeitseinstellung wirkt auf das Farbgamma, nicht auf die tatsächliche Bildschirmhelligkeit.
+            """,
+        [nameof(NightStartTimeTooltip)] = """
+            Zeitpunkt, zu dem der Übergang von der Abend- zur Nachtkonfiguration beginnt (wie der Sonnenuntergang um den Übergangsversatz angepasst)
+
+            Beginnt die Nacht, bevor der Übergang bei Sonnenuntergang abgeschlossen ist, wird die Abendphase an diesem Tag übersprungen.
+            """,
+        // Settings page
+        [nameof(BackTooltip)] = "Zurück zum Dashboard (Änderungen werden gespeichert)",
+        [nameof(CycleTabName)] = "Zyklus & Farben",
+        [nameof(ScheduleTabName)] = "Zeitplan & Standort",
+        [nameof(RulesTabName)] = "Regeln & Whitelist",
+        [nameof(ControlsTabName)] = "Steuerung & App",
+        [nameof(DayCardSubtitle)] = "Sonnenaufgang bis Sonnenuntergang",
+        [nameof(EveningCardSubtitle)] = "Sonnenuntergang bis Schlafenszeit",
+        [nameof(NightCardSubtitle)] = "Schlafenszeit bis Sonnenaufgang",
+        [nameof(TemperatureLabel)] = "Temperatur",
+        [nameof(BrightnessLabel)] = "Helligkeit",
+        [nameof(BedtimeNightStartLabel)] = "Schlafenszeit (Beginn der Nacht)",
+        [nameof(TransitionsCardTitle)] = "Übergänge",
+        [nameof(DurationLabel)] = "Dauer",
+        [nameof(TransitionOffsetShortLabel)] = "Versatz",
+        [nameof(LocationCardTitle)] = "Standort & Koordinaten",
+        [nameof(LocationCardSubtitle)] =
+            "Wird zur Berechnung von Sonnenaufgang und Sonnenuntergang verwendet. Suchen Sie einen Ort, geben Sie Koordinaten ein oder lassen Sie ihn automatisch erkennen.",
+        [nameof(LocationInUseText)] = "Verwendet: {0}, {1}",
+        [nameof(SolarScheduleCardTitle)] = "Sonnenzeitplan",
+        [nameof(SolarScheduleCardSubtitle)] =
+            "Sonnenaufgang und Sonnenuntergang anhand Ihres Standorts berechnen oder manuell festlegen.",
+        [nameof(OffLabel)] = "Aus",
+        // Rules & whitelist
+        [nameof(AutoPauseCardTitle)] = "Intelligente Auto-Pause",
+        [nameof(AutoPauseCardSubtitle)] =
+            "In diesen Situationen vorübergehend die normalen Farben wiederherstellen.",
+        [nameof(PauseWhenScreenLockedLabel)] = "Pausieren, wenn der Bildschirm gesperrt ist",
+        [nameof(PauseWhenScreenLockedTooltip)] =
+            "LightBulb pausieren, solange der Computer gesperrt ist",
+        [nameof(WhitelistCardSubtitle)] =
+            "LightBulb pausieren, solange eines der ausgewählten Programme im Vordergrund ist.",
+        [nameof(PerMonitorFullscreenPauseLabel)] = "Nur den Monitor mit dem Vollbild pausieren",
+        [nameof(PerMonitorFullscreenPauseTooltip)] =
+            "Wenn eine Vollbildanwendung im Vordergrund ist, die normalen Farben nur auf dem Bildschirm wiederherstellen, auf dem sie läuft, und die anderen Bildschirme im Zyklus belassen",
+        [nameof(StreamingAutoPauseLabel)] = "Beim Remote-Streaming pausieren (Sunshine / RDP)",
+        [nameof(StreamingAutoPauseTooltip)] =
+            "Die normalen Farben auf allen Bildschirmen wiederherstellen, solange dieser Computer mit Sunshine gestreamt oder per Remotedesktop verwendet wird",
+        [nameof(StreamingPortsLabel)] = "Streaming-TCP-Ports",
+        [nameof(StreamingPortsTooltip)] =
+            "Remotedesktop wird automatisch auf jedem Port erkannt. Sunshine und andere Streaming-Apps werden an einer aktiven Verbindung auf einem dieser lokalen TCP-Ports erkannt, getrennt durch Kommas (z. B. 48010 für Sunshine, oder 48010, 27036, um auch Steam Remote Play einzubeziehen).",
+        [nameof(DisplaysCardTitle)] = "Verbundene Bildschirme",
+        [nameof(DisplaysCardSubtitle)] =
+            "Bildschirme ausschließen oder ihre Wärme einzeln feinabstimmen. Bildschirme werden beim erneuten Verbinden wiedererkannt.",
+        [nameof(IdentifyButton)] = "IDENTIFIZIEREN",
+        [nameof(IdentifyTooltip)] = "Die Nummer jedes Bildschirms auf ihm anzeigen",
+        [nameof(OffsetScalingLabel)] = "Versatzskalierung",
+        [nameof(OffsetScalingTooltip)] =
+            "Wie der Temperaturversatz jedes Bildschirms angewendet wird, während der Zyklus vom Tag zur Nacht übergeht",
+        [nameof(PerceptualOffsetScalingOption)] = "Mired (Wahrnehmung)",
+        [nameof(FixedOffsetScalingOption)] = "Kelvin (fest)",
+        [nameof(PerceptualOffsetScalingDescription)] =
+            "Temperaturversätze gelten exakt bei Ihrer Tagestemperatur und skalieren zum Abend und zur Nacht hin wahrnehmungsgetreu, sodass unterschiedliche Bildschirmtypen optisch aufeinander abgestimmt bleiben.",
+        [nameof(FixedOffsetScalingDescription)] =
+            "Temperaturversätze werden jederzeit als gleiche, feste Anzahl Kelvin angewendet, ohne Skalierung zwischen Tag und Nacht.",
+        [nameof(NoDisplaysText)] = "Keine Bildschirme erkannt.",
+        [nameof(PrimaryBadge)] = "PRIMÄR",
+        [nameof(DisplayEnabledTooltip)] =
+            "LightBulb auf diesen Bildschirm anwenden. Ein ausgeschlossener Bildschirm behält neutrale Farben.",
+        [nameof(MonitorTemperatureOffsetLabel)] = "Temperaturversatz",
+        [nameof(MonitorTemperatureOffsetTooltip)] =
+            "Verschiebt die Farbtemperatur nur auf diesem Bildschirm. Bei wahrnehmungsgetreuer Skalierung ist dies die Verschiebung bei Ihrer Tagestemperatur.",
+        [nameof(MonitorBrightnessOffsetLabel)] = "Helligkeitsversatz",
+        [nameof(MonitorBrightnessOffsetTooltip)] =
+            "Wird nur auf diesem Bildschirm zur aktuellen Helligkeit addiert",
+        [nameof(ResetOffsetsTooltip)] = "Versätze zurücksetzen",
+        [nameof(ReferenceDisplayNote)] =
+            "Referenzbildschirm · Folgt dem Hauptzeitplan von „Zyklus & Farben“",
+        [nameof(EffectiveNowText)] = "Aktuell wirksam: {0} K · {1}",
+        [nameof(ExcludedNeutralText)] = "Ausgeschlossen · Neutral 6600 K",
+        [nameof(DisconnectedDisplaysLabel)] = "Gespeicherte getrennte Bildschirme ({0})",
+        [nameof(ForgetButton)] = "VERGESSEN",
+        [nameof(ForgetDisplayTooltip)] =
+            "Die gespeicherten Einstellungen für diesen Bildschirm entfernen",
+        // Controls & app
+        [nameof(HotkeysCardTitle)] = "Globale Tastenkombinationen",
+        [nameof(HotkeysCardSubtitle)] =
+            "Klicken Sie auf ein Feld und drücken Sie eine Tastenkombination, um sie zuzuweisen.",
+        [nameof(SystemPreferencesCardTitle)] = "Systemeinstellungen",
+        [nameof(StartMinimizedLabel)] = "Minimiert starten",
+        [nameof(StartMinimizedTooltip)] =
+            "LightBulb beim Start in den Infobereich minimieren, auch wenn es manuell gestartet wird",
+        [nameof(ExtendedGammaRangeLabel)] = "Erweiterter Gamma-Bereich",
+        [nameof(ExtendedGammaRangeTooltip)] =
+            "Den vollen Gamma-Bereich in Windows entsperren, der wärmere Farbtemperaturen und geringere Helligkeit erlaubt. Für die Änderung sind Administratorrechte erforderlich.",
+        [nameof(GammaPollingIntervalLabel)] = "Aktualisieren alle",
+        [nameof(GammaPollingIntervalTooltip)] =
+            "Wie oft das Gamma bei aktivierter Gamma-Abfrage aufgefrischt wird",
+        [nameof(SecondsValueText)] = "{0} s",
+        // Tray menu
+        [nameof(TrayOpenMenuItem)] = "LightBulb öffnen",
+        [nameof(TrayPauseMenuItem)] = "Pausieren",
+        [nameof(TrayResumeMenuItem)] = "Fortsetzen",
+        [nameof(TrayPreviewMenuItem)] = "24-Stunden-Zyklus vorschauen",
+        [nameof(PauseFor15MinutesChip)] = "15 Min.",
+        [nameof(PauseFor1HourChip)] = "1 Std.",
+        [nameof(PauseFor3HoursChip)] = "3 Std.",
+        [nameof(PausedStateLabel)] = "Pausiert",
     };
 }
