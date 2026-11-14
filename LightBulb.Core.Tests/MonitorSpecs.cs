@@ -313,4 +313,53 @@ public class MonitorSpecs
         // Assert
         state.Should().Be(new AutoPauseState(PauseReason.Whitelist, null));
     }
+
+    [Fact]
+    public void I_observe_no_failure_when_evaluating_with_no_displays_connected()
+    {
+        // Arrange
+        // E.g. booted with the monitor off, or into a remote session before a display is attached
+        var monitors = System.Array.Empty<string>();
+
+        // Act
+        var state = AutoPause.Evaluate(
+            new AutoPauseConditions(false, false, null, false),
+            AllEnabledSettings
+        );
+
+        var context = CreateContext(isGloballyPaused: state.IsGloballyPaused);
+        var configurations = monitors
+            .Select(m =>
+                MonitorColorResolver.Resolve(context, null, isPaused: m == state.PausedMonitor)
+            )
+            .ToArray();
+
+        // Assert
+        state.Should().Be(AutoPauseState.None);
+        configurations.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void I_observe_no_display_paused_when_the_fullscreen_display_is_no_longer_connected()
+    {
+        // Arrange
+        // The fullscreen window was on a display that has since been unplugged
+        var state = AutoPause.Evaluate(
+            new AutoPauseConditions(false, false, @"\\.\DISPLAY7", false),
+            AllEnabledSettings
+        );
+
+        var connectedMonitors = new[] { @"\\.\DISPLAY1", @"\\.\DISPLAY2" };
+        var context = CreateContext(isGloballyPaused: state.IsGloballyPaused);
+
+        // Act
+        var configurations = connectedMonitors
+            .Select(m =>
+                MonitorColorResolver.Resolve(context, null, isPaused: m == state.PausedMonitor)
+            )
+            .ToArray();
+
+        // Assert
+        configurations.Should().AllBeEquivalentTo(ActiveConfiguration);
+    }
 }

@@ -21,8 +21,40 @@ public static class Program
 
     public static string ExecutableDirPath { get; } = AppContext.BaseDirectory;
 
+    // Used to start the app with Windows, so it must point to the actual app executable
     public static string ExecutableFilePath { get; } =
-        Path.ChangeExtension(Assembly.Location, "exe");
+        ResolveExecutableFilePath(ExecutableDirPath, Name, Environment.ProcessPath, File.Exists);
+
+    // Assembly locations can't be used for this, because they're empty when published as a single
+    // file. The process path can't be relied on either, because it points to the dotnet host when
+    // the app is launched through it (e.g. 'dotnet run' or debugging).
+    internal static string ResolveExecutableFilePath(
+        string baseDirPath,
+        string appName,
+        string? processPath,
+        Func<string, bool> fileExists
+    )
+    {
+        // The app's own executable sits next to it in every deployment mode
+        // (regular and single-file publishing, framework-dependent and self-contained, dev builds)
+        var appExecutablePath = Path.Combine(baseDirPath, appName + ".exe");
+        if (fileExists(appExecutablePath))
+            return appExecutablePath;
+
+        if (
+            !string.IsNullOrWhiteSpace(processPath)
+            && !string.Equals(
+                Path.GetFileNameWithoutExtension(processPath),
+                "dotnet",
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+        {
+            return processPath;
+        }
+
+        return appExecutablePath;
+    }
 
     public static string ProjectUrl { get; } = "https://github.com/Tyrrrz/LightBulb";
 

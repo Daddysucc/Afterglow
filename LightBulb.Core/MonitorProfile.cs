@@ -14,7 +14,7 @@ public record MonitorProfile
     public const double BrightnessOffsetStep = 0.01;
 
     // Persistent hardware identifier, used to recognize the display when it's reconnected
-    public required string DevicePath { get; init; }
+    public string DevicePath { get; init; } = "";
 
     // Shown for displays that are currently disconnected
     public string LastKnownName { get; init; } = "";
@@ -31,18 +31,22 @@ public record MonitorProfile
     [JsonIgnore]
     public bool HasOffsets => TemperatureOffset != 0 || Math.Abs(BrightnessOffset) >= 0.005;
 
+    // Halfway values round away from zero (e.g. 125 K becomes 150 K), rather than to an even step
     public static int NormalizeTemperatureOffset(double offset) =>
         (int)(
             Math.Round(
                 Math.Clamp(offset, -MaxTemperatureOffset, MaxTemperatureOffset)
-                    / TemperatureOffsetStep
+                    / TemperatureOffsetStep,
+                MidpointRounding.AwayFromZero
             ) * TemperatureOffsetStep
         );
 
     public static double NormalizeBrightnessOffset(double offset) =>
         Math.Round(
             Math.Round(
-                Math.Clamp(offset, -MaxBrightnessOffset, MaxBrightnessOffset) / BrightnessOffsetStep
+                Math.Clamp(offset, -MaxBrightnessOffset, MaxBrightnessOffset)
+                    / BrightnessOffsetStep,
+                MidpointRounding.AwayFromZero
             ) * BrightnessOffsetStep,
             2
         );

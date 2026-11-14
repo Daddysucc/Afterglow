@@ -70,8 +70,15 @@ public partial class TrayMenuWindow : Window<MainViewModel>
 
     private void UpdatePosition(Size size)
     {
-        // Everything here is in physical pixels, as reported by the system for the target display
-        var (workArea, scale) = DisplayMonitors.GetWorkAreaAt(_anchor.CenterX, _anchor.CenterY);
+        // Everything here is in physical pixels, as reported by the system for the target display.
+        // The window is sized in logical pixels, which are scaled by that display's DPI once the
+        // window is on it, so the physical size is computed with the same scale (and only once).
+        var (bounds, workArea, scale) = DisplayMonitors.GetWorkAreaAt(
+            _anchor.CenterX,
+            _anchor.CenterY
+        );
+
+        // No display (e.g. all displays are off), so there's nowhere sensible to position it
         if (workArea == PlatformInterop.Rect.Empty)
             return;
 
@@ -80,7 +87,8 @@ public partial class TrayMenuWindow : Window<MainViewModel>
             (int)Math.Ceiling(size.Width * scale),
             (int)Math.Ceiling(size.Height * scale),
             new ScreenRect(workArea.Left, workArea.Top, workArea.Right, workArea.Bottom),
-            (int)Math.Round(Gap * scale)
+            (int)Math.Round(Gap * scale),
+            new ScreenRect(bounds.Left, bounds.Top, bounds.Right, bounds.Bottom)
         );
 
         Position = new PixelPoint(x, y);

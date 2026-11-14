@@ -2,7 +2,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>../favicon.ico</ApplicationIcon>
-    <PublishTrimmed>true</PublishTrimmed>
+    <!-- Trimming is only supported for self-contained apps (which is how releases are published) -->
+    <PublishTrimmed Condition="'$(SelfContained)' == 'true'">true</PublishTrimmed>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
   </PropertyGroup>
 
@@ -33,5 +34,8 @@
   <ItemGroup>
     <ProjectReference Include="../LightBulb.Core/LightBulb.Core.csproj" />
     <ProjectReference Include="../LightBulb.PlatformInterop/LightBulb.PlatformInterop.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LightBulb.Tests" />
   </ItemGroup>
 </Project>

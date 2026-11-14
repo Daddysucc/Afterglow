@@ -65,6 +65,9 @@ internal static partial class NativeMethods
     [DllImport(User32, SetLastError = true)]
     public static extern bool IsWindowVisible(nint hWnd);
 
+    [DllImport(User32)]
+    public static extern bool IsIconic(nint hWnd);
+
     [DllImport(User32, SetLastError = true)]
     public static extern int GetClassName(nint hWnd, StringBuilder lpClassName, int nMaxCount);
 

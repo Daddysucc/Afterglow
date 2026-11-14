@@ -121,6 +121,23 @@ public partial class Window(nint handle) : NativeResource(handle)
 
     public bool IsVisible() => NativeMethods.IsWindowVisible(Handle);
 
+    public bool IsMinimized() => NativeMethods.IsIconic(Handle);
+
+    // Cloaked windows are "visible" but not actually shown, e.g. suspended UWP app frames,
+    // or windows on other virtual desktops
+    public bool IsCloaked()
+    {
+        const int dwmwaCloaked = 14;
+
+        return NativeMethods.DwmGetWindowAttribute(
+                Handle,
+                dwmwaCloaked,
+                out var cloaked,
+                sizeof(int)
+            ) == 0
+            && cloaked != 0;
+    }
+
     public bool IsFullScreen()
     {
         if (TryGetMonitor() is not { } monitor)

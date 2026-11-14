@@ -3,4 +3,7 @@
     <PackageReference Include="CSharpier.MsBuild" PrivateAssets="all" />
     <PackageReference Include="PowerKit" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="LightBulb.Tests" />
+  </ItemGroup>
 </Project>
