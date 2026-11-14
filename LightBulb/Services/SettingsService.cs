@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text.Json.Serialization;
+using System.Threading;
 using Cogwheel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LightBulb.Core;
@@ -217,7 +219,7 @@ public partial class SettingsService : SettingsBase
         IsAutoStartEnabled = false;
 #endif
 
-        base.Save();
+        TrySaveToFile();
 
         // Update values in the registry
         try
@@ -237,13 +239,80 @@ public partial class SettingsService : SettingsBase
         OnPropertyChanged(string.Empty);
     }
 
-    public override bool Load()
+    // Errors that mean the file can't be accessed right now, as opposed to it having invalid contents
+    private static bool IsFileAccessError(Exception ex) =>
+        ex
+            is UnauthorizedAccessException
+                or SecurityException
+                or (IOException and not (FileNotFoundException or DirectoryNotFoundException));
+
+    // Set when the settings file exists but couldn't be read, so that it doesn't get overwritten
+    private bool _isFileUnreadable;
+
+    internal static int FileAccessAttempts => 5;
+
+    internal static TimeSpan FileAccessRetryDelay { get; } = TimeSpan.FromMilliseconds(100);
+
+    // Writes the settings file only, without touching the registry. Returns false if it couldn't be
+    // written (e.g. it's read-only or locked), which must not crash the app, as saving happens
+    // from the dashboard and the settings page at any time.
+    internal bool TrySaveToFile()
     {
-        bool wasLoaded;
+        if (_isFileUnreadable)
+        {
+            Debug.WriteLine("Not saving settings, because the existing file could not be read.");
+            return false;
+        }
 
         try
         {
-            wasLoaded = base.Load();
+            base.Save();
+            return true;
+        }
+        catch (Exception ex) when (IsFileAccessError(ex))
+        {
+            Debug.WriteLine($"Failed to save settings: {ex}");
+            return false;
+        }
+    }
+
+    // The file may be briefly locked by another process (e.g. a cloud sync client or an antivirus
+    // scan right after signing in), so reading is retried a few times before giving up
+    private bool LoadFileWithRetries()
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return base.Load();
+            }
+            catch (Exception ex) when (IsFileAccessError(ex) && attempt < FileAccessAttempts)
+            {
+                Debug.WriteLine($"Settings file is not accessible (attempt {attempt}): {ex}");
+                Thread.Sleep(FileAccessRetryDelay);
+            }
+        }
+    }
+
+    public override bool Load()
+    {
+        bool wasLoaded;
+        _isFileUnreadable = false;
+
+        try
+        {
+            wasLoaded = LoadFileWithRetries();
+        }
+        catch (Exception ex) when (IsFileAccessError(ex))
+        {
+            // The file exists but can't be read. It's not corrupt, so it's neither backed up nor
+            // replaced: run with defaults for now, and leave the file alone for the next launch.
+            Debug.WriteLine($"Failed to read settings, using defaults for this session: {ex}");
+
+            Reset();
+            _isFileUnreadable = true;
+
+            wasLoaded = false;
         }
         catch (Exception ex)
         {
@@ -348,10 +417,38 @@ public partial class SettingsService : SettingsBase
             (c, v) => c with { Brightness = v }
         );
 
-    public MonitorProfile? TryGetMonitorProfile(string devicePath) =>
-        MonitorProfiles?.FirstOrDefault(p =>
-            string.Equals(p.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase)
-        );
+    // Called for every display on every update tick, so it avoids allocations
+    public MonitorProfile? TryGetMonitorProfile(string devicePath)
+    {
+        if (MonitorProfiles is not { } profiles)
+            return null;
+
+        foreach (var profile in profiles)
+        {
+            if (string.Equals(profile.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase))
+                return profile;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Re-attaches saved profiles to connected displays whose device paths have changed since
+    /// (e.g. after a graphics driver update), so that their preferences aren't lost.
+    /// </summary>
+    /// <returns>Whether any profile was updated.</returns>
+    public bool ReconcileMonitorProfiles(IReadOnlyList<string> connectedDevicePaths)
+    {
+        if (MonitorProfiles is not { Count: > 0 } profiles)
+            return false;
+
+        var rekeyed = MonitorProfileMatcher.TryRekey(connectedDevicePaths, profiles);
+        if (rekeyed is null)
+            return false;
+
+        MonitorProfiles = rekeyed;
+        return true;
+    }
 
     // Creates the profile if the display doesn't have one yet
     public void UpdateMonitorProfile(
