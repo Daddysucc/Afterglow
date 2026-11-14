@@ -31,6 +31,9 @@ public class GrayscaleSpecs : IDisposable
     [InlineData(GrayscaleSchedule.EveningAndNight, CycleStage.Day, false)]
     [InlineData(GrayscaleSchedule.EveningAndNight, CycleStage.Evening, true)]
     [InlineData(GrayscaleSchedule.EveningAndNight, CycleStage.Night, true)]
+    [InlineData(GrayscaleSchedule.On, CycleStage.Day, true)]
+    [InlineData(GrayscaleSchedule.On, CycleStage.Evening, true)]
+    [InlineData(GrayscaleSchedule.On, CycleStage.Night, true)]
     public void I_can_have_grayscale_turn_on_by_itself_during_the_scheduled_stages(
         GrayscaleSchedule schedule,
         CycleStage stage,

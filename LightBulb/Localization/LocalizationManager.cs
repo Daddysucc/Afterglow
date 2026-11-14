@@ -125,6 +125,8 @@ public partial class LocalizationManager
     public string StatusPausedAutomaticallyDayText => Get();
     public string StatusGrayscaleText => Get();
     public string StatusGrayscaleNeutralText => Get();
+    public string StatusGrayscaleSnoozedText => Get();
+    public string StatusGrayscaleHeldText => Get();
     public string StatusPreviewText => Get();
     public string PausedRemoteStreamingLabel => Get();
     public string PausedScreenLockedLabel => Get();
@@ -352,4 +354,9 @@ public partial class LocalizationManager
     public string GrayscaleScheduleEveningAndNightOption => Get();
     public string GrayscaleTemperatureShiftLabel => Get();
     public string GrayscaleTemperatureShiftTooltip => Get();
+    public string GrayscaleScheduleOnOption => Get();
+    public string TrayDisableGrayscaleMenuItem => Get();
+    public string PauseFor30MinutesChip => Get();
+    public string GrayscaleUntilScheduleChangeChip => Get();
+    public string TrayResumeGrayscaleMenuItem => Get();
 }

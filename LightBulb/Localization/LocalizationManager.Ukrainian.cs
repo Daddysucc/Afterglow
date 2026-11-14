@@ -172,6 +172,9 @@ public partial class LocalizationManager
             [nameof(StatusGrayscaleText)] = "Відтінки сірого активні з {0} K і яскравістю {1}%.",
             [nameof(StatusGrayscaleNeutralText)] =
                 "Відтінки сірого активні з нейтральною точкою білого.",
+            [nameof(StatusGrayscaleSnoozedText)] = "Відтінки сірого тимчасово вимкнено на {0}.",
+            [nameof(StatusGrayscaleHeldText)] =
+                "Відтінки сірого вимкнено до наступної зміни розкладу.",
             [nameof(StatusPreviewText)] = "Демонстрація наступних 24 годин…",
             [nameof(PausedRemoteStreamingLabel)] = "Призупинено (віддалена трансляція)",
             [nameof(PausedScreenLockedLabel)] = "Призупинено (екран заблоковано)",
@@ -325,5 +328,10 @@ public partial class LocalizationManager
                 "Змінювати колірну температуру у відтінках сірого",
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Продовжувати застосовувати колірну температуру поверх відтінків сірого для теплого бурштинового монохромного вигляду. Якщо вимкнено, використовується нейтральна точка білого, а яскравість і далі застосовується.",
+            [nameof(GrayscaleScheduleOnOption)] = "Увімк.",
+            [nameof(TrayDisableGrayscaleMenuItem)] = "Тимчасово вимкнути відтінки сірого",
+            [nameof(PauseFor30MinutesChip)] = "30 хв",
+            [nameof(GrayscaleUntilScheduleChangeChip)] = "До наступної зміни розкладу",
+            [nameof(TrayResumeGrayscaleMenuItem)] = "Відновити відтінки сірого",
         };
 }

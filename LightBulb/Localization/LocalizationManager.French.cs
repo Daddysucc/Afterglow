@@ -173,6 +173,9 @@ public partial class LocalizationManager
             "En pause automatique, configuration de jour rétablie.",
         [nameof(StatusGrayscaleText)] = "Niveaux de gris actifs à {0} K et {1} % de luminosité.",
         [nameof(StatusGrayscaleNeutralText)] = "Niveaux de gris actifs avec un point blanc neutre.",
+        [nameof(StatusGrayscaleSnoozedText)] = "Niveaux de gris désactivés pendant {0}.",
+        [nameof(StatusGrayscaleHeldText)] =
+            "Niveaux de gris désactivés jusqu'au prochain changement d'horaire.",
         [nameof(StatusPreviewText)] = "Aperçu des 24 prochaines heures…",
         [nameof(PausedRemoteStreamingLabel)] = "En pause (streaming à distance)",
         [nameof(PausedScreenLockedLabel)] = "En pause (écran verrouillé)",
@@ -327,5 +330,10 @@ public partial class LocalizationManager
             "Appliquer la température de couleur en niveaux de gris",
         [nameof(GrayscaleTemperatureShiftTooltip)] =
             "Continuer d'appliquer la température de couleur par-dessus les niveaux de gris, pour un rendu monochrome ambré et chaud. Si désactivé, les niveaux de gris utilisent un point blanc neutre, et la luminosité reste appliquée.",
+        [nameof(GrayscaleScheduleOnOption)] = "Activé",
+        [nameof(TrayDisableGrayscaleMenuItem)] = "Désactiver temporairement les niveaux de gris",
+        [nameof(PauseFor30MinutesChip)] = "30 min",
+        [nameof(GrayscaleUntilScheduleChangeChip)] = "Jusqu'au prochain changement d'horaire",
+        [nameof(TrayResumeGrayscaleMenuItem)] = "Reprendre les niveaux de gris",
     };
 }

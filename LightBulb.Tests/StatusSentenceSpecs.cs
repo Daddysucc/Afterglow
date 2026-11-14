@@ -51,7 +51,9 @@ public class StatusSentenceSpecs : IDisposable
         ColorConfiguration? current = null,
         bool isGrayscaleActive = false,
         bool isGrayscaleTemperatureShiftEnabled = true,
-        bool isDefaultToDayConfigurationEnabled = false
+        bool isDefaultToDayConfigurationEnabled = false,
+        TimeSpan? grayscaleSnoozeRemaining = null,
+        bool isGrayscaleHeldUntilScheduleChange = false
     ) =>
         StatusSentenceBuilder.Build(
             new StatusSentenceContext(
@@ -67,10 +69,47 @@ public class StatusSentenceSpecs : IDisposable
                 night ?? Night,
                 isGrayscaleActive,
                 isGrayscaleTemperatureShiftEnabled,
-                isDefaultToDayConfigurationEnabled
+                isDefaultToDayConfigurationEnabled,
+                grayscaleSnoozeRemaining,
+                isGrayscaleHeldUntilScheduleChange
             ),
             _localization
         );
+
+    [Theory]
+    [InlineData(27.5 * 60, "Grayscale temporarily disabled for 28 minutes.")]
+    [InlineData(30, "Grayscale temporarily disabled for 1 minute.")]
+    [InlineData(59.5 * 60, "Grayscale temporarily disabled for 1 hour.")]
+    [InlineData(60 * 60, "Grayscale temporarily disabled for 1 hour.")]
+    public void I_can_see_how_long_grayscale_stays_disabled(double seconds, string expected)
+    {
+        // Act & assert
+        Build(CycleStage.Night, grayscaleSnoozeRemaining: TimeSpan.FromSeconds(seconds))
+            .Should()
+            .Be(expected);
+    }
+
+    [Fact]
+    public void I_can_see_grayscale_disabled_until_the_next_schedule_change()
+    {
+        // Act & assert
+        Build(CycleStage.Night, isGrayscaleHeldUntilScheduleChange: true)
+            .Should()
+            .Be("Grayscale disabled until the next schedule change.");
+    }
+
+    [Fact]
+    public void I_can_see_a_pause_explained_rather_than_disabled_grayscale_while_paused()
+    {
+        // Act & assert
+        Build(
+                CycleStage.Night,
+                pauseReason: PauseReason.ScreenLocked,
+                grayscaleSnoozeRemaining: TimeSpan.FromMinutes(10)
+            )
+            .Should()
+            .Be("Paused while the screen is locked.");
+    }
 
     [Fact]
     public void I_can_see_grayscale_and_the_color_temperature_tinting_it()

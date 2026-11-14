@@ -54,6 +54,9 @@ public partial class LocalizationManager
                 "Paused automatically with daytime configuration restored.",
             [nameof(StatusGrayscaleText)] = "Grayscale active at {0} K and {1}% brightness.",
             [nameof(StatusGrayscaleNeutralText)] = "Grayscale active with neutral white point.",
+            [nameof(StatusGrayscaleSnoozedText)] = "Grayscale temporarily disabled for {0}.",
+            [nameof(StatusGrayscaleHeldText)] =
+                "Grayscale disabled until the next schedule change.",
             [nameof(StatusPreviewText)] = "Previewing the next 24 hours…",
             [nameof(PausedRemoteStreamingLabel)] = "Paused (Remote streaming)",
             [nameof(PausedScreenLockedLabel)] = "Paused (Screen locked)",
@@ -333,5 +336,10 @@ public partial class LocalizationManager
             [nameof(GrayscaleTemperatureShiftLabel)] = "Shift color temperature in grayscale mode",
             [nameof(GrayscaleTemperatureShiftTooltip)] =
                 "Keep applying the color temperature on top of grayscale, for a warm amber monochrome look. When off, grayscale uses a neutral white point, and brightness still applies.",
+            [nameof(GrayscaleScheduleOnOption)] = "On",
+            [nameof(TrayDisableGrayscaleMenuItem)] = "Temporarily disable grayscale",
+            [nameof(PauseFor30MinutesChip)] = "30 min",
+            [nameof(GrayscaleUntilScheduleChangeChip)] = "Until next schedule change",
+            [nameof(TrayResumeGrayscaleMenuItem)] = "Resume grayscale",
         };
 }

@@ -122,8 +122,14 @@ public class CycleSettingsTabViewModel(
         get => (int)SettingsService.GrayscaleSchedule;
         set
         {
-            if (Enum.IsDefined((GrayscaleSchedule)value))
-                SettingsService.GrayscaleSchedule = (GrayscaleSchedule)value;
+            if (!Enum.IsDefined((GrayscaleSchedule)value))
+                return;
+
+            // A new schedule applies right away, replacing any earlier manual choice
+            if ((GrayscaleSchedule)value != SettingsService.GrayscaleSchedule)
+                SettingsService.GrayscaleOverride = null;
+
+            SettingsService.GrayscaleSchedule = (GrayscaleSchedule)value;
         }
     }
 

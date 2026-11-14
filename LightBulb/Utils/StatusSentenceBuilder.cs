@@ -31,7 +31,9 @@ public readonly record struct StatusSentenceContext(
     ColorConfiguration NightConfiguration,
     bool IsGrayscaleActive = false,
     bool IsGrayscaleTemperatureShiftEnabled = true,
-    bool IsDefaultToDayConfigurationEnabled = false
+    bool IsDefaultToDayConfigurationEnabled = false,
+    TimeSpan? GrayscaleSnoozeRemaining = null,
+    bool IsGrayscaleHeldUntilScheduleChange = false
 );
 
 /// <summary>
@@ -130,6 +132,27 @@ public static class StatusSentenceBuilder
             target
         );
 
+    // Time left, rounded up so that it never reads "0 minutes" (e.g. "28 minutes", "1 hour")
+    internal static string FormatDuration(TimeSpan duration, LocalizationManager localization)
+    {
+        var minutes = Math.Max(1, (int)Math.Ceiling(duration.TotalMinutes));
+        if (minutes < 60)
+        {
+            return minutes == 1
+                ? localization.DurationMinuteText
+                : string.Format(
+                    CultureInfo.CurrentCulture,
+                    localization.DurationMinutesText,
+                    minutes
+                );
+        }
+
+        var hours = (int)Math.Round(minutes / 60.0);
+        return hours == 1
+            ? localization.DurationHourText
+            : string.Format(CultureInfo.CurrentCulture, localization.DurationHoursText, hours);
+    }
+
     public static string Build(in StatusSentenceContext context, LocalizationManager localization)
     {
         if (context.IsPreviewing)
@@ -163,6 +186,18 @@ public static class StatusSentenceBuilder
                 ? Format(localization.StatusGrayscaleText, context.CurrentConfiguration)
                 : localization.StatusGrayscaleNeutralText;
         }
+
+        if (context.GrayscaleSnoozeRemaining is { } remaining)
+        {
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                localization.StatusGrayscaleSnoozedText,
+                FormatDuration(remaining, localization)
+            );
+        }
+
+        if (context.IsGrayscaleHeldUntilScheduleChange)
+            return localization.StatusGrayscaleHeldText;
 
         if (context.IsManualOverride)
             return Format(localization.StatusManualOverrideText, context.CurrentConfiguration);
