@@ -9,10 +9,6 @@ public partial class LocalizationManager
         {
             [nameof(SunsetLabel)] = "Захід",
             [nameof(SunriseLabel)] = "Схід",
-            [nameof(SunsetTransitionTooltip)] =
-                "Перехід до заходу сонця починається о **{0}** і закінчується о **{1}**",
-            [nameof(SunriseTransitionTooltip)] =
-                "Перехід до сходу сонця починається о **{0}** і закінчується о **{1}**",
             [nameof(OffsetTooltipHeader)] =
                 "Поточні значення температури та яскравості скориговані зміщенням:",
             [nameof(TemperatureOffsetLabel)] = "Зміщення температури:",
@@ -24,7 +20,6 @@ public partial class LocalizationManager
             [nameof(PreviewText)] = "ДЕМОНСТРАЦІЯ",
             [nameof(StopPreviewTooltip)] = "Зупинити демонстрацію",
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
-            [nameof(SettingsText)] = "НАЛАШТУВАННЯ",
             [nameof(OpenSettingsTooltip)] = "Відкрити налаштування",
             [nameof(ResetButton)] = "СКИНУТИ",
             [nameof(ResetTooltip)] = "Скинути всі налаштування до типових",

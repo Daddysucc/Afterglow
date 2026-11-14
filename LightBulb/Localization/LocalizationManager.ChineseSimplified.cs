@@ -10,8 +10,6 @@ public partial class LocalizationManager
             // Dashboard (仪表盘)
             [nameof(SunsetLabel)] = "日落",
             [nameof(SunriseLabel)] = "日出",
-            [nameof(SunsetTransitionTooltip)] = "日落过渡开始于 **{0}**，结束于 **{1}**",
-            [nameof(SunriseTransitionTooltip)] = "日出过渡开始于 **{0}**，结束于 **{1}**",
             [nameof(OffsetTooltipHeader)] = "当前的色温和亮度值已应用偏移量：",
             [nameof(TemperatureOffsetLabel)] = "色温偏移：",
             [nameof(BrightnessOffsetLabel)] = "亮度偏移：",
@@ -24,7 +22,6 @@ public partial class LocalizationManager
             [nameof(PreviewText)] = "预览",
             [nameof(StopPreviewTooltip)] = "停止预览",
             [nameof(StartPreviewTooltip)] = "预览 24 小时循环",
-            [nameof(SettingsText)] = "设置",
             [nameof(OpenSettingsTooltip)] = "打开设置",
 
             // Settings dialog (设置对话框)

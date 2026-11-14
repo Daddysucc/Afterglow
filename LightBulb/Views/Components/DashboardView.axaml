@@ -4,298 +4,238 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:components="clr-namespace:LightBulb.ViewModels.Components"
     xmlns:controls="clr-namespace:LightBulb.Views.Controls"
-    xmlns:converters="clr-namespace:LightBulb.Converters"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:viewModels="clr-namespace:LightBulb.ViewModels"
     x:Name="UserControl"
     x:DataType="components:DashboardViewModel"
 >
-    <Grid ColumnDefinitions="*,Auto,*">
-        <!--  Sunset time  -->
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+        <!--  Color temperature of the current stage  -->
+        <controls:TemperatureSlider
+            Grid.Row="0"
+            Margin="64,10,64,0"
+            FontSize="14"
+            Foreground="{DynamicResource DashboardTextBrush}"
+            Maximum="{Binding MaximumSliderTemperature}"
+            Minimum="{Binding MinimumSliderTemperature}"
+            ThumbBorderBrush="{DynamicResource DashboardSliderThumbBorderBrush}"
+            ToolTip.Tip="{Binding ActiveStageTemperatureTooltip}"
+            TrackBrush="{DynamicResource DashboardSliderTrackBrush}"
+            Value="{Binding ActiveStageTemperature}"
+        />
+
+        <!--  Relative solar timing  -->
         <TextBlock
-            Grid.Column="0"
-            Margin="4,0"
+            Grid.Row="1"
+            Margin="16,0,16,8"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="19"
-            TextAlignment="Center"
+            FontSize="13"
+            Foreground="{DynamicResource DashboardMutedTextBrush}"
+            Text="{Binding SolarTimingText}"
             TextTrimming="CharacterEllipsis"
+        />
+
+        <!--  24-hour graph  -->
+        <Border
+            Grid.Row="2"
+            Background="{DynamicResource DashboardGraphBrush}"
+            BorderBrush="{DynamicResource DashboardGraphBorderBrush}"
+            BorderThickness="0,1,0,0"
         >
-            <ToolTip.Tip>
-                <TextBlock Inlines="{Binding SunsetTransitionTooltip, Converter={x:Static converters:MarkdownToInlinesConverter.Instance}}" />
-            </ToolTip.Tip>
-            <Run FontWeight="Light" Text="{Binding LocalizationManager.SunsetLabel}" />
-            <LineBreak />
-            <Run
-                FontWeight="Regular"
-                Text="{Binding SolarTimes.Sunset, Converter={x:Static converters:TimeOnlyToStringConverter.Instance}, Mode=OneWay}"
-            />
-        </TextBlock>
-
-        <!--  Sundial  -->
-        <Panel Grid.Column="1">
-            <Panel.Resources>
-                <ResourceDictionary>
-                    <ResourceDictionary.ThemeDictionaries>
-                        <ResourceDictionary x:Key="Default">
-                            <SolidColorBrush x:Key="SundialNightBorderBrush" Color="#B4FFAF1A" />
-                            <SolidColorBrush x:Key="SundialNightBrush" Color="#B4FFD280" />
-                            <SolidColorBrush x:Key="SundialEveningBorderBrush" Color="#B4A98BD6" />
-                            <SolidColorBrush x:Key="SundialEveningBrush" Color="#B4E3D4F5" />
-                            <SolidColorBrush x:Key="SundialDayBorderBrush" Color="#B48AC0FF" />
-                            <SolidColorBrush x:Key="SundialDayBrush" Color="#B4F2F8FF" />
-                            <SolidColorBrush x:Key="SundialSunriseBorderBrush" Color="#B4FFC766" />
-                            <SolidColorBrush x:Key="SundialSunriseBrush" Color="#B4FFEDCD" />
-                            <SolidColorBrush x:Key="SundialSunsetBorderBrush" Color="#B4FFC766" />
-                            <SolidColorBrush x:Key="SundialSunsetBrush" Color="#B4FFEDCD" />
-                            <SolidColorBrush x:Key="SundialMarkerBorderBrush" Color="#B4FF7733" />
-                            <SolidColorBrush x:Key="SundialMarkerBrush" Color="#B4FFAB85" />
-                        </ResourceDictionary>
-                        <ResourceDictionary x:Key="Dark">
-                            <SolidColorBrush x:Key="SundialNightBorderBrush" Color="#B4B18B4E" />
-                            <SolidColorBrush x:Key="SundialNightBrush" Color="#B4ECC17E" />
-                            <SolidColorBrush x:Key="SundialEveningBorderBrush" Color="#B47A62A3" />
-                            <SolidColorBrush x:Key="SundialEveningBrush" Color="#B4AE9BCC" />
-                            <SolidColorBrush x:Key="SundialDayBorderBrush" Color="#B44E93B1" />
-                            <SolidColorBrush x:Key="SundialDayBrush" Color="#B48FBDCD" />
-                            <SolidColorBrush x:Key="SundialSunriseBorderBrush" Color="#B4B18C4E" />
-                            <SolidColorBrush x:Key="SundialSunriseBrush" Color="#B4FAEDD6" />
-                            <SolidColorBrush x:Key="SundialSunsetBorderBrush" Color="#B4B18C4E" />
-                            <SolidColorBrush x:Key="SundialSunsetBrush" Color="#B4FAEDD6" />
-                            <SolidColorBrush x:Key="SundialMarkerBorderBrush" Color="#B4B1704E" />
-                            <SolidColorBrush x:Key="SundialMarkerBrush" Color="#B4E38755" />
-                        </ResourceDictionary>
-                    </ResourceDictionary.ThemeDictionaries>
-                </ResourceDictionary>
-            </Panel.Resources>
-
-            <!--  Night-time arc  -->
-            <!--  (when there's no evening stage, the night transition collapses onto the end of the sunset)  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialNightBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialNightBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Evening arc  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                IsVisible="{Binding IsEveningIncluded}"
-                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialEveningBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                IsVisible="{Binding IsEveningIncluded}"
-                StartAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialEveningBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Night transition (evening to night)  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                IsVisible="{Binding IsEveningIncluded}"
-                StartAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunsetBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding NightTransitionEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                IsVisible="{Binding IsEveningIncluded}"
-                StartAngle="{Binding NightTransitionStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunsetBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Day-time arc  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunsetStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunriseEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialDayBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunsetStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunriseEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialDayBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Sunrise transition  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunriseEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunriseBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunriseEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunriseStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunriseBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Sunset transition  -->
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunsetStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunsetBorderBrush}"
-                StrokeThickness="28"
-            />
-            <controls:Arc
-                Width="180"
-                Height="180"
-                EndAngle="{Binding SunsetEnd, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                StartAngle="{Binding SunsetStart, Converter={x:Static converters:TimeOnlyToDegreesDoubleConverter.Instance}}"
-                Stroke="{DynamicResource SundialSunsetBrush}"
-                StrokeThickness="26"
-            />
-
-            <!--  Current time position  -->
-            <controls:ArcPoint
-                Width="180"
-                Height="180"
-                Angle="{Binding Instant.TimeOfDay.TotalDays, Converter={x:Static converters:FractionToDegreesConverter.Instance}}"
-                Fill="{DynamicResource SundialMarkerBorderBrush}"
-                Size="28"
-            />
-            <controls:ArcPoint
-                Width="180"
-                Height="180"
-                Angle="{Binding Instant.TimeOfDay.TotalDays, Converter={x:Static converters:FractionToDegreesConverter.Instance}}"
-                Fill="{DynamicResource SundialMarkerBrush}"
-                Size="26"
-            />
-
-            <!--  Configuration offset  -->
-            <StackPanel
-                x:Name="ConfigurationOffsetStackPanel"
-                Margin="0,50,0,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Background="Transparent"
-                Cursor="Hand"
-                IsVisible="{Binding IsOffsetEnabled}"
-                Orientation="Horizontal"
-                PointerReleased="ConfigurationOffsetStackPanel_OnPointerReleased"
-                Spacing="4"
-            >
-                <ToolTip.Tip>
-                    <TextBlock>
-                        <Run Text="{Binding LocalizationManager.OffsetTooltipHeader}" />
-                        <LineBreak />
-                        <Run Text=" " />
-                        <Run Text="{Binding LocalizationManager.TemperatureOffsetLabel}" />
-                        <Run
-                            FontWeight="SemiBold"
-                            Text="{Binding TemperatureOffset, StringFormat={}{0:F0} K, Mode=OneWay}"
-                        />
-                        <LineBreak />
-                        <Run Text=" " />
-                        <Run Text="{Binding LocalizationManager.BrightnessOffsetLabel}" />
-                        <Run
-                            FontWeight="SemiBold"
-                            Text="{Binding BrightnessOffset, StringFormat={}{0:P0}, Mode=OneWay}"
-                        />
-                        <LineBreak />
-                        <LineBreak />
-                        <Run
-                            FontWeight="SemiBold"
-                            Text="{Binding LocalizationManager.ClickToResetLabel}"
-                        />
-                    </TextBlock>
-                </ToolTip.Tip>
-                <materialIcons:MaterialIcon Width="16" Height="16" Kind="SwapVertical" />
-                <TextBlock FontSize="15" Text="{Binding LocalizationManager.OffsetLabel}" />
-            </StackPanel>
-
-            <!--  Current temperature and brightness  -->
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Orientation="Horizontal"
-                Spacing="8"
-            >
-                <materialIcons:MaterialIcon
-                    Width="48"
-                    Height="48"
-                    Kind="{Binding CycleState, Converter={x:Static converters:CycleStateToMaterialIconKindConverter.Instance}}"
-                    ToolTip.Tip="{Binding CycleStateText}"
+            <Panel>
+                <controls:CycleGraph
+                    CurveBrush="{DynamicResource DashboardCurveBrush}"
+                    Curve="{Binding CycleCurve}"
+                    MarkerRingBrush="{DynamicResource DashboardMarkerRingBrush}"
+                    Now="{Binding DayProgress}"
+                    ShadeOpacity="{DynamicResource DashboardShadeOpacity}"
+                    WaveBrush="{DynamicResource DashboardWaveBrush}"
                 />
-                <TextBlock FontSize="20">
-                    <Run Text="{Binding CurrentConfiguration.Temperature, StringFormat={}{0:F0} K, Mode=OneWay}" />
-                    <LineBreak />
-                    <Run Text="{Binding CurrentConfiguration.Brightness, StringFormat={}{0:P0}, Mode=OneWay}" />
-                </TextBlock>
-            </StackPanel>
 
-            <!--  Current time  -->
-            <StackPanel
-                Margin="0,0,0,50"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Orientation="Horizontal"
-                Spacing="4"
-            >
-                <materialIcons:MaterialIcon Width="16" Height="16" Kind="ClockOutline" />
+                <!--  Active phase and current values  -->
                 <TextBlock
+                    Margin="12,0,12,13"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    FontSize="12"
+                    Foreground="{DynamicResource DashboardCaptionBrush}"
+                    IsHitTestVisible="False"
+                    Text="{Binding ActivePhaseCaption}"
+                />
+
+                <!--  Configuration offset (from hotkeys)  -->
+                <StackPanel
+                    x:Name="ConfigurationOffsetStackPanel"
+                    Margin="0,0,12,12"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="Transparent"
+                    Cursor="Hand"
+                    IsVisible="{Binding IsOffsetEnabled}"
+                    Orientation="Horizontal"
+                    PointerReleased="ConfigurationOffsetStackPanel_OnPointerReleased"
+                    Spacing="4"
+                >
+                    <ToolTip.Tip>
+                        <TextBlock>
+                            <Run Text="{Binding LocalizationManager.OffsetTooltipHeader}" />
+                            <LineBreak />
+                            <Run Text=" " />
+                            <Run Text="{Binding LocalizationManager.TemperatureOffsetLabel}" />
+                            <Run
+                                FontWeight="SemiBold"
+                                Text="{Binding TemperatureOffset, StringFormat={}{0:F0} K, Mode=OneWay}"
+                            />
+                            <LineBreak />
+                            <Run Text=" " />
+                            <Run Text="{Binding LocalizationManager.BrightnessOffsetLabel}" />
+                            <Run
+                                FontWeight="SemiBold"
+                                Text="{Binding BrightnessOffset, StringFormat={}{0:P0}, Mode=OneWay}"
+                            />
+                            <LineBreak />
+                            <LineBreak />
+                            <Run
+                                FontWeight="SemiBold"
+                                Text="{Binding LocalizationManager.ClickToResetLabel}"
+                            />
+                        </TextBlock>
+                    </ToolTip.Tip>
+                    <materialIcons:MaterialIcon
+                        Width="14"
+                        Height="14"
+                        Foreground="{DynamicResource DashboardCaptionBrush}"
+                        Kind="SwapVertical"
+                    />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource DashboardCaptionBrush}"
+                        Text="{Binding LocalizationManager.OffsetLabel}"
+                    />
+                </StackPanel>
+            </Panel>
+        </Border>
+
+        <!--  Footer  -->
+        <Grid Grid.Row="3" Height="52" Margin="16,0,8,0" ColumnDefinitions="Auto,Auto,*,Auto">
+            <!--  Bedtime (night start)  -->
+            <StackPanel
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                IsEnabled="{Binding IsEveningConfigurationEnabled}"
+                Orientation="Horizontal"
+                Spacing="6"
+                ToolTip.ShowOnDisabled="True"
+                ToolTip.Tip="{Binding LocalizationManager.BedtimeTooltip}"
+            >
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="24"
+                    Foreground="{DynamicResource DashboardBedtimeBrush}"
+                    Text="{Binding NightStartTimeText}"
+                />
+                <StackPanel VerticalAlignment="Center" Orientation="Vertical">
+                    <Button
+                        Width="22"
+                        Height="16"
+                        Padding="0"
+                        Command="{Binding IncreaseNightStartTimeCommand}"
+                        Foreground="{DynamicResource DashboardBedtimeBrush}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.LaterBedtimeTooltip}"
+                    >
+                        <materialIcons:MaterialIcon Width="18" Height="18" Kind="ChevronUp" />
+                    </Button>
+                    <Button
+                        Width="22"
+                        Height="16"
+                        Padding="0"
+                        Command="{Binding DecreaseNightStartTimeCommand}"
+                        Foreground="{DynamicResource DashboardBedtimeBrush}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.EarlierBedtimeTooltip}"
+                    >
+                        <materialIcons:MaterialIcon Width="18" Height="18" Kind="ChevronDown" />
+                    </Button>
+                </StackPanel>
+                <TextBlock
+                    VerticalAlignment="Center"
                     FontSize="14"
-                    FontWeight="Light"
-                    Text="{Binding Instant, StringFormat={}{0:t}}"
+                    Foreground="{DynamicResource DashboardTextBrush}"
+                    Text="{Binding LocalizationManager.BedtimeSuffixText}"
                 />
             </StackPanel>
-        </Panel>
 
-        <!--  Sunrise time  -->
-        <TextBlock
-            Grid.Column="2"
-            Margin="4,0"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            FontSize="19"
-            TextAlignment="Center"
-            TextTrimming="CharacterEllipsis"
-        >
-            <ToolTip.Tip>
-                <TextBlock Inlines="{Binding SunriseTransitionTooltip, Converter={x:Static converters:MarkdownToInlinesConverter.Instance}}" />
-            </ToolTip.Tip>
+            <!--  Cycle preview  -->
+            <ToggleButton
+                Grid.Column="1"
+                Margin="16,0,0,0"
+                Padding="8,4"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource DashboardCaptionBrush}"
+                IsChecked="{Binding IsCyclePreviewEnabled}"
+                Theme="{DynamicResource MaterialFlatToggleButton}"
+            >
+                <ToggleButton.Styles>
+                    <Style Selector="ToggleButton">
+                        <Style Selector="^:checked">
+                            <Setter
+                                Property="ToolTip.Tip"
+                                Value="{Binding LocalizationManager.StopPreviewTooltip}"
+                            />
+                        </Style>
+                        <Style Selector="^:unchecked">
+                            <Setter
+                                Property="ToolTip.Tip"
+                                Value="{Binding LocalizationManager.StartPreviewTooltip}"
+                            />
+                        </Style>
+                    </Style>
+                </ToggleButton.Styles>
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <materialIcons:MaterialIcon Width="18" Height="18">
+                        <materialIcons:MaterialIcon.Styles>
+                            <Style Selector="ToggleButton materialIcons|MaterialIcon">
+                                <Setter Property="Kind" Value="PlayCircleOutline" />
+                            </Style>
+                            <Style Selector="ToggleButton:checked materialIcons|MaterialIcon">
+                                <Setter Property="Kind" Value="StopCircleOutline" />
+                            </Style>
+                        </materialIcons:MaterialIcon.Styles>
+                    </materialIcons:MaterialIcon>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Text="{Binding LocalizationManager.PreviewText}"
+                    />
+                </StackPanel>
+            </ToggleButton>
 
-            <Run FontWeight="Light" Text="{Binding LocalizationManager.SunriseLabel}" />
-            <LineBreak />
-            <Run
-                FontWeight="Regular"
-                Text="{Binding SolarTimes.Sunrise, Converter={x:Static converters:TimeOnlyToStringConverter.Instance}, Mode=OneWay}"
-            />
-        </TextBlock>
+            <!--  Location (opens location settings)  -->
+            <Button
+                Grid.Column="3"
+                Padding="8,4"
+                VerticalAlignment="Center"
+                Command="{Binding $parent[Window].((viewModels:MainViewModel)DataContext).ShowLocationSettingsCommand}"
+                Foreground="{DynamicResource DashboardTextBrush}"
+                Theme="{DynamicResource MaterialFlatButton}"
+                ToolTip.Tip="{Binding LocalizationManager.OpenLocationSettingsTooltip}"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon
+                        Width="16"
+                        Height="16"
+                        Foreground="{DynamicResource DashboardMutedTextBrush}"
+                        Kind="NavigationVariant"
+                    />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="13"
+                        FontWeight="Normal"
+                        Text="{Binding LocationText}"
+                    />
+                </StackPanel>
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

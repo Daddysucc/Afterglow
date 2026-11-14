@@ -243,6 +243,98 @@ public class EveningCycleSpecs
         atSunriseStart.Should().Be(NightConfiguration);
     }
 
+    [Theory]
+    [InlineData(12, 00, CycleStage.Day, false)]
+    [InlineData(18, 45, CycleStage.Evening, true)]
+    [InlineData(20, 30, CycleStage.Evening, false)]
+    [InlineData(22, 45, CycleStage.Night, true)]
+    [InlineData(02, 00, CycleStage.Night, false)]
+    [InlineData(06, 15, CycleStage.Day, true)]
+    public void I_can_get_the_current_phase_of_the_three_stage_cycle(
+        int hour,
+        int minute,
+        CycleStage expectedStage,
+        bool expectedIsTransitioning
+    )
+    {
+        // Act
+        var phase = Cycle.GetPhase(
+            SolarTimes,
+            TransitionDuration,
+            TransitionOffset,
+            NightStart,
+            At(hour, minute)
+        );
+
+        // Assert
+        phase.Should().Be(new CyclePhase(expectedStage, expectedIsTransitioning));
+    }
+
+    [Theory]
+    [InlineData(12, 00, CycleStage.Day, false)]
+    [InlineData(18, 45, CycleStage.Night, true)]
+    [InlineData(20, 30, CycleStage.Night, false)]
+    [InlineData(06, 15, CycleStage.Day, true)]
+    public void I_can_get_the_current_phase_of_the_classic_two_stage_cycle(
+        int hour,
+        int minute,
+        CycleStage expectedStage,
+        bool expectedIsTransitioning
+    )
+    {
+        // Act
+        var phase = Cycle.GetPhase(
+            SolarTimes,
+            TransitionDuration,
+            TransitionOffset,
+            null,
+            At(hour, minute)
+        );
+
+        // Assert
+        phase.Should().Be(new CyclePhase(expectedStage, expectedIsTransitioning));
+    }
+
+    [Fact]
+    public void I_observe_the_phase_agree_with_the_interpolated_color_configuration_during_the_whole_cycle()
+    {
+        // Arrange
+        var startInstant = At(00, 00);
+
+        for (
+            var offset = TimeSpan.Zero;
+            offset < TimeSpan.FromDays(1);
+            offset += TimeSpan.FromMinutes(1)
+        )
+        {
+            var instant = startInstant + offset;
+
+            // Act
+            var phase = Cycle.GetPhase(
+                SolarTimes,
+                TransitionDuration,
+                TransitionOffset,
+                NightStart,
+                instant
+            );
+
+            var configuration = Interpolate(instant);
+
+            // Assert
+            if (!phase.IsTransitioning)
+            {
+                var expected = phase.Stage switch
+                {
+                    CycleStage.Day => DayConfiguration,
+                    CycleStage.Evening => EveningConfiguration,
+                    _ => NightConfiguration,
+                };
+
+                configuration.Should().Be(expected, $"at {instant}");
+            }
+        }
+    }
+
     [Fact]
     public void I_can_get_the_schedule_of_the_three_stage_cycle()
     {

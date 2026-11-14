@@ -63,18 +63,11 @@ public static class Cycle
         return sunset.Add(shift);
     }
 
-    private enum Stage
-    {
-        Day,
-        Evening,
-        Night,
-    }
-
     // Start is the time elapsed since the beginning of the cycle (i.e. the sunrise transition start)
     private readonly record struct Transition(
         TimeSpan Start,
         TimeSpan Duration,
-        Stage Target,
+        CycleStage Target,
         bool IsSunrise,
         bool IsSkipped
     );
@@ -120,14 +113,14 @@ public static class Cycle
         Transition[] transitions = isEveningIncluded
             ?
             [
-                new(TimeSpan.Zero, duration, Stage.Day, true, false),
-                new(sunsetStart, duration, Stage.Evening, false, false),
-                new(nightTransitionStart!.Value, duration, Stage.Night, false, false),
+                new(TimeSpan.Zero, duration, CycleStage.Day, true, false),
+                new(sunsetStart, duration, CycleStage.Evening, false, false),
+                new(nightTransitionStart!.Value, duration, CycleStage.Night, false, false),
             ]
             :
             [
-                new(TimeSpan.Zero, duration, Stage.Day, true, false),
-                new(sunsetStart, duration, Stage.Night, false, false),
+                new(TimeSpan.Zero, duration, CycleStage.Day, true, false),
+                new(sunsetStart, duration, CycleStage.Night, false, false),
             ];
 
         // A transition that would still be running when the next one starts is shortened,
@@ -185,27 +178,17 @@ public static class Cycle
         );
     }
 
-    private static double Interpolate(
+    // Finds the most recent transition that has started at the given instant, the one before it,
+    // and how much time has elapsed since the former started
+    private static (Transition Current, Transition Previous, TimeSpan Elapsed) Locate(
         Plan plan,
-        double dayValue,
-        double eveningValue,
-        double nightValue,
         DateTimeOffset instant
     )
     {
-        double GetValue(Stage stage) =>
-            stage switch
-            {
-                Stage.Day => dayValue,
-                Stage.Evening => eveningValue,
-                _ => nightValue,
-            };
-
         var transitions = plan.Transitions;
         var position = instant.ToTimeOnly() - plan.Origin;
 
-        // Find the most recent transition that has started.
-        // There's always at least one, because the first non-skipped transition starts at the origin.
+        // There's always at least one, because the first non-skipped transition starts at the origin
         var currentIndex = 0;
         for (var i = 0; i < transitions.Length; i++)
         {
@@ -222,11 +205,30 @@ public static class Cycle
         } while (transitions[previousIndex].IsSkipped);
 
         var current = transitions[currentIndex];
-        var fromValue = GetValue(transitions[previousIndex].Target);
+        return (current, transitions[previousIndex], position - current.Start);
+    }
+
+    private static double Interpolate(
+        Plan plan,
+        double dayValue,
+        double eveningValue,
+        double nightValue,
+        DateTimeOffset instant
+    )
+    {
+        double GetValue(CycleStage stage) =>
+            stage switch
+            {
+                CycleStage.Day => dayValue,
+                CycleStage.Evening => eveningValue,
+                _ => nightValue,
+            };
+
+        var (current, previous, elapsed) = Locate(plan, instant);
+        var fromValue = GetValue(previous.Target);
         var toValue = GetValue(current.Target);
 
         // Transition has finished (this also covers zero-length transitions)
-        var elapsed = position - current.Start;
         if (elapsed >= current.Duration)
             return toValue;
 
@@ -236,6 +238,24 @@ public static class Cycle
         return current.IsSunrise
             ? toValue + (fromValue - toValue) * Math.Cos(progress * Math.PI / 2)
             : fromValue + (toValue - fromValue) * Math.Sin(progress * Math.PI / 2);
+    }
+
+    /// <summary>
+    /// Gets the stage the cycle is in (or transitioning into) at the given instant.
+    /// Pass <c>null</c> as <paramref name="nightStart" /> for the classic two-stage cycle.
+    /// </summary>
+    public static CyclePhase GetPhase(
+        SolarTimes solarTimes,
+        TimeSpan transitionDuration,
+        double transitionOffset,
+        TimeOnly? nightStart,
+        DateTimeOffset instant
+    )
+    {
+        var plan = GetPlan(solarTimes, transitionDuration, transitionOffset, nightStart);
+        var (current, _, elapsed) = Locate(plan, instant);
+
+        return new CyclePhase(current.Target, elapsed < current.Duration);
     }
 
     private static ColorConfiguration InterpolateConfiguration(

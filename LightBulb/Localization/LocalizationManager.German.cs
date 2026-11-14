@@ -11,10 +11,6 @@ public partial class LocalizationManager
     {
         [nameof(SunsetLabel)] = "Untergang",
         [nameof(SunriseLabel)] = "Aufgang",
-        [nameof(SunsetTransitionTooltip)] =
-            "Sonnenuntergangsübergang beginnt um **{0}** und endet um **{1}**",
-        [nameof(SunriseTransitionTooltip)] =
-            "Sonnenaufgangsübergang beginnt um **{0}** und endet um **{1}**",
         [nameof(OffsetTooltipHeader)] =
             "Aktuelle Temperatur- und Helligkeitswerte werden durch einen Versatz angepasst:",
         [nameof(TemperatureOffsetLabel)] = "Temperaturversatz:",
@@ -26,7 +22,6 @@ public partial class LocalizationManager
         [nameof(PreviewText)] = "VORSCHAU",
         [nameof(StopPreviewTooltip)] = "Vorschau beenden",
         [nameof(StartPreviewTooltip)] = "24-Stunden-Zyklus vorschauen",
-        [nameof(SettingsText)] = "EINSTELLUNGEN",
         [nameof(OpenSettingsTooltip)] = "Einstellungen öffnen",
         [nameof(ResetButton)] = "ZURÜCKSETZEN",
         [nameof(ResetTooltip)] = "Alle Einstellungen auf die Standardwerte zurücksetzen",
