@@ -2,8 +2,11 @@ using System;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Threading;
+using LightBulb.Core;
 using LightBulb.Framework;
+using LightBulb.PlatformInterop;
 using LightBulb.ViewModels;
 
 namespace LightBulb.Views;
@@ -13,56 +16,72 @@ namespace LightBulb.Views;
 /// </summary>
 public partial class TrayMenuWindow : Window<MainViewModel>
 {
-    private PixelPoint _anchor;
+    // Space between the tray icon and the menu, in logical pixels
+    private const double Gap = 8;
+
+    private ScreenRect _anchor;
     private bool _isClosing;
 
     public TrayMenuWindow() => InitializeComponent();
 
     /// <summary>
-    /// Shows the menu next to the given point (in physical screen coordinates),
-    /// typically the cursor position when the tray icon was clicked.
+    /// Shows the menu next to the given area (typically the tray icon, or the cursor position),
+    /// in physical screen pixels.
     /// </summary>
-    public void ShowAt(PixelPoint anchor)
+    public void ShowAt(PlatformInterop.Rect anchor)
     {
-        _anchor = anchor;
+        _anchor = new ScreenRect(anchor.Left, anchor.Top, anchor.Right, anchor.Bottom);
 
-        Position = anchor;
+        // Position the window before it's shown, so that it doesn't flash elsewhere first...
+        UpdatePosition(GetContentSize());
+
         Show();
-
-        // Size is known once the window has been laid out
-        UpdatePosition();
         Activate();
     }
 
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
-        UpdatePosition();
+
+        // ...then again once it's open. Note that the window's own bounds are not reliable at
+        // this point: it's only sized to its content afterwards, so use the content size instead.
+        UpdatePosition(GetContentSize());
     }
 
-    // Opens upwards and to the right of the anchor (like native tray menus with a bottom taskbar),
-    // flipping and clamping as needed so that the menu always stays within the screen's work area
-    private void UpdatePosition()
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
-        var screen = Screens.ScreenFromPoint(_anchor) ?? Screens.Primary;
-        if (screen is null)
+        base.OnPropertyChanged(change);
+
+        // Re-anchor whenever the size settles or changes (e.g. after moving to a display
+        // with a different scaling), so that the menu stays next to the icon and on screen
+        if (change.Property == ClientSizeProperty && IsVisible)
+            UpdatePosition(GetContentSize());
+    }
+
+    // Size of the window's content, in logical pixels
+    private Size GetContentSize()
+    {
+        if (Content is not Layoutable content)
+            return ClientSize;
+
+        content.Measure(Size.Infinity);
+        return content.DesiredSize;
+    }
+
+    private void UpdatePosition(Size size)
+    {
+        // Everything here is in physical pixels, as reported by the system for the target display
+        var (workArea, scale) = DisplayMonitors.GetWorkAreaAt(_anchor.CenterX, _anchor.CenterY);
+        if (workArea == PlatformInterop.Rect.Empty)
             return;
 
-        var area = screen.WorkingArea;
-        var width = (int)Math.Ceiling(Bounds.Width * screen.Scaling);
-        var height = (int)Math.Ceiling(Bounds.Height * screen.Scaling);
-
-        var x = _anchor.X;
-        var y = _anchor.Y - height;
-
-        if (x + width > area.Right)
-            x = _anchor.X - width;
-
-        if (y < area.Y)
-            y = _anchor.Y;
-
-        x = Math.Clamp(x, area.X, Math.Max(area.X, area.Right - width));
-        y = Math.Clamp(y, area.Y, Math.Max(area.Y, area.Bottom - height));
+        var (x, y) = PopupPlacement.Calculate(
+            _anchor,
+            (int)Math.Ceiling(size.Width * scale),
+            (int)Math.Ceiling(size.Height * scale),
+            new ScreenRect(workArea.Left, workArea.Top, workArea.Right, workArea.Bottom),
+            (int)Math.Round(Gap * scale)
+        );
 
         Position = new PixelPoint(x, y);
     }

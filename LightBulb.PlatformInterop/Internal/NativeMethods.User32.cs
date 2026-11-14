@@ -132,6 +132,79 @@ internal static partial class NativeMethods
     [DllImport(User32, SetLastError = true)]
     public static extern bool CloseDesktop(nint hDesktop);
 
+    [DllImport(User32)]
+    public static extern int GetDisplayConfigBufferSizes(
+        uint flags,
+        out uint numPathArrayElements,
+        out uint numModeInfoArrayElements
+    );
+
+    [DllImport(User32)]
+    public static extern int QueryDisplayConfig(
+        uint flags,
+        ref uint numPathArrayElements,
+        [Out] DisplayConfigPathInfo[] pathArray,
+        ref uint numModeInfoArrayElements,
+        [Out] DisplayConfigModeInfo[] modeInfoArray,
+        nint currentTopologyId
+    );
+
+    [DllImport(User32)]
+    public static extern int DisplayConfigGetDeviceInfo(
+        ref DisplayConfigSourceDeviceName requestPacket
+    );
+
+    [DllImport(User32)]
+    public static extern int DisplayConfigGetDeviceInfo(
+        ref DisplayConfigTargetDeviceName requestPacket
+    );
+
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern bool EnumDisplayDevices(
+        string? lpDevice,
+        uint iDevNum,
+        ref DisplayDevice lpDisplayDevice,
+        uint dwFlags
+    );
+
+    [DllImport(User32)]
+    public static extern int GetSystemMetrics(int nIndex);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern nint CreateIconFromResourceEx(
+        byte[] presbits,
+        uint dwResSize,
+        bool fIcon,
+        uint dwVer,
+        int cxDesired,
+        int cyDesired,
+        uint flags
+    );
+
+    [DllImport(User32)]
+    public static extern nint MonitorFromPoint(NativePoint pt, uint dwFlags);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern bool SetLayeredWindowAttributes(
+        nint hwnd,
+        uint crKey,
+        byte bAlpha,
+        uint dwFlags
+    );
+
+    [DllImport(User32, SetLastError = true, EntryPoint = "GetWindowLongPtrW")]
+    public static extern nint GetWindowLongPtr(nint hWnd, int nIndex);
+
+    [DllImport(User32, SetLastError = true, EntryPoint = "SetWindowLongPtrW")]
+    public static extern nint SetWindowLongPtr(nint hWnd, int nIndex, nint dwNewLong);
+
+    // 32-bit processes only have the non-pointer variants
+    [DllImport(User32, SetLastError = true, EntryPoint = "GetWindowLongW")]
+    public static extern int GetWindowLong32(nint hWnd, int nIndex);
+
+    [DllImport(User32, SetLastError = true, EntryPoint = "SetWindowLongW")]
+    public static extern int SetWindowLong32(nint hWnd, int nIndex, int dwNewLong);
+
     [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern bool GetUserObjectInformation(
         nint hObj,

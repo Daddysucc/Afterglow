@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 using Cogwheel;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -114,6 +115,20 @@ public partial class SettingsService()
 
     [ObservableProperty]
     public partial bool IsPauseWhenScreenLockedEnabled { get; set; }
+
+    // When pausing for fullscreen applications, only pause the display that runs it
+    [ObservableProperty]
+    public partial bool IsPerMonitorFullscreenPauseEnabled { get; set; } = true;
+
+    // Pause on all displays while the computer is being streamed (Sunshine) or accessed remotely (RDP)
+    [ObservableProperty]
+    public partial bool IsStreamingAutoPauseEnabled { get; set; } = true;
+
+    // Displays
+
+    // Stored as a list (rather than a dictionary keyed by device path) to keep the file readable
+    [ObservableProperty]
+    public partial IReadOnlyList<MonitorProfile>? MonitorProfiles { get; set; }
 
     [ObservableProperty]
     public partial bool IsGammaPollingEnabled { get; set; }
@@ -281,6 +296,42 @@ public partial class SettingsService()
             c => c.Brightness,
             (c, v) => c with { Brightness = v }
         );
+
+    public MonitorProfile? TryGetMonitorProfile(string devicePath) =>
+        MonitorProfiles?.FirstOrDefault(p =>
+            string.Equals(p.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase)
+        );
+
+    // Creates the profile if the display doesn't have one yet
+    public void UpdateMonitorProfile(
+        string devicePath,
+        string name,
+        Func<MonitorProfile, MonitorProfile> update
+    )
+    {
+        var existing =
+            TryGetMonitorProfile(devicePath)
+            ?? new MonitorProfile { DevicePath = devicePath, LastKnownName = name };
+
+        var updated = update(existing) with { LastKnownName = name };
+        if (updated == existing)
+            return;
+
+        MonitorProfiles =
+        [
+            .. (MonitorProfiles ?? []).Where(p =>
+                !string.Equals(p.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase)
+            ),
+            updated,
+        ];
+    }
+
+    public void ForgetMonitorProfile(string devicePath) =>
+        MonitorProfiles = [
+            .. (MonitorProfiles ?? []).Where(p =>
+                !string.Equals(p.DevicePath, devicePath, StringComparison.OrdinalIgnoreCase)
+            ),
+        ];
 
     // Unlike Math.Clamp, this doesn't throw if the bounds are in the wrong order
     private static double ClampBetween(double value, double bound1, double bound2) =>

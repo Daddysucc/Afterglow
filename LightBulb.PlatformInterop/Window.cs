@@ -74,6 +74,9 @@ public partial class Window(nint handle) : NativeResource(handle)
         return new Monitor(monitorHandle);
     }
 
+    // GDI device name (e.g. \\.\DISPLAY1) of the monitor that hosts most of this window
+    public string? TryGetMonitorDeviceName() => TryGetMonitor()?.TryGetDeviceName();
+
     public Rect? TryGetRect() => NativeMethods.GetWindowRect(Handle, out var rect) ? rect : null;
 
     public Rect? TryGetClientRect() =>
@@ -191,5 +194,45 @@ public partial class Window
         }
 
         return result;
+    }
+}
+
+public partial class Window
+{
+    private const int GwlExStyle = -20;
+    private const long WsExTransparent = 0x00000020;
+    private const long WsExToolWindow = 0x00000080;
+    private const long WsExLayered = 0x00080000;
+    private const long WsExNoActivate = 0x08000000;
+    private const uint LwaAlpha = 0x2;
+
+    /// <summary>
+    /// Turns the window into an overlay that never takes focus, doesn't show up in Alt+Tab,
+    /// and lets mouse input pass through to whatever is underneath.
+    /// </summary>
+    public static void MakeOverlay(nint handle)
+    {
+        var exStyle =
+            IntPtr.Size == 8
+                ? (long)NativeMethods.GetWindowLongPtr(handle, GwlExStyle)
+                : NativeMethods.GetWindowLong32(handle, GwlExStyle);
+
+        // Mouse input only passes through transparent windows that are also layered
+        exStyle |= WsExTransparent | WsExLayered | WsExToolWindow | WsExNoActivate;
+
+        if (IntPtr.Size == 8)
+            NativeMethods.SetWindowLongPtr(handle, GwlExStyle, (nint)exStyle);
+        else
+            NativeMethods.SetWindowLong32(handle, GwlExStyle, (int)exStyle);
+
+        // A layered window stays invisible until its layering attributes are set,
+        // so make it fully opaque
+        if (!NativeMethods.SetLayeredWindowAttributes(handle, 0, 255, LwaAlpha))
+        {
+            Debug.WriteLine(
+                $"Failed to set layered window attributes on window #{handle}. "
+                    + $"Error {Marshal.GetLastWin32Error()}."
+            );
+        }
     }
 }

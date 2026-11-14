@@ -24,29 +24,41 @@ public partial class NotifyIcon : IDisposable
     private const int WmLButtonUp = 0x0202;
     private const int WmRButtonUp = 0x0205;
 
-    // WM_APP + arbitrary offset
-    private const int CallbackMessageId = 0x8000 + 0x4C42;
+    // Must be within the WM_APP range (0x8000-0xBFFF)
+    private const int CallbackMessageId = 0x8000 + 0x0142;
 
     private const int IconId = 1;
 
-    private readonly nint _iconHandle;
-    private readonly bool _ownsIconHandle;
+    // Contents of the .ico file to show, or null to use the generic application icon
+    private readonly byte[]? _iconData;
     private readonly IDisposable _wndProcRegistration;
 
+    private nint _iconHandle;
+    private bool _ownsIconHandle;
     private string _toolTip;
     private bool _isDisposed;
 
-    public NotifyIcon(string toolTip)
+    public NotifyIcon(string toolTip, byte[]? iconData)
     {
         _toolTip = toolTip;
-        (_iconHandle, _ownsIconHandle) = LoadApplicationIcon();
+        _iconData = iconData;
 
-        // Re-add the icon when Explorer restarts, as all notification icons are lost then
+        LoadIcon();
+
+        // When Explorer restarts, all notification icons are lost and need to be added again.
+        // The system DPI may also have changed by then, so the icon is re-created as well.
         var taskbarCreatedMessageId = NativeMethods.RegisterWindowMessage("TaskbarCreated");
 
         _wndProcRegistration = Disposable.Merge(
             WndProcSponge.Default.Listen(CallbackMessageId, OnCallbackMessage),
-            WndProcSponge.Default.Listen((int)taskbarCreatedMessageId, _ => Add())
+            WndProcSponge.Default.Listen(
+                (int)taskbarCreatedMessageId,
+                _ =>
+                {
+                    LoadIcon();
+                    Add();
+                }
+            )
         );
 
         Add();
@@ -58,10 +70,11 @@ public partial class NotifyIcon : IDisposable
     public event EventHandler? LeftClicked;
 
     /// <summary>
-    /// Occurs when the icon is clicked with the right mouse button.
-    /// The argument is the cursor position, in physical screen coordinates.
+    /// Occurs when the icon is clicked with the right mouse button. The argument is the area
+    /// to anchor a menu to, in physical screen pixels: the icon itself if its location is known,
+    /// or the cursor position otherwise.
     /// </summary>
-    public event EventHandler<(int X, int Y)>? RightClicked;
+    public event EventHandler<Rect>? RightClicked;
 
     public string ToolTip
     {
@@ -76,6 +89,53 @@ public partial class NotifyIcon : IDisposable
         }
     }
 
+    // Creates the icon at the system's small icon size, replacing (and destroying) the previous one
+    private void LoadIcon()
+    {
+        var (width, height) = IconHandle.GetSmallIconSize();
+
+        var handle = _iconData is not null
+            ? IconHandle.TryCreateFromIco(_iconData, width, height)
+            : 0;
+        var ownsHandle = handle != 0;
+
+        // IDI_APPLICATION (shared, must not be destroyed)
+        if (handle == 0)
+            handle = NativeMethods.LoadIcon(0, 32512);
+
+        DestroyIcon();
+
+        _iconHandle = handle;
+        _ownsIconHandle = ownsHandle;
+    }
+
+    private void DestroyIcon()
+    {
+        if (_ownsIconHandle && _iconHandle != 0)
+            NativeMethods.DestroyIcon(_iconHandle);
+
+        _iconHandle = 0;
+        _ownsIconHandle = false;
+    }
+
+    /// <summary>
+    /// Gets the location of the icon, in physical screen pixels.
+    /// </summary>
+    public Rect? TryGetIconRect()
+    {
+        var identifier = new NotifyIconIdentifier
+        {
+            Size = Marshal.SizeOf<NotifyIconIdentifier>(),
+            WindowHandle = WndProcSponge.Default.Handle,
+            Id = IconId,
+        };
+
+        var result = NativeMethods.Shell_NotifyIconGetRect(ref identifier, out var rect);
+
+        // The icon may be hidden in the overflow area, in which case there's no location to report
+        return result == 0 && rect.Right > rect.Left && rect.Bottom > rect.Top ? rect : null;
+    }
+
     private void OnCallbackMessage(WndProcMessage message)
     {
         // With the default (legacy) notification icon version, the low word of lParam is the mouse message
@@ -86,8 +146,11 @@ public partial class NotifyIcon : IDisposable
                 break;
 
             case WmRButtonUp:
-                RightClicked?.Invoke(this, GetCursorPosition());
+            {
+                var (x, y) = GetCursorPosition();
+                RightClicked?.Invoke(this, TryGetIconRect() ?? new Rect(x, y, x, y));
                 break;
+            }
         }
     }
 
@@ -132,9 +195,7 @@ public partial class NotifyIcon : IDisposable
         _isDisposed = true;
 
         _wndProcRegistration.Dispose();
-
-        if (_ownsIconHandle)
-            NativeMethods.DestroyIcon(_iconHandle);
+        DestroyIcon();
 
         GC.SuppressFinalize(this);
     }
@@ -142,26 +203,6 @@ public partial class NotifyIcon : IDisposable
 
 public partial class NotifyIcon
 {
-    // Use the icon embedded in the executable, falling back to the generic application icon
-    private static (nint Handle, bool IsOwned) LoadApplicationIcon()
-    {
-        var executableFilePath = Environment.ProcessPath;
-        if (!string.IsNullOrWhiteSpace(executableFilePath))
-        {
-            var smallIcons = new nint[1];
-            if (
-                NativeMethods.ExtractIconEx(executableFilePath, 0, null, smallIcons, 1) > 0
-                && smallIcons[0] != 0
-            )
-            {
-                return (smallIcons[0], true);
-            }
-        }
-
-        // IDI_APPLICATION
-        return (NativeMethods.LoadIcon(0, 32512), false);
-    }
-
     /// <summary>
     /// Gets the current cursor position, in physical screen coordinates.
     /// </summary>

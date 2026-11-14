@@ -16,11 +16,15 @@ public partial class GammaService : IDisposable
 
     private bool _isUpdatingGamma;
 
-    private IReadOnlyList<DeviceContext> _deviceContexts = [];
+    // Keyed by GDI device name (e.g. \.DISPLAY1), which stays valid as long as the display is connected
+    private IReadOnlyDictionary<string, DeviceContext> _deviceContexts =
+        new Dictionary<string, DeviceContext>();
     private bool _areDeviceContextsValid;
     private DateTimeOffset _lastGammaInvalidationTimestamp = DateTimeOffset.MinValue;
 
-    private ColorConfiguration? _lastConfiguration;
+    private readonly Dictionary<string, ColorConfiguration> _lastConfigurations = new(
+        StringComparer.OrdinalIgnoreCase
+    );
     private DateTimeOffset _lastUpdateTimestamp = DateTimeOffset.MinValue;
 
     public GammaService(SettingsService settingsService)
@@ -66,14 +70,26 @@ public partial class GammaService : IDisposable
 
         _areDeviceContextsValid = true;
 
-        Disposable.Merge(_deviceContexts).Dispose();
-        _deviceContexts = Monitor
-            .GetAll()
-            .Select(m => m.TryCreateDeviceContext())
-            .WhereNotNull()
-            .ToArray();
+        Disposable.Merge(_deviceContexts.Values).Dispose();
 
-        _lastConfiguration = null;
+        var deviceContexts = new Dictionary<string, DeviceContext>(
+            StringComparer.OrdinalIgnoreCase
+        );
+        foreach (var monitor in Monitor.GetAll())
+        {
+            var deviceName = monitor.TryGetDeviceName();
+            if (string.IsNullOrWhiteSpace(deviceName) || deviceContexts.ContainsKey(deviceName))
+                continue;
+
+            var deviceContext = DeviceContext.TryCreate(deviceName);
+            if (deviceContext is not null)
+                deviceContexts[deviceName] = deviceContext;
+        }
+
+        _deviceContexts = deviceContexts;
+
+        // Force gamma to be re-applied on all (possibly new) displays
+        _lastConfigurations.Clear();
     }
 
     private bool IsGammaStale()
@@ -104,10 +120,10 @@ public partial class GammaService : IDisposable
         return false;
     }
 
-    private bool IsSignificantChange(ColorConfiguration configuration)
+    private bool IsSignificantChange(string deviceName, ColorConfiguration configuration)
     {
         // Nothing to compare to
-        if (_lastConfiguration is not { } lastConfiguration)
+        if (!_lastConfigurations.TryGetValue(deviceName, out var lastConfiguration))
             return true;
 
         return Math.Abs(configuration.Temperature - lastConfiguration.Temperature) > 15
@@ -133,40 +149,58 @@ public partial class GammaService : IDisposable
         InvalidateGamma();
     }
 
-    public void SetGamma(ColorConfiguration configuration)
+    /// <summary>
+    /// Sets gamma on each display, using the configuration resolved for its GDI device name.
+    /// </summary>
+    public void SetGamma(Func<string, ColorConfiguration> getConfiguration)
     {
-        // Avoid unnecessary changes as updating too often will cause stuttering
-        if (!IsGammaStale() && !IsSignificantChange(configuration))
-            return;
-
+        // Device contexts are re-created after the display configuration changes (e.g. hot-plug)
         EnsureValidDeviceContexts();
+
+        var isStale = IsGammaStale();
+        var isUpdated = false;
 
         _isUpdatingGamma = true;
 
-        foreach (var deviceContext in _deviceContexts)
+        try
         {
-            deviceContext.SetGamma(
-                GetRed(configuration) * configuration.Brightness,
-                GetGreen(configuration) * configuration.Brightness,
-                GetBlue(configuration) * configuration.Brightness
-            );
+            foreach (var (deviceName, deviceContext) in _deviceContexts)
+            {
+                var configuration = getConfiguration(deviceName);
+
+                // Avoid unnecessary changes as updating too often will cause stuttering
+                if (!isStale && !IsSignificantChange(deviceName, configuration))
+                    continue;
+
+                deviceContext.SetGamma(
+                    GetRed(configuration) * configuration.Brightness,
+                    GetGreen(configuration) * configuration.Brightness,
+                    GetBlue(configuration) * configuration.Brightness
+                );
+
+                _lastConfigurations[deviceName] = configuration;
+                isUpdated = true;
+
+                Debug.WriteLine($"Updated gamma on {deviceName} to {configuration}.");
+            }
+        }
+        finally
+        {
+            _isUpdatingGamma = false;
         }
 
-        _isUpdatingGamma = false;
-
-        _lastConfiguration = configuration;
-        _lastUpdateTimestamp = DateTimeOffset.Now;
-        Debug.WriteLine($"Updated gamma to {configuration}.");
+        if (isUpdated)
+            _lastUpdateTimestamp = DateTimeOffset.Now;
     }
 
     public void Dispose()
     {
         // Reset gamma on all contexts
-        foreach (var deviceContext in _deviceContexts)
+        foreach (var deviceContext in _deviceContexts.Values)
             deviceContext.ResetGamma();
 
         _eventSubscription.Dispose();
-        Disposable.Merge(_deviceContexts).Dispose();
+        Disposable.Merge(_deviceContexts.Values).Dispose();
     }
 }
 
