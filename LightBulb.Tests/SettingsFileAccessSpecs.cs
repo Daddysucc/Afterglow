@@ -34,17 +34,25 @@ public class SettingsFileAccessSpecs : IDisposable
         // E.g. a cloud sync client or an antivirus scan right after signing in
         File.WriteAllText(FilePath, Json);
         var lockStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.None);
-        using var releaseTimer = new Timer(
-            _ => lockStream.Dispose(),
-            null,
-            SettingsService.FileAccessRetryDelay * 1.5,
-            Timeout.InfiniteTimeSpan
-        );
+
+        // Released on a dedicated thread rather than a thread pool timer: other tests running in
+        // parallel can keep the thread pool busy, delaying the release past the last retry
+        var releaseThread = new Thread(() =>
+        {
+            Thread.Sleep(SettingsService.FileAccessRetryDelay * 1.5);
+            lockStream.Dispose();
+        })
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.AboveNormal,
+        };
+        releaseThread.Start();
 
         var settings = new SettingsService(FilePath);
 
         // Act
         var wasLoaded = settings.Load();
+        releaseThread.Join();
 
         // Assert
         wasLoaded.Should().BeTrue();

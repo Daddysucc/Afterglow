@@ -47,7 +47,10 @@ public partial class UpdateService : ObservableObject, IDisposable
                 if (isEnabled)
                     _ = CheckIfDueAsync();
                 else
+                {
                     AvailableVersion = null;
+                    Status = UpdateCheckStatus.None;
+                }
             }
         );
     }
@@ -68,6 +71,10 @@ public partial class UpdateService : ObservableObject, IDisposable
         _timer.Start();
     }
 
+    // Outcome of the last check, shown next to the button that checks on request
+    [ObservableProperty]
+    public partial UpdateCheckStatus Status { get; private set; }
+
     private async Task CheckIfDueAsync()
     {
         if (!_isStarted || !_settingsService.IsUpdateCheckEnabled)
@@ -76,9 +83,25 @@ public partial class UpdateService : ObservableObject, IDisposable
         if (!UpdateCheck.IsDue(_lastCheckedAt, DateTimeOffset.Now))
             return;
 
+        await CheckAsync();
+    }
+
+    /// <summary>
+    /// Checks right away, when asked to: even if checking now and then is turned off.
+    /// </summary>
+    public async Task CheckNowAsync()
+    {
+        if (IsSupported)
+            await CheckAsync();
+    }
+
+    private async Task CheckAsync()
+    {
         // One check at a time
         if (Interlocked.Exchange(ref _isChecking, 1) != 0)
             return;
+
+        Dispatcher.UIThread.Post(() => Status = UpdateCheckStatus.Checking);
 
         try
         {
@@ -93,13 +116,18 @@ public partial class UpdateService : ObservableObject, IDisposable
             _lastCheckedAt = DateTimeOffset.Now;
 
             Dispatcher.UIThread.Post(() =>
-                AvailableVersion = _settingsService.IsUpdateCheckEnabled ? version : null
-            );
+            {
+                AvailableVersion = version;
+                Status = version is not null
+                    ? UpdateCheckStatus.UpdateAvailable
+                    : UpdateCheckStatus.UpToDate;
+            });
         }
         // Not being able to check (e.g. offline, or GitHub is unavailable) is never an error
         catch (Exception ex)
         {
             Debug.WriteLine($"Failed to check for updates: {ex.Message}");
+            Dispatcher.UIThread.Post(() => Status = UpdateCheckStatus.Failed);
         }
         finally
         {
@@ -112,4 +140,14 @@ public partial class UpdateService : ObservableObject, IDisposable
         _timer.Dispose();
         _settingsSubscription.Dispose();
     }
+}
+
+public enum UpdateCheckStatus
+{
+    // Not checked yet
+    None,
+    Checking,
+    UpToDate,
+    UpdateAvailable,
+    Failed,
 }

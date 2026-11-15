@@ -305,6 +305,11 @@ public partial class LocalizationManager
     public string UpdateAvailableTooltip => Get();
     public string CheckForUpdatesLabel => Get();
     public string CheckForUpdatesTooltip => Get();
+    public string CheckForUpdatesNowTooltip => Get();
+    public string UpdateCheckingText => Get();
+    public string UpToDateText => Get();
+    public string UpdateCheckFailedText => Get();
+    public string UpdateCheckUnavailableText => Get();
     public string PerMonitorFullscreenPauseLabel => Get();
     public string PerMonitorFullscreenPauseTooltip => Get();
     public string StreamingAutoPauseLabel => Get();
