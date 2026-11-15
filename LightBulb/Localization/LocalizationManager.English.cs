@@ -188,7 +188,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Application whitelist",
             [nameof(RefreshAppsTooltip)] = "Refresh running applications",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Pause Afterglow when one of the selected applications is in the foreground",
+                "Pause Afterglow when one of the selected applications or window titles is in the foreground",
             // Tray icon context menu
             [nameof(TraySettingsMenuItem)] = "Settings",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Until sunrise",
@@ -219,12 +219,17 @@ public partial class LocalizationManager
                 Press OK to open settings.
                 """,
             [nameof(OkButton)] = "OK",
+            [nameof(AlreadyRunningTitle)] = "Already running",
+            [nameof(AlreadyRunningMessage)] =
+                "Another copy of {0}, or the original {1}, is already running. Close it from its icon in the system tray, then start {0} again.",
+            [nameof(TemporaryLocationNote)] =
+                "{0} is running from a temporary folder (such as Downloads), so it won't start with Windows from there. To keep it, use the installer, or move {1} to a permanent folder and run it from there.",
             // Settings page
             [nameof(BackTooltip)] = "Back to the dashboard (changes are saved)",
             [nameof(CycleTabName)] = "Cycle & Colors",
             [nameof(ScheduleTabName)] = "Schedule & Location",
             [nameof(RulesTabName)] = "Rules & Whitelist",
-            [nameof(ControlsTabName)] = "Controls & App",
+            [nameof(ControlsTabName)] = "App & Controls",
             // Cycle & colors
             [nameof(DayCardSubtitle)] = "Sunrise to sunset",
             [nameof(EveningCardSubtitle)] = "Sunset to bedtime",
@@ -252,7 +257,27 @@ public partial class LocalizationManager
             [nameof(PauseWhenScreenLockedTooltip)] =
                 "Pause Afterglow while the workstation is locked",
             [nameof(WhitelistCardSubtitle)] =
-                "Pause Afterglow while any of the selected programs is in the foreground.",
+                "Pause Afterglow while a selected program or matching window is in the foreground.",
+            [nameof(UpstreamCreditText)] =
+                "Afterglow is built on LightBulb by Tyrrrz (Oleksii Holub), used under the MIT License.",
+            [nameof(UpstreamUkraineText)] =
+                "LightBulb was made in Ukraine. Its author asks users to condemn Russia's war against Ukraine and support its territorial integrity.",
+            [nameof(UpstreamProjectLink)] = "LightBulb on GitHub",
+            [nameof(UkraineStatementLink)] = "Read his statement",
+            [nameof(UpstreamDonationLink)] = "Donate to Tyrrrz",
+            [nameof(WhitelistedApplicationsPauseLabel)] = "Pause for whitelisted applications",
+            [nameof(WhitelistedApplicationsPauseTooltip)] =
+                "Pause while the window in the foreground belongs to one of the selected applications",
+            [nameof(WhitelistedWindowTitlesPauseLabel)] = "Pause for whitelisted window titles",
+            [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+                "Pause while the title of the window in the foreground contains one of the keywords (not case-sensitive)",
+            [nameof(WindowTitleKeywordPlaceholder)] = "Title keyword, e.g. Netflix",
+            [nameof(AddButton)] = "ADD",
+            [nameof(RemoveWindowTitleTooltip)] = "Remove keyword",
+            [nameof(PerMonitorWhitelistPauseLabel)] =
+                "Pause only the monitor with the matching window",
+            [nameof(PerMonitorWhitelistPauseTooltip)] =
+                "Keep the other monitors adjusted. When off, all monitors are paused.",
             [nameof(PerMonitorFullscreenPauseLabel)] = "Pause only the monitor running fullscreen",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "When a fullscreen application is in the foreground, restore normal colors only on the display that runs it, and keep the other displays on the cycle",

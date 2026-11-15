@@ -77,6 +77,35 @@ public partial class Window(nint handle) : NativeResource(handle)
     // GDI device name (e.g. \\.\DISPLAY1) of the monitor that hosts most of this window
     public string? TryGetMonitorDeviceName() => TryGetMonitor()?.TryGetDeviceName();
 
+    // Same as above, but falls back to the nearest monitor for windows that are off screen
+    public string? TryGetNearestMonitorDeviceName()
+    {
+        const uint monitorDefaultToNearest = 2;
+
+        var monitorHandle = NativeMethods.MonitorFromWindow(Handle, monitorDefaultToNearest);
+        return monitorHandle != 0 ? new Monitor(monitorHandle).TryGetDeviceName() : null;
+    }
+
+    // ID of the process that created the window. Cheap, unlike opening the process.
+    public int GetProcessId()
+    {
+        _ = NativeMethods.GetWindowThreadProcessId(Handle, out var processId);
+        return (int)processId;
+    }
+
+    // The window's title, or null if it has none
+    public string? TryGetTitle()
+    {
+        var length = NativeMethods.GetWindowTextLength(Handle);
+        if (length <= 0)
+            return null;
+
+        var buffer = new StringBuilder(length + 1);
+        return NativeMethods.GetWindowText(Handle, buffer, buffer.Capacity) > 0
+            ? buffer.ToString()
+            : null;
+    }
+
     public Rect? TryGetRect() => NativeMethods.GetWindowRect(Handle, out var rect) ? rect : null;
 
     public Rect? TryGetClientRect() =>

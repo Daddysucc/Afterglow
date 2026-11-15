@@ -47,6 +47,11 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial bool IsFirstTimeExperienceEnabled { get; set; } = true;
 
+    // The limited gamma range is only pointed out once: it can also be unlocked in the settings
+    // later, and the installer unlocks it anyway
+    [ObservableProperty]
+    public partial bool IsGammaRangePromptEnabled { get; set; } = true;
+
     [ObservableProperty]
     [JsonIgnore] // comes from registry
     public partial bool IsExtendedGammaRangeUnlocked { get; set; }
@@ -177,6 +182,21 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial IReadOnlyList<ExternalApplication>? WhitelistedApplications { get; set; }
 
+    // Words that pause when they're part of the foreground window's title (ignoring case)
+    [ObservableProperty]
+    public partial IReadOnlyList<string>? WhitelistedWindowTitles { get; set; }
+
+    // Each kind of whitelist match can be turned off on its own, without losing its list
+    [ObservableProperty]
+    public partial bool IsWhitelistedApplicationPauseEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsWhitelistedWindowTitlePauseEnabled { get; set; } = true;
+
+    // Only pause the displays that show whitelisted windows, rather than all of them
+    [ObservableProperty]
+    public partial bool IsPerMonitorWhitelistPauseEnabled { get; set; } = true;
+
     // HotKeys
 
     [ObservableProperty]
@@ -220,10 +240,13 @@ public partial class SettingsService : SettingsBase
 
     public override void Reset()
     {
+        var isGammaRangePromptEnabled = IsGammaRangePromptEnabled;
+
         base.Reset();
 
-        // Don't reset the first-time experience
+        // Don't reset the first-time experience, or bring back prompts that were already shown
         IsFirstTimeExperienceEnabled = false;
+        IsGammaRangePromptEnabled = isGammaRangePromptEnabled;
 
         // Trigger UI updates
         OnPropertyChanged(string.Empty);
@@ -558,6 +581,10 @@ public partial class SettingsService : SettingsBase
         );
 
         StreamingPorts = StreamingPortList.Normalize(StreamingPorts);
+
+        // Blank entries (which could otherwise match every window), padding, and duplicates
+        if (WhitelistedWindowTitles is not null)
+            WhitelistedWindowTitles = WindowTitleKeywords.Normalize(WhitelistedWindowTitles);
 
         // Coordinates that don't exist on Earth (e.g. edited by hand) are treated as not set
         if (Location is { IsValid: false })

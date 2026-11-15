@@ -2,7 +2,7 @@
 ; upgrades an existing LightBulb installation in place, keeping its settings and startup entry
 #define AppName "LightBulb"
 #define AppDisplayName "Afterglow"
-#define AppUrl "https://github.com/trentrichards1/Afterglow"
+#define AppUrl "https://github.com/Daddysucc/Afterglow"
 #define AppVersion GetEnv("INSTALLER_APP_VERSION")
 
 [Setup]

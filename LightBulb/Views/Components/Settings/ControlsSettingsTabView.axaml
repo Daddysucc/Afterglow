@@ -15,128 +15,6 @@
     </UserControl.Styles>
 
     <StackPanel Orientation="Vertical" Spacing="12">
-        <!--  Global hotkeys  -->
-        <Border Classes="card">
-            <StackPanel Orientation="Vertical" Spacing="10">
-                <StackPanel Orientation="Vertical" Spacing="2">
-                    <TextBlock
-                        Classes="card-title"
-                        Text="{Binding LocalizationManager.HotkeysCardTitle}"
-                    />
-                    <TextBlock
-                        Classes="card-subtitle"
-                        Text="{Binding LocalizationManager.HotkeysCardSubtitle}"
-                    />
-                </StackPanel>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.ToggleLightBulbHotkeyTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.ToggleLightBulbHotkeyLabel}"
-                    />
-                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleHotKey}" />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.ToggleWindowHotkeyTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.ToggleWindowLabel}"
-                    />
-                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleWindowHotKey}" />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.IncreaseTemperatureOffsetTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.IncreaseTemperatureOffsetLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding IncreaseTemperatureOffsetHotKey}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.DecreaseTemperatureOffsetTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.DecreaseTemperatureOffsetLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding DecreaseTemperatureOffsetHotKey}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.IncreaseBrightnessOffsetTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.IncreaseBrightnessOffsetLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding IncreaseBrightnessOffsetHotKey}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.DecreaseBrightnessOffsetTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.DecreaseBrightnessOffsetLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding DecreaseBrightnessOffsetHotKey}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.ResetOffsetHotkeyTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.ResetOffsetLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding ResetConfigurationOffsetHotKey}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.ToggleGrayscaleHotkeyTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.ToggleGrayscaleHotkeyLabel}"
-                    />
-                    <controls:HotKeyTextBox
-                        Grid.Column="1"
-                        HotKey="{Binding ToggleGrayscaleHotKey}"
-                    />
-                </Grid>
-            </StackPanel>
-        </Border>
-
         <!--  System preferences  -->
         <Border Classes="card">
             <StackPanel Orientation="Vertical" Spacing="12">
@@ -271,5 +149,187 @@
                 </Grid>
             </StackPanel>
         </Border>
+
+        <!--  Global hotkeys  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HotkeysCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HotkeysCardSubtitle}"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleLightBulbHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleLightBulbHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleHotKey}" />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleWindowHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleWindowLabel}"
+                    />
+                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleWindowHotKey}" />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.IncreaseTemperatureOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.IncreaseTemperatureOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding IncreaseTemperatureOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.DecreaseTemperatureOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.DecreaseTemperatureOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding DecreaseTemperatureOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.IncreaseBrightnessOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.IncreaseBrightnessOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding IncreaseBrightnessOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.DecreaseBrightnessOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.DecreaseBrightnessOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding DecreaseBrightnessOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ResetOffsetHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ResetOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ResetConfigurationOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleGrayscaleHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleGrayscaleHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ToggleGrayscaleHotKey}"
+                    />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!--  Credits for the original project  -->
+        <StackPanel Margin="4,4,4,0" Orientation="Vertical" Spacing="4">
+            <TextBlock
+                Classes="setting-hint"
+                Text="{Binding LocalizationManager.UpstreamCreditText}"
+            />
+            <TextBlock
+                Classes="setting-hint"
+                Text="{Binding LocalizationManager.UpstreamUkraineText}"
+            />
+            <WrapPanel ItemSpacing="4" Orientation="Horizontal">
+                <WrapPanel.Styles>
+                    <Style Selector="TextBlock.link-separator">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="FontSize" Value="11.5" />
+                        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+                        <Setter Property="Text" Value="·" />
+                    </Style>
+                </WrapPanel.Styles>
+                <Button
+                    Padding="0,2"
+                    Command="{Binding OpenUpstreamProjectCommand}"
+                    Cursor="Hand"
+                    Foreground="{DynamicResource AccentTextBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                >
+                    <TextBlock
+                        FontSize="11.5"
+                        Text="{Binding LocalizationManager.UpstreamProjectLink}"
+                    />
+                </Button>
+                <TextBlock Classes="link-separator" />
+                <Button
+                    Padding="0,2"
+                    Command="{Binding OpenUkraineStatementCommand}"
+                    Cursor="Hand"
+                    Foreground="{DynamicResource AccentTextBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                >
+                    <TextBlock
+                        FontSize="11.5"
+                        Text="{Binding LocalizationManager.UkraineStatementLink}"
+                    />
+                </Button>
+                <TextBlock Classes="link-separator" />
+                <Button
+                    Padding="0,2"
+                    Command="{Binding OpenUpstreamDonationCommand}"
+                    Cursor="Hand"
+                    Foreground="{DynamicResource AccentTextBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                >
+                    <TextBlock
+                        FontSize="11.5"
+                        Text="{Binding LocalizationManager.UpstreamDonationLink}"
+                    />
+                </Button>
+            </WrapPanel>
+        </StackPanel>
     </StackPanel>
 </UserControl>

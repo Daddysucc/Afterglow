@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Reflection;
-using System.Threading;
 using Avalonia;
+using LightBulb.Localization;
 using LightBulb.PlatformInterop;
 
 namespace LightBulb;
@@ -62,7 +62,29 @@ public static class Program
         return appExecutablePath;
     }
 
-    public static string ProjectUrl { get; } = "https://github.com/trentrichards1/Afterglow";
+    public static string ProjectUrl { get; } = "https://github.com/Daddysucc/Afterglow";
+
+    // The running instance can't be asked to show itself, most likely because it's the original
+    // LightBulb. Shown before the app starts, so it uses the system language.
+    private static void ShowAlreadyRunningMessage()
+    {
+        var localization = LocalizationManager.GetLocalization(Language.System);
+
+        MessageBox.ShowInfo(
+            LocalizationManager.Resolve(
+                localization,
+                nameof(LocalizationManager.AlreadyRunningTitle)
+            ),
+            string.Format(
+                LocalizationManager.Resolve(
+                    localization,
+                    nameof(LocalizationManager.AlreadyRunningMessage)
+                ),
+                DisplayName,
+                "LightBulb"
+            )
+        );
+    }
 
     public static string ProjectReleasesUrl { get; } = $"{ProjectUrl}/releases";
 
@@ -83,18 +105,26 @@ public static class Program
             )
             .LogToTrace();
 
+    // Lets later launches bring this instance to the front
+    internal static SingleInstance? Instance { get; private set; }
+
     [STAThread]
     public static int Main(string[] args)
     {
-        // Ensure only one instance of the app is running at a time
-        using var identityMutex = new Mutex(
-            true,
-            $"{Name}_Identity",
-            out var isOnlyRunningInstance
-        );
+        // Ensure only one instance of the app is running at a time.
+        // Its name is shared with LightBulb (and the installer), as they can't run side by side.
+        using var instance = SingleInstance.TryAcquire(Name);
+        if (instance is null)
+        {
+            // Show the running instance, rather than seemingly doing nothing (it may well be
+            // hidden in the system tray)
+            if (!SingleInstance.TryActivateRunningInstance(Name))
+                ShowAlreadyRunningMessage();
 
-        if (!isOnlyRunningInstance)
             return 1;
+        }
+
+        Instance = instance;
 
         // Build and run the app
         var builder = BuildAvaloniaApp();

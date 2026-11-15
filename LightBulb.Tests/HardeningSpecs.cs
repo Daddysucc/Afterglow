@@ -238,7 +238,8 @@ public class HardeningSpecs : IDisposable
     [Theory]
     [InlineData(false, false, false)]
     [InlineData(true, false, true)]
-    [InlineData(false, true, true)]
+    // The whitelist looks up the foreground window on its own, opening its process only if needed
+    [InlineData(false, true, false)]
     [InlineData(true, true, true)]
     public void I_do_not_get_the_foreground_application_looked_up_when_nothing_needs_it(
         bool isPauseWhenFullScreenEnabled,
@@ -337,8 +338,38 @@ public class HardeningSpecs : IDisposable
 
         // Assert
         localization
-            .Values.Should()
+            .Where(p => !UpstreamCreditKeys.Contains(p.Key))
+            .Select(p => p.Value)
+            .Should()
             .AllSatisfy(v => Regex.IsMatch(v, @"\bLightBulb\b").Should().BeFalse(v));
+    }
+
+    // The credits for the original project are the only place that names it
+    private static readonly string[] UpstreamCreditKeys =
+    [
+        nameof(LocalizationManager.UpstreamCreditText),
+        nameof(LocalizationManager.UpstreamUkraineText),
+        nameof(LocalizationManager.UpstreamProjectLink),
+    ];
+
+    [Theory]
+    [MemberData(nameof(AllLanguages))]
+    public void I_see_the_original_project_and_its_author_credited_in_every_language(
+        Language language
+    )
+    {
+        // Arrange
+        var localization = LocalizationManager.GetLocalization(language);
+
+        // Assert
+        localization[nameof(LocalizationManager.UpstreamCreditText)]
+            .Should()
+            .Contain("LightBulb")
+            .And.Contain("Tyrrrz")
+            .And.Contain("MIT");
+        localization[nameof(LocalizationManager.UpstreamUkraineText)].Should().Contain("LightBulb");
+        localization[nameof(LocalizationManager.UpstreamProjectLink)].Should().Contain("LightBulb");
+        localization[nameof(LocalizationManager.UpstreamDonationLink)].Should().Contain("Tyrrrz");
     }
 
     public void Dispose()

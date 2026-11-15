@@ -48,7 +48,6 @@ public partial class DashboardViewModel : ViewModelBase
 
     // Last known states, kept while an unidentifiable application (e.g. the taskbar) is in focus
     private string? _fullScreenMonitor;
-    private bool _isWhitelistedApplicationActive;
 
     private bool _isDashboardVisible = true;
 
@@ -182,9 +181,10 @@ public partial class DashboardViewModel : ViewModelBase
     [NotifyPropertyChangedFor(nameof(TrayStatusText))]
     public partial PauseReason PauseReason { get; set; }
 
-    // GDI device name of the display that is paused on its own (running a fullscreen application)
+    // GDI device names of the displays that are paused on their own (e.g. one running a fullscreen
+    // application, and others showing whitelisted windows), while the rest stay on the cycle
     [ObservableProperty]
-    public partial string? PausedMonitor { get; set; }
+    public partial IReadOnlyCollection<string>? PausedMonitors { get; set; }
 
     // Current configuration of each display, by GDI device name
     [ObservableProperty]
@@ -795,7 +795,7 @@ public partial class DashboardViewModel : ViewModelBase
         );
 
         // The cycle preview overrides pauses, including display-specific ones
-        var pausedMonitor = IsCyclePreviewEnabled ? null : PausedMonitor;
+        var pausedMonitors = IsCyclePreviewEnabled ? null : PausedMonitors;
         var isChanged = false;
 
         _gammaService.SetGamma(gdiDeviceName =>
@@ -810,7 +810,7 @@ public partial class DashboardViewModel : ViewModelBase
             var target = MonitorColorResolver.Resolve(
                 context,
                 profile,
-                string.Equals(gdiDeviceName, pausedMonitor, StringComparison.OrdinalIgnoreCase),
+                pausedMonitors?.Contains(gdiDeviceName, StringComparer.OrdinalIgnoreCase) == true,
                 monitor?.IsPrimary ?? false
             );
 
@@ -861,6 +861,52 @@ public partial class DashboardViewModel : ViewModelBase
         return _streamingPorts;
     }
 
+    private static bool AreSameMonitors(
+        IReadOnlyCollection<string>? first,
+        IReadOnlyCollection<string>? second
+    ) =>
+        (first?.Count ?? 0) == (second?.Count ?? 0)
+        && (
+            first is null
+            || second is null
+            || first.All(m => second.Contains(m, StringComparer.OrdinalIgnoreCase))
+        );
+
+    private readonly ForegroundWhitelist _foregroundWhitelist = new();
+
+    // Whitelist rules are only rebuilt when the settings they come from change
+    private WhitelistRules? _whitelistRules;
+    private (
+        bool,
+        IReadOnlyList<ExternalApplication>?,
+        bool,
+        IReadOnlyList<string>?
+    ) _whitelistRulesSource;
+
+    private WhitelistRules GetWhitelistRules()
+    {
+        var source = (
+            _settingsService.IsWhitelistedApplicationPauseEnabled,
+            _settingsService.WhitelistedApplications,
+            _settingsService.IsWhitelistedWindowTitlePauseEnabled,
+            _settingsService.WhitelistedWindowTitles
+        );
+
+        if (_whitelistRules is null || source != _whitelistRulesSource)
+        {
+            _whitelistRules = WhitelistRules.Create(
+                source.Item1,
+                source.Item2?.Select(a => a.ExecutableFilePath),
+                source.Item3,
+                source.Item4
+            );
+
+            _whitelistRulesSource = source;
+        }
+
+        return _whitelistRules;
+    }
+
     private void UpdateIsPaused()
     {
         var settings = new AutoPauseSettings(
@@ -868,7 +914,8 @@ public partial class DashboardViewModel : ViewModelBase
             _settingsService.IsPauseWhenScreenLockedEnabled,
             _settingsService.IsPauseWhenFullScreenEnabled,
             _settingsService.IsPerMonitorFullscreenPauseEnabled,
-            _settingsService.IsApplicationWhitelistEnabled
+            _settingsService.IsApplicationWhitelistEnabled,
+            _settingsService.IsPerMonitorWhitelistPauseEnabled
         );
 
         // These are only checked when the corresponding setting is enabled, to avoid needless work
@@ -879,8 +926,8 @@ public partial class DashboardViewModel : ViewModelBase
         var isScreenLocked = settings.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked();
 
         // Ignored or unidentifiable foreground applications (e.g. the taskbar) should not affect
-        // the fullscreen and whitelist states. This prevents brief flashes when switching from a
-        // fullscreen/whitelisted application to an ignored application, and back.
+        // the fullscreen state. This prevents brief flashes when switching from a fullscreen
+        // application to an ignored application, and back.
         // https://github.com/Tyrrrz/LightBulb/issues/451
         // Only looked up when needed, since this opens the foreground application's process
         var foregroundApplication = settings.IsForegroundApplicationNeeded
@@ -888,30 +935,38 @@ public partial class DashboardViewModel : ViewModelBase
             : null;
 
         if (foregroundApplication is not null)
-        {
-            _fullScreenMonitor = settings.IsPauseWhenFullScreenEnabled
-                ? _externalApplicationService.TryGetForegroundFullScreenMonitor()
-                : null;
+            _fullScreenMonitor = _externalApplicationService.TryGetForegroundFullScreenMonitor();
 
-            _isWhitelistedApplicationActive =
-                settings.IsApplicationWhitelistEnabled
-                && _settingsService.WhitelistedApplications is not null
-                && _settingsService.WhitelistedApplications.Contains(foregroundApplication);
-        }
+        // Only the window in focus counts. It isn't looked up at all when there's nothing to match.
+        var whitelistRules = settings.IsApplicationWhitelistEnabled
+            ? GetWhitelistRules()
+            : WhitelistRules.None;
+
+        var whitelist = whitelistRules.IsEmpty
+            ? _foregroundWhitelist.Reset()
+            : _foregroundWhitelist.Update(
+                whitelistRules,
+                _externalApplicationService.TryGetForegroundWhitelistWindow()
+            );
 
         var state = AutoPause.Evaluate(
             new AutoPauseConditions(
                 isRemoteStreamingActive,
                 isScreenLocked,
                 settings.IsPauseWhenFullScreenEnabled ? _fullScreenMonitor : null,
-                settings.IsApplicationWhitelistEnabled && _isWhitelistedApplicationActive
+                whitelist.IsMatched,
+                whitelist.Monitor,
+                _monitorService.Monitors.Select(m => m.GdiDeviceName).ToArray()
             ),
             settings
         );
 
         PauseReason = state.Reason;
-        PausedMonitor = state.PausedMonitor;
         IsPaused = state.IsGloballyPaused;
+
+        // Only replaced when it changes, as it's checked on every update
+        if (!AreSameMonitors(PausedMonitors, state.PausedMonitors))
+            PausedMonitors = state.PausedMonitors;
 
         // Also follows the grayscale schedule as the cycle moves between stages
         UpdateGrayscale();
@@ -975,7 +1030,7 @@ public partial class DashboardViewModel : ViewModelBase
         IsGrayscaleActive = GrayscaleController.IsApplied(
             isWanted && _grayscaleSnoozedUntil is null,
             IsActive,
-            !IsCyclePreviewEnabled && PausedMonitor is not null
+            !IsCyclePreviewEnabled && PausedMonitors is { Count: > 0 }
         );
 
         _grayscaleService.SetEnabled(IsGrayscaleActive);

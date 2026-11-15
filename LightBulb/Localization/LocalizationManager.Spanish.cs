@@ -99,7 +99,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Lista blanca de aplicaciones",
             [nameof(RefreshAppsTooltip)] = "Actualizar aplicaciones en ejecución",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Pausar Afterglow cuando una de las aplicaciones seleccionadas esté en primer plano",
+                "Pausar Afterglow cuando una de las aplicaciones o títulos de ventana seleccionados esté en primer plano",
             [nameof(TraySettingsMenuItem)] = "Ajustes",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "Hasta el amanecer",
             [nameof(TrayExitMenuItem)] = "Salir",
@@ -128,6 +128,11 @@ public partial class LocalizationManager
                 Presiona OK para abrir los ajustes.
                 """,
             [nameof(OkButton)] = "OK",
+            [nameof(AlreadyRunningTitle)] = "Ya se está ejecutando",
+            [nameof(AlreadyRunningMessage)] =
+                "Otra copia de {0}, o el {1} original, ya se está ejecutando. Ciérrala desde su icono en la bandeja del sistema y vuelve a iniciar {0}.",
+            [nameof(TemporaryLocationNote)] =
+                "{0} se está ejecutando desde una carpeta temporal (como Descargas), así que no se iniciará con Windows desde ahí. Para conservarlo, usa el instalador, o mueve {1} a una carpeta permanente y ejecútalo desde allí.",
             // Dashboard
             [nameof(BedtimeLabel)] = "Hora de dormir",
             [nameof(DayStateLabel)] = "Día",
@@ -217,7 +222,7 @@ public partial class LocalizationManager
             [nameof(CycleTabName)] = "Ciclo y colores",
             [nameof(ScheduleTabName)] = "Horario y ubicación",
             [nameof(RulesTabName)] = "Reglas y lista blanca",
-            [nameof(ControlsTabName)] = "Controles y aplicación",
+            [nameof(ControlsTabName)] = "Aplicación y controles",
             [nameof(DayCardSubtitle)] = "Del amanecer a la puesta de sol",
             [nameof(EveningCardSubtitle)] = "De la puesta de sol a la hora de dormir",
             [nameof(NightCardSubtitle)] = "De la hora de dormir al amanecer",
@@ -243,7 +248,29 @@ public partial class LocalizationManager
             [nameof(PauseWhenScreenLockedTooltip)] =
                 "Pausar Afterglow mientras el equipo esté bloqueado",
             [nameof(WhitelistCardSubtitle)] =
-                "Pausar Afterglow mientras cualquiera de los programas seleccionados esté en primer plano.",
+                "Pausar Afterglow mientras un programa seleccionado o una ventana coincidente esté en primer plano.",
+            [nameof(UpstreamCreditText)] =
+                "Afterglow está basado en LightBulb de Tyrrrz (Oleksii Holub), usado bajo la licencia MIT.",
+            [nameof(UpstreamUkraineText)] =
+                "LightBulb se creó en Ucrania. Su autor pide a los usuarios que condenen la guerra de Rusia contra Ucrania y apoyen su integridad territorial.",
+            [nameof(UpstreamProjectLink)] = "LightBulb en GitHub",
+            [nameof(UkraineStatementLink)] = "Leer su declaración",
+            [nameof(UpstreamDonationLink)] = "Donar a Tyrrrz",
+            [nameof(WhitelistedApplicationsPauseLabel)] =
+                "Pausar con aplicaciones de la lista blanca",
+            [nameof(WhitelistedApplicationsPauseTooltip)] =
+                "Pausar mientras la ventana en primer plano pertenezca a una de las aplicaciones seleccionadas",
+            [nameof(WhitelistedWindowTitlesPauseLabel)] =
+                "Pausar con títulos de ventana de la lista blanca",
+            [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+                "Pausar mientras el título de la ventana en primer plano contenga una de las palabras clave (sin distinguir mayúsculas)",
+            [nameof(WindowTitleKeywordPlaceholder)] = "Palabra clave del título, p. ej. Netflix",
+            [nameof(AddButton)] = "AÑADIR",
+            [nameof(RemoveWindowTitleTooltip)] = "Quitar palabra clave",
+            [nameof(PerMonitorWhitelistPauseLabel)] =
+                "Pausar solo el monitor con la ventana coincidente",
+            [nameof(PerMonitorWhitelistPauseTooltip)] =
+                "Los demás monitores siguen ajustados. Si está desactivado, se pausan todos.",
             [nameof(PerMonitorFullscreenPauseLabel)] =
                 "Pausar solo el monitor en pantalla completa",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
