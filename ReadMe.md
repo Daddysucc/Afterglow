@@ -1,5 +1,9 @@
 # Afterglow
 
+> **LightBulb was made in Ukraine.** Afterglow is built on [LightBulb](https://github.com/Tyrrrz/LightBulb) by [Tyrrrz (Oleksii Holub)](https://github.com/Tyrrrz). Its author asks users to condemn Russia's war against Ukraine and support its territorial integrity.
+>
+> [Read his statement](https://tyrrrz.me/ukraine) · [Donate to Tyrrrz](https://tyrrrz.me/donate)
+
 A fork of [LightBulb](https://github.com/Tyrrrz/LightBulb) by [Oleksii Holub (Tyrrrz)](https://github.com/Tyrrrz), with multi-monitor support, a three-stage day cycle, and a grayscale mode.
 
 <p align="center">
@@ -15,7 +19,7 @@ It runs quietly in the system tray and has minimal impact on performance.
 - **Multi-monitor support.** Exclude individual displays, or give each one its own temperature offset (up to ±2000 K) and brightness offset. By default, offsets scale perceptually (in mireds), so that panels matched during the day stay matched at night. The primary display is the reference, and **Identify** shows each display's number on its screen. Saved display settings survive reconnecting the display and graphics driver updates.
 - **Three-stage cycle.** Day, Evening, and Night, with a configurable bedtime, instead of a single switch at sunset.
 - **Grayscale mode.** Remove color from the screen manually, or on a schedule: at night, in the evening and at night, or always. The color temperature can keep tinting it for a warm monochrome look, or it can use a neutral white point.
-- **Smart auto-pause.** Restore normal colors only on the display that runs a fullscreen application, while the screen is locked, during remote streaming (Remote Desktop, or Sunshine and other streaming hosts by port), or while a whitelisted application is in the foreground.
+- **Smart auto-pause.** Restore normal colors only on the display that runs a fullscreen application, while the screen is locked, during remote streaming (Remote Desktop, or Sunshine and other streaming hosts by port), or while a whitelisted application, or a window whose title contains a whitelisted keyword, is in the foreground (optionally pausing only its display).
 - **Tray menu with snooze chips.** Pause Afterglow, or temporarily disable grayscale, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
 - **Redesigned interface.** A dashboard with a 24-hour color curve and a plain-language status line, and a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
 
@@ -24,7 +28,7 @@ Also included from LightBulb:
 - Location-based or manual sunrise and sunset times
 - Global hotkeys
 - Smooth gamma transitions
-- Works without an internet connection (only searching for a location uses it)
+- Works without an internet connection (only searching for a location, and the optional check for updates, use it)
 
 ## Download
 
