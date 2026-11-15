@@ -62,9 +62,33 @@ The two can't run at the same time: if LightBulb is running, Afterglow asks you 
 
 ## Screenshots
 
+**Dashboard.** The 24-hour curve shows how the day (6500 K), evening (4200 K), and night (2400 K) stages blend into each other, here with 1.5-hour transitions around sunset and bedtime.
+
 ![Dashboard](.assets/dashboard.png)
-![Settings](.assets/settings.png)
+
+**Tray menu.** Pause or turn off grayscale for a while, right from the system tray.
+
 ![Tray menu](.assets/tray.png)
+
+**Settings.** Everything is on one full-page screen, split into four tabs.
+
+![Settings](.assets/settings.png)
+
+**Cycle & Colors.** The temperature and brightness of each stage, the bedtime that starts the night, how long transitions take, and when grayscale turns on.
+
+![Cycle & Colors settings](.assets/settings-cycle.png)
+
+**Schedule & Location.** Sunrise and sunset from a searched place, coordinates, or automatic detection, or set by hand.
+
+![Schedule & Location settings](.assets/settings-schedule.png)
+
+**Rules & Whitelist.** When to pause automatically, per-display offsets for multi-monitor setups, and the applications and window titles that pause Afterglow.
+
+![Rules & Whitelist settings](.assets/settings-rules.png)
+
+**App & Controls.** Startup, updates, and gamma options, the language, and global hotkeys.
+
+![App & Controls settings](.assets/settings-app.png)
 
 ## License
 
