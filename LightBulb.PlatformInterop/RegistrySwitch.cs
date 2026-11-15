@@ -14,6 +14,10 @@ public class RegistrySwitch<T>(RegistryHive hive, string keyName, string entryNa
 {
     private readonly Lock _lock = new();
 
+    // Always the 64-bit view (the only one on 32-bit Windows), because that's where Windows reads
+    // its settings from. A 32-bit build would otherwise be redirected to WOW6432Node.
+    private RegistryKey OpenBaseKey() => RegistryKey.OpenBaseKey(hive, RegistryView.Registry64);
+
     public bool IsSet
     {
         get
@@ -23,7 +27,7 @@ public class RegistrySwitch<T>(RegistryHive hive, string keyName, string entryNa
                 try
                 {
                     // This should always be accessible without elevation
-                    using var baseKey = hive.OpenKey();
+                    using var baseKey = OpenBaseKey();
                     using var key = baseKey.OpenSubKey(keyName, false);
 
                     // A value of another type (e.g. written by another program, or edited by hand)
@@ -49,7 +53,7 @@ public class RegistrySwitch<T>(RegistryHive hive, string keyName, string entryNa
 
                 try
                 {
-                    using var baseKey = hive.OpenKey();
+                    using var baseKey = OpenBaseKey();
                     using var key = baseKey.CreateSubKey(keyName, true);
 
                     if (value)

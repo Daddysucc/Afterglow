@@ -124,6 +124,12 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial bool IsStartMinimizedEnabled { get; set; }
 
+    // Look for newer releases on GitHub now and then. Stored under the name the original
+    // LightBulb used for its updates, so that turning them off there carries over.
+    [ObservableProperty]
+    [JsonPropertyName("IsAutoUpdateEnabled")]
+    public partial bool IsUpdateCheckEnabled { get; set; } = true;
+
     [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 

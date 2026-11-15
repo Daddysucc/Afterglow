@@ -87,43 +87,35 @@ public class ExternalApplicationService
         return new WhitelistWindow(window);
     }
 
-    public ExternalApplication? TryGetForegroundApplication()
-    {
-        using var window = Window.TryGetForeground();
-
-        var executableFilePath = TryGetExecutableFilePath(window);
-        if (string.IsNullOrWhiteSpace(executableFilePath) || IsIgnored(executableFilePath))
-            return null;
-
-        return new ExternalApplication(executableFilePath);
-    }
-
     /// <summary>
-    /// Gets the GDI device name (e.g. <c>\\.\DISPLAY2</c>) of the display that is running
-    /// a fullscreen foreground application, or <c>null</c> if there's no such application.
+    /// Checks whether the foreground window is a fullscreen application, and gets the GDI device
+    /// name (e.g. <c>\\.\DISPLAY2</c>) of the display it's on, or <c>null</c> if it isn't.
+    /// Returns <c>false</c> if the foreground window can't be judged: there's none, or it's part
+    /// of the shell (e.g. the taskbar), in which case the previous state should be kept, so that
+    /// switching between a fullscreen application and the taskbar doesn't cause flashes.
+    /// https://github.com/Tyrrrz/LightBulb/issues/451
+    /// Applications that can't be identified are still judged: games protected by anti-cheat,
+    /// for example, don't let their executable be looked up, but can still be fullscreen.
     /// </summary>
-    public string? TryGetForegroundFullScreenMonitor()
+    public bool TryGetForegroundFullScreenMonitor(out string? fullScreenMonitor)
     {
-        using var window = Window.TryGetForeground();
+        fullScreenMonitor = null;
 
-        // Hidden, minimized, and cloaked windows (e.g. suspended UWP apps, or windows on other
-        // virtual desktops) may still report fullscreen bounds, but aren't actually on screen
-        if (
-            window is null
-            || !window.IsVisible()
-            || window.IsMinimized()
-            || window.IsCloaked()
-            || window.IsSystemWindow()
-        )
-        {
-            return null;
-        }
+        using var window = Window.TryGetForeground();
+        if (window is null || window.IsSystemWindow())
+            return false;
 
         var executableFilePath = TryGetExecutableFilePath(window);
         if (!string.IsNullOrWhiteSpace(executableFilePath) && IsIgnored(executableFilePath))
-            return null;
+            return false;
 
-        return window.IsFullScreen() ? window.TryGetMonitorDeviceName() : null;
+        // Hidden, minimized, and cloaked windows (e.g. suspended UWP apps, or windows on other
+        // virtual desktops) may still report fullscreen bounds, but aren't actually on screen
+        if (!window.IsVisible() || window.IsMinimized() || window.IsCloaked())
+            return true;
+
+        fullScreenMonitor = window.IsFullScreen() ? window.TryGetMonitorDeviceName() : null;
+        return true;
     }
 
     /// <summary>

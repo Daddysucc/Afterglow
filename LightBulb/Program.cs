@@ -64,6 +64,10 @@ public static class Program
 
     public static string ProjectUrl { get; } = "https://github.com/Daddysucc/Afterglow";
 
+    // Latest stable release, as listed by the GitHub API (drafts and pre-releases are left out)
+    public static string LatestReleaseApiUrl { get; } =
+        "https://api.github.com/repos/Daddysucc/Afterglow/releases/latest";
+
     // The running instance can't be asked to show itself, most likely because it's the original
     // LightBulb. Shown before the app starts, so it uses the system language.
     private static void ShowAlreadyRunningMessage()

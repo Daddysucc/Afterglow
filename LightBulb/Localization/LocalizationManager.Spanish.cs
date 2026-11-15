@@ -249,6 +249,12 @@ public partial class LocalizationManager
                 "Pausar Afterglow mientras el equipo esté bloqueado",
             [nameof(WhitelistCardSubtitle)] =
                 "Pausar Afterglow mientras un programa seleccionado o una ventana coincidente esté en primer plano.",
+            [nameof(UpdateAvailableButton)] = "Actualización disponible",
+            [nameof(UpdateAvailableTooltip)] =
+                "{0} {1} está disponible. Haz clic para abrir su página de descarga.",
+            [nameof(CheckForUpdatesLabel)] = "Buscar actualizaciones",
+            [nameof(CheckForUpdatesTooltip)] =
+                "Buscar de vez en cuando una versión más reciente en GitHub. No se descarga nada automáticamente.",
             [nameof(UpstreamCreditText)] =
                 "Afterglow está basado en LightBulb de Tyrrrz (Oleksii Holub), usado bajo la licencia MIT.",
             [nameof(UpstreamUkraineText)] =

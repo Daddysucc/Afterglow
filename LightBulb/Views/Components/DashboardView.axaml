@@ -166,6 +166,32 @@
                 </StackPanel>
             </ToggleButton>
 
+            <!--  Newer release on GitHub (opens its page)  -->
+            <Button
+                Grid.Column="1"
+                Height="22"
+                Margin="2,0,0,0"
+                Padding="8,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource AccentSoftBrush}"
+                Command="{Binding OpenUpdateCommand}"
+                CornerRadius="11"
+                Foreground="{DynamicResource AccentTextBrush}"
+                IsVisible="{Binding IsUpdateAvailable}"
+                Theme="{DynamicResource MaterialFlatButton}"
+                ToolTip.Tip="{Binding UpdateAvailableTooltip}"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <materialIcons:MaterialIcon Width="13" Height="13" Kind="ArrowUpCircle" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="11"
+                        Text="{Binding LocalizationManager.UpdateAvailableButton}"
+                    />
+                </StackPanel>
+            </Button>
+
             <!--  Location (opens location settings)  -->
             <Button
                 Grid.Column="2"

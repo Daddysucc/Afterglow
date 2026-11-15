@@ -108,9 +108,20 @@ jobs:
         env:
           INSTALLER_APP_VERSION: ${{ steps.version.outputs.value }}
         run: |
+          # x64, arm64, or x86, so that each installer only runs where its app can
+          $env:INSTALLER_APP_ARCHITECTURE = '${{ matrix.rid }}'.Replace('win-', '')
+
           choco install innosetup --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Copy-Item -Path LightBulb/bin/publish/ -Recurse -Destination Installer/Source/
-          & "c:\Program Files (x86)\Inno Setup 6\ISCC.exe" Installer/Installer.iss
+
+          # Found rather than assumed, as its folder is named after its major version
+          $compiler = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Inno Setup *\ISCC.exe", "$env:ProgramFiles\Inno Setup *\ISCC.exe" -ErrorAction SilentlyContinue |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+          if (-not $compiler) { throw "Inno Setup compiler (ISCC.exe) not found" }
+
+          & $compiler.FullName Installer/Installer.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Name packages

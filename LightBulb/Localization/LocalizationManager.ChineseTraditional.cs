@@ -228,6 +228,11 @@ public partial class LocalizationManager
             [nameof(PauseWhenScreenLockedTooltip)] = "在電腦鎖定期間暫停 Afterglow",
             [nameof(WhitelistCardSubtitle)] =
                 "當任一選取的程式或相符的視窗位於前景時暫停 Afterglow。",
+            [nameof(UpdateAvailableButton)] = "有可用的更新",
+            [nameof(UpdateAvailableTooltip)] = "{0} {1} 已發布。按一下以開啟下載頁面。",
+            [nameof(CheckForUpdatesLabel)] = "檢查更新",
+            [nameof(CheckForUpdatesTooltip)] =
+                "不時在 GitHub 上檢查是否有新版本。不會自動下載任何內容。",
             [nameof(UpstreamCreditText)] =
                 "Afterglow 以 Tyrrrz（Oleksii Holub）的 LightBulb 為基礎打造，依 MIT 授權條款使用。",
             [nameof(UpstreamUkraineText)] =

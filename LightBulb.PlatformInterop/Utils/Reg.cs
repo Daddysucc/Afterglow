@@ -15,6 +15,11 @@ internal static class Reg
         foreach (var arg in arguments)
             process.StartInfo.ArgumentList.Add(arg);
 
+        // Always the 64-bit registry view (like RegistrySwitch), even from a 32-bit build, where
+        // reg.exe would otherwise be redirected to WOW6432Node
+        if (Environment.Is64BitOperatingSystem)
+            process.StartInfo.ArgumentList.Add("/reg:64");
+
         if (isElevated)
         {
             process.StartInfo.UseShellExecute = true;

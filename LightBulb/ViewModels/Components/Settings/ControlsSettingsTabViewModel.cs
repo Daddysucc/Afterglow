@@ -39,6 +39,12 @@ public partial class ControlsSettingsTabViewModel(
         set => SettingsService.IsStartMinimizedEnabled = value;
     }
 
+    public bool IsUpdateCheckEnabled
+    {
+        get => SettingsService.IsUpdateCheckEnabled;
+        set => SettingsService.IsUpdateCheckEnabled = value;
+    }
+
     public bool IsConfigurationSmoothingEnabled
     {
         get => SettingsService.IsConfigurationSmoothingEnabled;

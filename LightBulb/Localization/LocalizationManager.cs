@@ -301,6 +301,10 @@ public partial class LocalizationManager
     public string UpstreamProjectLink => Get();
     public string UkraineStatementLink => Get();
     public string UpstreamDonationLink => Get();
+    public string UpdateAvailableButton => Get();
+    public string UpdateAvailableTooltip => Get();
+    public string CheckForUpdatesLabel => Get();
+    public string CheckForUpdatesTooltip => Get();
     public string PerMonitorFullscreenPauseLabel => Get();
     public string PerMonitorFullscreenPauseTooltip => Get();
     public string StreamingAutoPauseLabel => Get();
