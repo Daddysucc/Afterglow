@@ -28,8 +28,17 @@ Also included from LightBulb:
 
 ## Download
 
-Prebuilt versions are published on the [Releases](https://github.com/Daddysucc/Afterglow/releases) page.
+Download the latest version from the [Releases](https://github.com/Daddysucc/Afterglow/releases) page:
+
+- **Installer (recommended):** `Afterglow-Installer.win-x64.exe`. Installs Afterglow and unlocks the full gamma range, so that the warmest colors work. Afterglow then starts with Windows, and you can delete the downloaded file.
+- **Portable:** `Afterglow.win-x64.exe`, a single file that runs without installing. Keep it in a permanent folder: when it runs from Downloads or a temporary folder, Afterglow keeps its settings in your user profile and doesn't start with Windows.
+
+On ARM devices (such as Snapdragon laptops), use the `win-arm64` versions instead, and on 32-bit Windows, the `win-x86` ones.
 Afterglow requires Windows 10 or later.
+
+> [!NOTE]
+> Afterglow isn't code-signed yet, so Windows may warn about it the first time: select **More info**, then **Run anyway**.
+> On PCs with Smart App Control turned on, Windows blocks apps that aren't code-signed.
 
 ### Building from source
 
@@ -43,9 +52,9 @@ This produces a standalone `LightBulb.exe` in `LightBulb/bin/Release/net10.0-win
 
 ## Coming from LightBulb
 
-For compatibility, Afterglow keeps LightBulb's executable name (`LightBulb.exe`), settings location, and startup entry, so it picks up your existing LightBulb settings.
-The installer upgrades an existing LightBulb installation in place.
-Only one of the two can run at a time.
+For compatibility, Afterglow keeps LightBulb's executable name (`LightBulb.exe`), settings location, and startup entry.
+The installer upgrades an existing LightBulb installation in place, keeping its settings, and a portable copy run from Downloads picks them up too.
+The two can't run at the same time: if LightBulb is running, Afterglow asks you to close it first.
 
 ## Screenshots
 

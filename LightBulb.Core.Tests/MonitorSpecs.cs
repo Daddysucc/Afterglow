@@ -251,7 +251,7 @@ public class MonitorSpecs
         // Act
         var configurations = monitors
             .Select(m =>
-                MonitorColorResolver.Resolve(context, null, isPaused: m == state.PausedMonitor)
+                MonitorColorResolver.Resolve(context, null, isPaused: state.IsMonitorPaused(m))
             )
             .ToArray();
 
@@ -337,7 +337,7 @@ public class MonitorSpecs
         var context = CreateContext(isGloballyPaused: state.IsGloballyPaused);
         var configurations = monitors
             .Select(m =>
-                MonitorColorResolver.Resolve(context, null, isPaused: m == state.PausedMonitor)
+                MonitorColorResolver.Resolve(context, null, isPaused: state.IsMonitorPaused(m))
             )
             .ToArray();
 
@@ -362,7 +362,7 @@ public class MonitorSpecs
         // Act
         var configurations = connectedMonitors
             .Select(m =>
-                MonitorColorResolver.Resolve(context, null, isPaused: m == state.PausedMonitor)
+                MonitorColorResolver.Resolve(context, null, isPaused: state.IsMonitorPaused(m))
             )
             .ToArray();
 

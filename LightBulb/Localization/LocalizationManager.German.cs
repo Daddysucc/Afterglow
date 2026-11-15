@@ -101,7 +101,7 @@ public partial class LocalizationManager
         [nameof(AppWhitelistLabel)] = "Anwendungs-Whitelist",
         [nameof(RefreshAppsTooltip)] = "Laufende Anwendungen aktualisieren",
         [nameof(PauseForWhitelistedTooltip)] =
-            "Afterglow pausieren, wenn eine der ausgewählten Anwendungen im Vordergrund ist",
+            "Afterglow pausieren, wenn eine der ausgewählten Anwendungen oder Fenstertitel im Vordergrund ist",
         [nameof(TraySettingsMenuItem)] = "Einstellungen",
         [nameof(TrayDisableUntilSunriseMenuItem)] = "Bis Sonnenaufgang",
         [nameof(TrayExitMenuItem)] = "Beenden",
@@ -130,6 +130,11 @@ public partial class LocalizationManager
             Drücken Sie OK, um die Einstellungen zu öffnen.
             """,
         [nameof(OkButton)] = "OK",
+        [nameof(AlreadyRunningTitle)] = "Bereits gestartet",
+        [nameof(AlreadyRunningMessage)] =
+            "Eine andere Kopie von {0} oder das ursprüngliche {1} läuft bereits. Beenden Sie sie über ihr Symbol im Infobereich und starten Sie {0} dann erneut.",
+        [nameof(TemporaryLocationNote)] =
+            "{0} wird aus einem temporären Ordner (z. B. Downloads) ausgeführt und startet von dort nicht mit Windows. Um es zu behalten, verwenden Sie das Installationsprogramm oder verschieben Sie {1} in einen dauerhaften Ordner und starten es von dort.",
         // Dashboard
         [nameof(BedtimeLabel)] = "Schlafenszeit",
         [nameof(DayStateLabel)] = "Tag",
@@ -210,7 +215,7 @@ public partial class LocalizationManager
         [nameof(CycleTabName)] = "Zyklus & Farben",
         [nameof(ScheduleTabName)] = "Zeitplan & Standort",
         [nameof(RulesTabName)] = "Regeln & Whitelist",
-        [nameof(ControlsTabName)] = "Steuerung & App",
+        [nameof(ControlsTabName)] = "App & Steuerung",
         [nameof(DayCardSubtitle)] = "Sonnenaufgang bis Sonnenuntergang",
         [nameof(EveningCardSubtitle)] = "Sonnenuntergang bis Schlafenszeit",
         [nameof(NightCardSubtitle)] = "Schlafenszeit bis Sonnenaufgang",
@@ -236,7 +241,28 @@ public partial class LocalizationManager
         [nameof(PauseWhenScreenLockedTooltip)] =
             "Afterglow pausieren, solange der Computer gesperrt ist",
         [nameof(WhitelistCardSubtitle)] =
-            "Afterglow pausieren, solange eines der ausgewählten Programme im Vordergrund ist.",
+            "Afterglow pausieren, solange ein ausgewähltes Programm oder ein passendes Fenster im Vordergrund ist.",
+        [nameof(UpstreamCreditText)] =
+            "Afterglow basiert auf LightBulb von Tyrrrz (Oleksii Holub) und wird unter der MIT-Lizenz verwendet.",
+        [nameof(UpstreamUkraineText)] =
+            "LightBulb wurde in der Ukraine entwickelt. Sein Autor bittet die Nutzer, Russlands Krieg gegen die Ukraine zu verurteilen und ihre territoriale Integrität zu unterstützen.",
+        [nameof(UpstreamProjectLink)] = "LightBulb auf GitHub",
+        [nameof(UkraineStatementLink)] = "Seine Erklärung lesen",
+        [nameof(UpstreamDonationLink)] = "An Tyrrrz spenden",
+        [nameof(WhitelistedApplicationsPauseLabel)] = "Für Anwendungen auf der Whitelist pausieren",
+        [nameof(WhitelistedApplicationsPauseTooltip)] =
+            "Pausieren, solange das Fenster im Vordergrund zu einer der ausgewählten Anwendungen gehört",
+        [nameof(WhitelistedWindowTitlesPauseLabel)] =
+            "Für Fenstertitel auf der Whitelist pausieren",
+        [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+            "Pausieren, solange der Titel des Fensters im Vordergrund eines der Stichwörter enthält (Groß-/Kleinschreibung egal)",
+        [nameof(WindowTitleKeywordPlaceholder)] = "Stichwort im Titel, z. B. Netflix",
+        [nameof(AddButton)] = "HINZUFÜGEN",
+        [nameof(RemoveWindowTitleTooltip)] = "Stichwort entfernen",
+        [nameof(PerMonitorWhitelistPauseLabel)] =
+            "Nur den Monitor mit dem passenden Fenster pausieren",
+        [nameof(PerMonitorWhitelistPauseTooltip)] =
+            "Die anderen Monitore bleiben angepasst. Wenn aus, werden alle Monitore pausiert.",
         [nameof(PerMonitorFullscreenPauseLabel)] = "Nur den Monitor mit dem Vollbild pausieren",
         [nameof(PerMonitorFullscreenPauseTooltip)] =
             "Wenn eine Vollbildanwendung im Vordergrund ist, die normalen Farben nur auf dem Bildschirm wiederherstellen, auf dem sie läuft, und die anderen Bildschirme im Zyklus belassen",

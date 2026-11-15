@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using CommunityToolkit.Mvvm.Input;
 using LightBulb.Localization;
 using LightBulb.Models;
 using LightBulb.Services;
+using PowerKit.Extensions;
+using Process = System.Diagnostics.Process;
 
 namespace LightBulb.ViewModels.Components.Settings;
 
-public class ControlsSettingsTabViewModel(
+public partial class ControlsSettingsTabViewModel(
     SettingsService settingsService,
     LocalizationManager localizationManager
 ) : SettingsTabViewModelBase(settingsService, localizationManager, 3)
@@ -118,4 +121,16 @@ public class ControlsSettingsTabViewModel(
         get => SettingsService.ToggleGrayscaleHotKey;
         set => SettingsService.ToggleGrayscaleHotKey = value;
     }
+
+    // ---- Credits ----
+
+    [RelayCommand]
+    private void OpenUpstreamProject() =>
+        Process.StartShellExecute("https://github.com/Tyrrrz/LightBulb");
+
+    [RelayCommand]
+    private void OpenUkraineStatement() => Process.StartShellExecute("https://tyrrrz.me/ukraine");
+
+    [RelayCommand]
+    private void OpenUpstreamDonation() => Process.StartShellExecute("https://tyrrrz.me/donate");
 }

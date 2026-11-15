@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace LightBulb.PlatformInterop.Internal;
@@ -24,5 +25,14 @@ internal static partial class NativeMethods
         int dpiType,
         out uint dpiX,
         out uint dpiY
+    );
+
+    // Returns an HRESULT; the path must be freed with CoTaskMemFree
+    [DllImport(Shell32)]
+    public static extern int SHGetKnownFolderPath(
+        ref Guid rfid,
+        uint dwFlags,
+        nint hToken,
+        out nint ppszPath
     );
 }

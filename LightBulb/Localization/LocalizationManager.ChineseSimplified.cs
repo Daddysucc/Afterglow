@@ -100,7 +100,8 @@ public partial class LocalizationManager
             // Application whitelist settings tab (应用白名单设置选项卡)
             [nameof(AppWhitelistLabel)] = "应用白名单",
             [nameof(RefreshAppsTooltip)] = "刷新正在运行的应用程序",
-            [nameof(PauseForWhitelistedTooltip)] = "当选定的应用程序之一处于前台时暂停 Afterglow",
+            [nameof(PauseForWhitelistedTooltip)] =
+                "当选定的应用程序或窗口标题之一处于前台时暂停 Afterglow",
 
             // Tray icon context menu (托盘图标上下文菜单)
             [nameof(TraySettingsMenuItem)] = "设置",
@@ -133,6 +134,11 @@ public partial class LocalizationManager
                 按下“确定”打开设置。
                 """,
             [nameof(OkButton)] = "确定",
+            [nameof(AlreadyRunningTitle)] = "已在运行",
+            [nameof(AlreadyRunningMessage)] =
+                "{0} 的另一个副本或原版 {1} 已在运行。请通过系统托盘中的图标将其关闭，然后重新启动 {0}。",
+            [nameof(TemporaryLocationNote)] =
+                "{0} 正在从临时文件夹（例如“下载”）运行，因此不会从该位置随 Windows 启动。若要保留它，请使用安装程序，或将 {1} 移动到固定的文件夹并从那里运行。",
             // Dashboard
             [nameof(BedtimeLabel)] = "就寝时间",
             [nameof(DayStateLabel)] = "白天",
@@ -205,7 +211,7 @@ public partial class LocalizationManager
             [nameof(CycleTabName)] = "周期与色彩",
             [nameof(ScheduleTabName)] = "时间表与位置",
             [nameof(RulesTabName)] = "规则与白名单",
-            [nameof(ControlsTabName)] = "控制与应用",
+            [nameof(ControlsTabName)] = "应用与控制",
             [nameof(DayCardSubtitle)] = "日出到日落",
             [nameof(EveningCardSubtitle)] = "日落到就寝时间",
             [nameof(NightCardSubtitle)] = "就寝时间到日出",
@@ -227,7 +233,26 @@ public partial class LocalizationManager
             [nameof(AutoPauseCardSubtitle)] = "在以下情况下临时恢复正常色彩。",
             [nameof(PauseWhenScreenLockedLabel)] = "屏幕锁定时暂停",
             [nameof(PauseWhenScreenLockedTooltip)] = "在电脑锁定期间暂停 Afterglow",
-            [nameof(WhitelistCardSubtitle)] = "当任一所选程序处于前台时暂停 Afterglow。",
+            [nameof(WhitelistCardSubtitle)] =
+                "当任一所选程序或匹配的窗口处于前台时暂停 Afterglow。",
+            [nameof(UpstreamCreditText)] =
+                "Afterglow 基于 Tyrrrz（Oleksii Holub）的 LightBulb 构建，依据 MIT 许可证使用。",
+            [nameof(UpstreamUkraineText)] =
+                "LightBulb 诞生于乌克兰。其作者请求用户谴责俄罗斯对乌克兰的战争，并支持乌克兰的领土完整。",
+            [nameof(UpstreamProjectLink)] = "GitHub 上的 LightBulb",
+            [nameof(UkraineStatementLink)] = "阅读他的声明",
+            [nameof(UpstreamDonationLink)] = "向 Tyrrrz 捐款",
+            [nameof(WhitelistedApplicationsPauseLabel)] = "为白名单应用程序暂停",
+            [nameof(WhitelistedApplicationsPauseTooltip)] = "当前台窗口属于所选应用程序之一时暂停",
+            [nameof(WhitelistedWindowTitlesPauseLabel)] = "为白名单窗口标题暂停",
+            [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+                "当前台窗口的标题包含任一关键字时暂停（不区分大小写）",
+            [nameof(WindowTitleKeywordPlaceholder)] = "标题关键字，例如 Netflix",
+            [nameof(AddButton)] = "添加",
+            [nameof(RemoveWindowTitleTooltip)] = "删除关键字",
+            [nameof(PerMonitorWhitelistPauseLabel)] = "仅暂停显示匹配窗口的显示器",
+            [nameof(PerMonitorWhitelistPauseTooltip)] =
+                "其他显示器保持调节。关闭时将暂停所有显示器。",
             [nameof(PerMonitorFullscreenPauseLabel)] = "仅暂停运行全屏应用的显示器",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "当全屏应用处于前台时，仅在运行该应用的显示器上恢复正常色彩，其他显示器继续跟随周期",

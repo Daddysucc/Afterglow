@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using LightBulb.Core;
 using LightBulb.Models;
 using LightBulb.PlatformInterop;
 
@@ -49,6 +50,41 @@ public class ExternalApplicationService
 
             yield return new ExternalApplication(executableFilePath);
         }
+    }
+
+    // The window in focus, as checked against the whitelist
+    private sealed class WhitelistWindow(Window window) : IWhitelistWindow
+    {
+        public string? TryGetTitle() => window.TryGetTitle();
+
+        // Normalized the same way as the whitelisted applications, so that they can be compared
+        public string? TryGetExecutableFilePath() =>
+            ExternalApplicationService.TryGetExecutableFilePath(window) is { } path
+                ? new ExternalApplication(path).ExecutableFilePath
+                : null;
+
+        public string? TryGetMonitor() => window.TryGetNearestMonitorDeviceName();
+    }
+
+    /// <summary>
+    /// Gets the window in focus to check against the whitelist (windows behind it never count),
+    /// or <c>null</c> if it can't be judged: there's none, or it's the desktop, the taskbar, or
+    /// another part of the shell, or one of this app's own windows.
+    /// </summary>
+    public IWhitelistWindow? TryGetForegroundWhitelistWindow()
+    {
+        var window = Window.TryGetForeground();
+        if (window is null)
+            return null;
+
+        // This app's own windows never count (e.g. a keyword that's part of its title)
+        if (window.GetProcessId() == Environment.ProcessId || window.IsSystemWindow())
+        {
+            window.Dispose();
+            return null;
+        }
+
+        return new WhitelistWindow(window);
     }
 
     public ExternalApplication? TryGetForegroundApplication()

@@ -95,7 +95,8 @@ public partial class LocalizationManager
             // Application whitelist settings tab
             [nameof(AppWhitelistLabel)] = "應用程式白名單",
             [nameof(RefreshAppsTooltip)] = "重新整理執行中的應用程式",
-            [nameof(PauseForWhitelistedTooltip)] = "當選定的應用程式之一在前景執行時暫停 Afterglow",
+            [nameof(PauseForWhitelistedTooltip)] =
+                "當選定的應用程式或視窗標題之一位於前景時暫停 Afterglow",
             // Tray icon context menu
             [nameof(TraySettingsMenuItem)] = "設定",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "直到日出",
@@ -126,6 +127,11 @@ public partial class LocalizationManager
                 按一下確定以開啟設定。
                 """,
             [nameof(OkButton)] = "確定",
+            [nameof(AlreadyRunningTitle)] = "已在執行",
+            [nameof(AlreadyRunningMessage)] =
+                "{0} 的另一個副本或原版 {1} 已在執行。請透過系統匣中的圖示將其關閉，然後重新啟動 {0}。",
+            [nameof(TemporaryLocationNote)] =
+                "{0} 正從暫存資料夾（例如「下載」）執行，因此不會從該位置隨 Windows 啟動。若要保留它，請使用安裝程式，或將 {1} 移至固定的資料夾並從那裡執行。",
             // Dashboard
             [nameof(BedtimeLabel)] = "就寢時間",
             [nameof(DayStateLabel)] = "白天",
@@ -198,7 +204,7 @@ public partial class LocalizationManager
             [nameof(CycleTabName)] = "週期與色彩",
             [nameof(ScheduleTabName)] = "排程與位置",
             [nameof(RulesTabName)] = "規則與白名單",
-            [nameof(ControlsTabName)] = "控制與應用程式",
+            [nameof(ControlsTabName)] = "應用程式與控制",
             [nameof(DayCardSubtitle)] = "日出到日落",
             [nameof(EveningCardSubtitle)] = "日落到就寢時間",
             [nameof(NightCardSubtitle)] = "就寢時間到日出",
@@ -220,7 +226,26 @@ public partial class LocalizationManager
             [nameof(AutoPauseCardSubtitle)] = "在以下情況下暫時恢復正常色彩。",
             [nameof(PauseWhenScreenLockedLabel)] = "螢幕鎖定時暫停",
             [nameof(PauseWhenScreenLockedTooltip)] = "在電腦鎖定期間暫停 Afterglow",
-            [nameof(WhitelistCardSubtitle)] = "當任一選取的程式位於前景時暫停 Afterglow。",
+            [nameof(WhitelistCardSubtitle)] =
+                "當任一選取的程式或相符的視窗位於前景時暫停 Afterglow。",
+            [nameof(UpstreamCreditText)] =
+                "Afterglow 以 Tyrrrz（Oleksii Holub）的 LightBulb 為基礎打造，依 MIT 授權條款使用。",
+            [nameof(UpstreamUkraineText)] =
+                "LightBulb 誕生於烏克蘭。其作者請求使用者譴責俄羅斯對烏克蘭的戰爭，並支持烏克蘭的領土完整。",
+            [nameof(UpstreamProjectLink)] = "GitHub 上的 LightBulb",
+            [nameof(UkraineStatementLink)] = "閱讀他的聲明",
+            [nameof(UpstreamDonationLink)] = "捐款給 Tyrrrz",
+            [nameof(WhitelistedApplicationsPauseLabel)] = "為白名單應用程式暫停",
+            [nameof(WhitelistedApplicationsPauseTooltip)] = "當前景視窗屬於所選應用程式之一時暫停",
+            [nameof(WhitelistedWindowTitlesPauseLabel)] = "為白名單視窗標題暫停",
+            [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+                "當前景視窗的標題包含任一關鍵字時暫停（不區分大小寫）",
+            [nameof(WindowTitleKeywordPlaceholder)] = "標題關鍵字，例如 Netflix",
+            [nameof(AddButton)] = "新增",
+            [nameof(RemoveWindowTitleTooltip)] = "移除關鍵字",
+            [nameof(PerMonitorWhitelistPauseLabel)] = "僅暫停顯示相符視窗的顯示器",
+            [nameof(PerMonitorWhitelistPauseTooltip)] =
+                "其他顯示器保持調整。關閉時將暫停所有顯示器。",
             [nameof(PerMonitorFullscreenPauseLabel)] = "僅暫停執行全螢幕應用程式的顯示器",
             [nameof(PerMonitorFullscreenPauseTooltip)] =
                 "當全螢幕應用程式位於前景時，僅在執行該應用程式的顯示器上恢復正常色彩，其他顯示器繼續跟隨週期",

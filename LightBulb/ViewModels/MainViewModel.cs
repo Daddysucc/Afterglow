@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
@@ -57,8 +58,14 @@ public partial class MainViewModel(
 
     private async Task ShowGammaRangeMessageAsync()
     {
-        if (settingsService.IsExtendedGammaRangeUnlocked)
+        if (
+            settingsService.IsExtendedGammaRangeUnlocked
+            || !settingsService.IsGammaRangePromptEnabled
+        )
             return;
+
+        // Only asked once, rather than on every launch: it can still be unlocked in the settings
+        settingsService.IsGammaRangePromptEnabled = false;
 
         var dialog = viewModelManager.GetMessageBoxViewModel(
             LocalizationManager.LimitedGammaRangeTitle,
@@ -67,10 +74,9 @@ public partial class MainViewModel(
             LocalizationManager.CloseButton
         );
 
-        if (await dialogManager.ShowDialogAsync(dialog) != true)
-            return;
+        if (await dialogManager.ShowDialogAsync(dialog) == true)
+            settingsService.IsExtendedGammaRangeUnlocked = true;
 
-        settingsService.IsExtendedGammaRangeUnlocked = true;
         settingsService.Save();
     }
 
@@ -79,16 +85,33 @@ public partial class MainViewModel(
         if (!settingsService.IsFirstTimeExperienceEnabled)
             return;
 
+        // Starting with Windows from a temporary location (e.g. Downloads) would stop working as
+        // soon as it's tidied up, so it's only enabled automatically from a permanent location
+        var isTemporaryLocation = StartOptions.Current.IsRunningFromTemporaryLocation;
+
+        var message = string.Format(LocalizationManager.WelcomeMessage, Program.DisplayName);
+        if (isTemporaryLocation)
+        {
+            message +=
+                Environment.NewLine
+                + Environment.NewLine
+                + string.Format(
+                    LocalizationManager.TemporaryLocationNote,
+                    Program.DisplayName,
+                    Path.GetFileName(Program.ExecutableFilePath)
+                );
+        }
+
         var dialog = viewModelManager.GetMessageBoxViewModel(
             LocalizationManager.WelcomeTitle,
-            string.Format(LocalizationManager.WelcomeMessage, Program.DisplayName),
+            message,
             LocalizationManager.OkButton,
             LocalizationManager.CloseButton
         );
 
         // Disable this message in the future
         settingsService.IsFirstTimeExperienceEnabled = false;
-        settingsService.IsAutoStartEnabled = true;
+        settingsService.IsAutoStartEnabled = !isTemporaryLocation;
         settingsService.Save();
 
         if (await dialogManager.ShowDialogAsync(dialog) != true)

@@ -43,6 +43,10 @@ public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
                 o => o.IsApplicationWhitelistEnabled,
                 _ => RefreshApplicationsCommand.NotifyCanExecuteChanged()
             ),
+            this.WatchProperty(
+                o => o.IsWhitelistedApplicationPauseEnabled,
+                _ => RefreshApplicationsCommand.NotifyCanExecuteChanged()
+            ),
             // Display items are kept (not re-created) when settings change, so that
             // sliders that are being dragged don't get replaced; they're refreshed instead
             settingsService.WatchAllProperties(() =>
@@ -263,7 +267,55 @@ public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
         set => SettingsService.WhitelistedApplications = value;
     }
 
-    private bool CanRefreshApplications() => IsApplicationWhitelistEnabled;
+    public bool IsWhitelistedApplicationPauseEnabled
+    {
+        get => SettingsService.IsWhitelistedApplicationPauseEnabled;
+        set => SettingsService.IsWhitelistedApplicationPauseEnabled = value;
+    }
+
+    public bool IsWhitelistedWindowTitlePauseEnabled
+    {
+        get => SettingsService.IsWhitelistedWindowTitlePauseEnabled;
+        set => SettingsService.IsWhitelistedWindowTitlePauseEnabled = value;
+    }
+
+    public bool IsPerMonitorWhitelistPauseEnabled
+    {
+        get => SettingsService.IsPerMonitorWhitelistPauseEnabled;
+        set => SettingsService.IsPerMonitorWhitelistPauseEnabled = value;
+    }
+
+    public IReadOnlyList<string> WhitelistedWindowTitles =>
+        SettingsService.WhitelistedWindowTitles ?? [];
+
+    // Keyword being typed, before it's added to the list
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(AddWindowTitleCommand))]
+    public partial string? NewWindowTitle { get; set; }
+
+    private bool CanAddWindowTitle() => !string.IsNullOrWhiteSpace(NewWindowTitle);
+
+    [RelayCommand(CanExecute = nameof(CanAddWindowTitle))]
+    private void AddWindowTitle()
+    {
+        SettingsService.WhitelistedWindowTitles = WindowTitleKeywords.Normalize([
+            .. WhitelistedWindowTitles,
+            NewWindowTitle,
+        ]);
+
+        NewWindowTitle = "";
+    }
+
+    [RelayCommand]
+    private void RemoveWindowTitle(string keyword) =>
+        SettingsService.WhitelistedWindowTitles = [
+            .. WhitelistedWindowTitles.Where(k =>
+                !string.Equals(k, keyword, StringComparison.OrdinalIgnoreCase)
+            ),
+        ];
+
+    private bool CanRefreshApplications() =>
+        IsApplicationWhitelistEnabled && IsWhitelistedApplicationPauseEnabled;
 
     [RelayCommand(CanExecute = nameof(CanRefreshApplications))]
     private void RefreshApplications()

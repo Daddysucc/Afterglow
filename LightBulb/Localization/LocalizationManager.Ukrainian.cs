@@ -99,7 +99,7 @@ public partial class LocalizationManager
             [nameof(AppWhitelistLabel)] = "Білий список програм",
             [nameof(RefreshAppsTooltip)] = "Оновити список запущених програм",
             [nameof(PauseForWhitelistedTooltip)] =
-                "Призупиняти Afterglow, коли одна з вибраних програм знаходиться на передньому плані",
+                "Призупиняти Afterglow, коли одна з вибраних програм або заголовків вікон на передньому плані",
             [nameof(TraySettingsMenuItem)] = "Налаштування",
             [nameof(TrayDisableUntilSunriseMenuItem)] = "До сходу сонця",
             [nameof(TrayExitMenuItem)] = "Вийти",
@@ -128,6 +128,11 @@ public partial class LocalizationManager
                 Натисніть ОК для відкриття налаштувань.
                 """,
             [nameof(OkButton)] = "ОК",
+            [nameof(AlreadyRunningTitle)] = "Уже запущено",
+            [nameof(AlreadyRunningMessage)] =
+                "Інша копія {0} або оригінальний {1} уже запущені. Закрийте їх через значок у системному треї, а потім знову запустіть {0}.",
+            [nameof(TemporaryLocationNote)] =
+                "{0} запущено з тимчасової папки (наприклад, «Завантаження»), тому звідти він не запускатиметься разом із Windows. Щоб залишити його, скористайтеся інсталятором або перемістіть {1} до постійної папки й запускайте звідти.",
             // Dashboard
             [nameof(BedtimeLabel)] = "Час сну",
             [nameof(DayStateLabel)] = "День",
@@ -215,7 +220,7 @@ public partial class LocalizationManager
             [nameof(CycleTabName)] = "Цикл і кольори",
             [nameof(ScheduleTabName)] = "Розклад і місце",
             [nameof(RulesTabName)] = "Правила і білий список",
-            [nameof(ControlsTabName)] = "Керування і програма",
+            [nameof(ControlsTabName)] = "Програма і керування",
             [nameof(DayCardSubtitle)] = "Від сходу до заходу сонця",
             [nameof(EveningCardSubtitle)] = "Від заходу сонця до часу сну",
             [nameof(NightCardSubtitle)] = "Від часу сну до сходу сонця",
@@ -241,7 +246,28 @@ public partial class LocalizationManager
             [nameof(PauseWhenScreenLockedTooltip)] =
                 "Призупиняти Afterglow, поки комп'ютер заблоковано",
             [nameof(WhitelistCardSubtitle)] =
-                "Призупиняти Afterglow, поки будь-яка з вибраних програм на передньому плані.",
+                "Призупиняти Afterglow, поки вибрана програма або відповідне вікно на передньому плані.",
+            [nameof(UpstreamCreditText)] =
+                "Afterglow створено на основі LightBulb від Tyrrrz (Олексій Голуб), що використовується за ліцензією MIT.",
+            [nameof(UpstreamUkraineText)] =
+                "LightBulb створено в Україні. Його автор просить користувачів засудити війну Росії проти України та підтримати її територіальну цілісність.",
+            [nameof(UpstreamProjectLink)] = "LightBulb на GitHub",
+            [nameof(UkraineStatementLink)] = "Прочитати його заяву",
+            [nameof(UpstreamDonationLink)] = "Підтримати Tyrrrz донатом",
+            [nameof(WhitelistedApplicationsPauseLabel)] = "Призупиняти для програм з білого списку",
+            [nameof(WhitelistedApplicationsPauseTooltip)] =
+                "Призупиняти, поки вікно на передньому плані належить одній з вибраних програм",
+            [nameof(WhitelistedWindowTitlesPauseLabel)] =
+                "Призупиняти для заголовків вікон з білого списку",
+            [nameof(WhitelistedWindowTitlesPauseTooltip)] =
+                "Призупиняти, поки заголовок вікна на передньому плані містить одне з ключових слів (без урахування регістру)",
+            [nameof(WindowTitleKeywordPlaceholder)] = "Ключове слово заголовка, напр. Netflix",
+            [nameof(AddButton)] = "ДОДАТИ",
+            [nameof(RemoveWindowTitleTooltip)] = "Видалити ключове слово",
+            [nameof(PerMonitorWhitelistPauseLabel)] =
+                "Призупиняти лише монітор із відповідним вікном",
+            [nameof(PerMonitorWhitelistPauseTooltip)] =
+                "Інші монітори залишаються налаштованими. Якщо вимкнено, призупиняються всі.",
             [nameof(PerMonitorFullscreenPauseLabel)] =
                 "Призупиняти лише монітор із повноекранною програмою",
             [nameof(PerMonitorFullscreenPauseTooltip)] =

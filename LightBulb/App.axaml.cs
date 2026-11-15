@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -134,6 +135,9 @@ public partial class App : Application, IDisposable
             Dispatcher.UIThread.UnhandledException += OnDispatcherUnhandledException;
 
             InitializeNotifyIcon();
+
+            // Launching the app again shows the running instance (e.g. hidden in the tray)
+            Program.Instance?.ListenForActivation(() => Dispatcher.UIThread.Post(ShowMainWindow));
         }
 
         // Initialize the theme; must be done after the main window is created.
@@ -205,6 +209,17 @@ public partial class App : Application, IDisposable
 
         _trayMenu = trayMenu;
         trayMenu.ShowAt(anchor);
+    }
+
+    private void ShowMainWindow()
+    {
+        if (ApplicationLifetime?.TryGetMainWindow() is not { } window)
+            return;
+
+        if (window.WindowState == WindowState.Minimized)
+            window.WindowState = WindowState.Normal;
+
+        window.ShowActivateFocus();
     }
 
     private static void TryRun(Action action)

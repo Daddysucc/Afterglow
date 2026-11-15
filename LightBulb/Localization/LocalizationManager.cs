@@ -250,6 +250,9 @@ public partial class LocalizationManager
     public string WelcomeTitle => Get();
     public string WelcomeMessage => Get();
     public string OkButton => Get();
+    public string AlreadyRunningTitle => Get();
+    public string AlreadyRunningMessage => Get();
+    public string TemporaryLocationNote => Get();
 
     // ---- Settings page ----
 
@@ -284,6 +287,20 @@ public partial class LocalizationManager
     public string PauseWhenScreenLockedLabel => Get();
     public string PauseWhenScreenLockedTooltip => Get();
     public string WhitelistCardSubtitle => Get();
+    public string WhitelistedApplicationsPauseLabel => Get();
+    public string WhitelistedApplicationsPauseTooltip => Get();
+    public string WhitelistedWindowTitlesPauseLabel => Get();
+    public string WhitelistedWindowTitlesPauseTooltip => Get();
+    public string WindowTitleKeywordPlaceholder => Get();
+    public string AddButton => Get();
+    public string RemoveWindowTitleTooltip => Get();
+    public string PerMonitorWhitelistPauseLabel => Get();
+    public string PerMonitorWhitelistPauseTooltip => Get();
+    public string UpstreamCreditText => Get();
+    public string UpstreamUkraineText => Get();
+    public string UpstreamProjectLink => Get();
+    public string UkraineStatementLink => Get();
+    public string UpstreamDonationLink => Get();
     public string PerMonitorFullscreenPauseLabel => Get();
     public string PerMonitorFullscreenPauseTooltip => Get();
     public string StreamingAutoPauseLabel => Get();

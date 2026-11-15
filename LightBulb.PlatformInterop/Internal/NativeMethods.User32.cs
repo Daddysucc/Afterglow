@@ -98,8 +98,18 @@ internal static partial class NativeMethods
     [DllImport(User32, SetLastError = true)]
     public static extern bool UnhookWinEvent(nint hWinEventHook);
 
-    [DllImport(User32, SetLastError = true)]
+    // Unicode, so that text in any language displays correctly
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
     public static extern int MessageBox(nint hWnd, string text, string caption, uint type);
+
+    [DllImport(User32, SetLastError = true)]
+    public static extern bool AllowSetForegroundWindow(int dwProcessId);
+
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern int GetWindowTextLength(nint hWnd);
+
+    [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+    public static extern int GetWindowText(nint hWnd, StringBuilder lpString, int nMaxCount);
 
     [DllImport(User32, SetLastError = true)]
     public static extern bool RegisterHotKey(nint hWnd, int id, int fsModifiers, int vk);
