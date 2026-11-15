@@ -253,6 +253,12 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesLabel)] = "Перевіряти оновлення",
             [nameof(CheckForUpdatesTooltip)] =
                 "Час від часу шукати новішу версію на GitHub. Нічого не завантажується автоматично.",
+            [nameof(CheckForUpdatesNowTooltip)] = "Перевірити оновлення зараз",
+            [nameof(UpdateCheckingText)] = "Перевірка оновлень…",
+            [nameof(UpToDateText)] = "{0} {1} — найновіша версія.",
+            [nameof(UpdateCheckFailedText)] =
+                "Не вдалося перевірити оновлення. Перевірте підключення до інтернету та спробуйте ще раз.",
+            [nameof(UpdateCheckUnavailableText)] = "Збірки для розробки не перевіряють оновлення.",
             [nameof(UpstreamCreditText)] =
                 "Afterglow створено на основі LightBulb від Tyrrrz (Олексій Голуб), що використовується за ліцензією MIT.",
             [nameof(UpstreamUkraineText)] =

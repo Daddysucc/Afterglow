@@ -248,6 +248,12 @@ public partial class LocalizationManager
         [nameof(CheckForUpdatesLabel)] = "Nach Updates suchen",
         [nameof(CheckForUpdatesTooltip)] =
             "Ab und zu auf GitHub nach einer neueren Version suchen. Es wird nichts automatisch heruntergeladen.",
+        [nameof(CheckForUpdatesNowTooltip)] = "Jetzt nach Updates suchen",
+        [nameof(UpdateCheckingText)] = "Suche nach Updates…",
+        [nameof(UpToDateText)] = "{0} {1} ist die neueste Version.",
+        [nameof(UpdateCheckFailedText)] =
+            "Die Suche nach Updates ist fehlgeschlagen. Prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+        [nameof(UpdateCheckUnavailableText)] = "Entwicklungsversionen suchen nicht nach Updates.",
         [nameof(UpstreamCreditText)] =
             "Afterglow basiert auf LightBulb von Tyrrrz (Oleksii Holub) und wird unter der MIT-Lizenz verwendet.",
         [nameof(UpstreamUkraineText)] =

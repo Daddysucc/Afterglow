@@ -233,6 +233,11 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesLabel)] = "檢查更新",
             [nameof(CheckForUpdatesTooltip)] =
                 "不時在 GitHub 上檢查是否有新版本。不會自動下載任何內容。",
+            [nameof(CheckForUpdatesNowTooltip)] = "立即檢查更新",
+            [nameof(UpdateCheckingText)] = "正在檢查更新…",
+            [nameof(UpToDateText)] = "{0} {1} 已是最新版本。",
+            [nameof(UpdateCheckFailedText)] = "無法檢查更新。請檢查網路連線後再試一次。",
+            [nameof(UpdateCheckUnavailableText)] = "開發版本不會檢查更新。",
             [nameof(UpstreamCreditText)] =
                 "Afterglow 以 Tyrrrz（Oleksii Holub）的 LightBulb 為基礎打造，依 MIT 授權條款使用。",
             [nameof(UpstreamUkraineText)] =

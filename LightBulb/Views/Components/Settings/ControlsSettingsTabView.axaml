@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:LightBulb.Views.Controls"
     xmlns:converters="clr-namespace:LightBulb.Converters"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:settings="clr-namespace:LightBulb.ViewModels.Components.Settings"
     x:DataType="settings:ControlsSettingsTabViewModel"
 >
@@ -48,16 +49,65 @@
                 </Grid>
 
                 <!--  Check for updates  -->
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesTooltip}"
-                >
-                    <TextBlock
-                        Classes="setting-label"
-                        Text="{Binding LocalizationManager.CheckForUpdatesLabel}"
-                    />
-                    <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsUpdateCheckEnabled}" />
-                </Grid>
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <Grid
+                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnSpacing="8"
+                        ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesTooltip}"
+                    >
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="setting-label"
+                            Text="{Binding LocalizationManager.CheckForUpdatesLabel}"
+                        />
+
+                        <!--  Check now  -->
+                        <Button
+                            Grid.Column="1"
+                            Padding="4"
+                            VerticalAlignment="Center"
+                            Command="{Binding CheckForUpdatesCommand}"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesNowTooltip}"
+                        >
+                            <materialIcons:MaterialIcon Width="20" Height="20" Kind="Refresh" />
+                        </Button>
+
+                        <ToggleSwitch
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding IsUpdateCheckEnabled}"
+                        />
+                    </Grid>
+
+                    <!--  Result of the last check (a link to the download page, if there's an update)  -->
+                    <TextBlock Classes="setting-hint" Text="{Binding UpdateStatusText}">
+                        <TextBlock.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding
+                                    Converter="{x:Static ObjectConverters.IsNotNull}"
+                                    Path="UpdateStatusText"
+                                />
+                                <Binding
+                                    Converter="{x:Static BoolConverters.Not}"
+                                    Path="IsUpdateStatusLink"
+                                />
+                            </MultiBinding>
+                        </TextBlock.IsVisible>
+                    </TextBlock>
+                    <Button
+                        Padding="0,2"
+                        HorizontalAlignment="Left"
+                        Command="{Binding OpenUpdateCommand}"
+                        Cursor="Hand"
+                        Foreground="{DynamicResource AccentTextBrush}"
+                        IsVisible="{Binding IsUpdateStatusLink}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                    >
+                        <TextBlock FontSize="11.5" Text="{Binding UpdateStatusText}" />
+                    </Button>
+                </StackPanel>
 
                 <!--  Gamma smoothing  -->
                 <Grid

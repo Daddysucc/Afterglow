@@ -264,6 +264,12 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesLabel)] = "Check for updates",
             [nameof(CheckForUpdatesTooltip)] =
                 "Look for a newer version on GitHub now and then. Nothing is downloaded by itself.",
+            [nameof(CheckForUpdatesNowTooltip)] = "Check for updates now",
+            [nameof(UpdateCheckingText)] = "Checking for updates…",
+            [nameof(UpToDateText)] = "{0} {1} is the latest version.",
+            [nameof(UpdateCheckFailedText)] =
+                "Couldn't check for updates. Check your internet connection and try again.",
+            [nameof(UpdateCheckUnavailableText)] = "Development builds don't check for updates.",
             [nameof(UpstreamCreditText)] =
                 "Afterglow is built on LightBulb by Tyrrrz (Oleksii Holub), used under the MIT License.",
             [nameof(UpstreamUkraineText)] =

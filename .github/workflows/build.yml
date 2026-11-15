@@ -38,8 +38,9 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
 
+      # Failed tests are listed by name in the run's summary
       - name: Run tests
-        run: dotnet test --configuration Release --no-build
+        run: dotnet test --configuration Release --no-build --logger GitHubActions
 
   pack:
     # Packages are only built for version tags, or when run manually
