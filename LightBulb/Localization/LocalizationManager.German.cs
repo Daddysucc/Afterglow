@@ -242,6 +242,12 @@ public partial class LocalizationManager
             "Afterglow pausieren, solange der Computer gesperrt ist",
         [nameof(WhitelistCardSubtitle)] =
             "Afterglow pausieren, solange ein ausgewähltes Programm oder ein passendes Fenster im Vordergrund ist.",
+        [nameof(UpdateAvailableButton)] = "Update verfügbar",
+        [nameof(UpdateAvailableTooltip)] =
+            "{0} {1} ist verfügbar. Klicken, um die Downloadseite zu öffnen.",
+        [nameof(CheckForUpdatesLabel)] = "Nach Updates suchen",
+        [nameof(CheckForUpdatesTooltip)] =
+            "Ab und zu auf GitHub nach einer neueren Version suchen. Es wird nichts automatisch heruntergeladen.",
         [nameof(UpstreamCreditText)] =
             "Afterglow basiert auf LightBulb von Tyrrrz (Oleksii Holub) und wird unter der MIT-Lizenz verwendet.",
         [nameof(UpstreamUkraineText)] =

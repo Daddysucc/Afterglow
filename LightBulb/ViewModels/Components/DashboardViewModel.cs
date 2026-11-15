@@ -30,6 +30,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly HotKeyService _hotKeyService;
     private readonly ExternalApplicationService _externalApplicationService;
     private readonly MonitorService _monitorService;
+    private readonly UpdateService _updateService;
 
     private readonly IDisposable _eventSubscription;
 
@@ -37,7 +38,10 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly Timer _updateConfigurationTimer;
     private readonly Timer _updateIsPausedTimer;
 
-    private IDisposable? _enableAfterDelayRegistration;
+    // When a temporary pause ends. Checked against the clock rather than with a delayed timer,
+    // because timers don't count the time the computer spends asleep, which would stretch a pause
+    // (e.g. "until sunrise", with the laptop shut overnight) well past its end.
+    private DateTimeOffset? _enableAt;
     private IDisposable? _pendingSaveRegistration;
 
     // Smoothing of the overall configuration, and of each display (by GDI device name)
@@ -65,7 +69,8 @@ public partial class DashboardViewModel : ViewModelBase
         GrayscaleService grayscaleService,
         HotKeyService hotKeyService,
         ExternalApplicationService externalApplicationService,
-        MonitorService monitorService
+        MonitorService monitorService,
+        UpdateService updateService
     )
     {
         _settingsService = settingsService;
@@ -75,6 +80,7 @@ public partial class DashboardViewModel : ViewModelBase
         _hotKeyService = hotKeyService;
         _externalApplicationService = externalApplicationService;
         _monitorService = monitorService;
+        _updateService = updateService;
 
         _eventSubscription = Disposable.Merge(
             // Invalidate the cached local time zone when the system clock or time zone changes
@@ -87,8 +93,8 @@ public partial class DashboardViewModel : ViewModelBase
                 {
                     if (v)
                     {
-                        // Cancel any activate 'disable temporarily' timers
-                        _enableAfterDelayRegistration?.Dispose();
+                        // Cancel any active temporary pause
+                        _enableAt = null;
 
                         // Invalidate device contexts
                         _gammaService.InvalidateDeviceContexts();
@@ -124,6 +130,15 @@ public partial class DashboardViewModel : ViewModelBase
                     OnPropertyChanged(nameof(ActiveStageTemperatureTooltip));
                     OnPropertyChanged(nameof(LocationText));
                     OnPropertyChanged(nameof(StatusText));
+                    OnPropertyChanged(nameof(UpdateAvailableTooltip));
+                }
+            ),
+            updateService.WatchProperty(
+                o => o.AvailableVersion,
+                _ =>
+                {
+                    OnPropertyChanged(nameof(IsUpdateAvailable));
+                    OnPropertyChanged(nameof(UpdateAvailableTooltip));
                 }
             ),
             // Re-register hotkeys when they get updated
@@ -907,8 +922,19 @@ public partial class DashboardViewModel : ViewModelBase
         return _whitelistRules;
     }
 
+    // Whether a temporary pause that ends at the given time is over
+    internal static bool IsTemporaryPauseOver(DateTimeOffset? enableAt, DateTimeOffset now) =>
+        enableAt is { } at && now >= at;
+
     private void UpdateIsPaused()
     {
+        // Also catches up right after waking from sleep
+        if (IsTemporaryPauseOver(_enableAt, DateTimeOffset.Now))
+        {
+            _enableAt = null;
+            IsEnabled = true;
+        }
+
         var settings = new AutoPauseSettings(
             _settingsService.IsStreamingAutoPauseEnabled,
             _settingsService.IsPauseWhenScreenLockedEnabled,
@@ -925,17 +951,18 @@ public partial class DashboardViewModel : ViewModelBase
 
         var isScreenLocked = settings.IsPauseWhenScreenLockedEnabled && InputDesktop.IsLocked();
 
-        // Ignored or unidentifiable foreground applications (e.g. the taskbar) should not affect
-        // the fullscreen state. This prevents brief flashes when switching from a fullscreen
-        // application to an ignored application, and back.
-        // https://github.com/Tyrrrz/LightBulb/issues/451
-        // Only looked up when needed, since this opens the foreground application's process
-        var foregroundApplication = settings.IsForegroundApplicationNeeded
-            ? _externalApplicationService.TryGetForegroundApplication()
-            : null;
-
-        if (foregroundApplication is not null)
-            _fullScreenMonitor = _externalApplicationService.TryGetForegroundFullScreenMonitor();
+        // The taskbar and other parts of the shell don't affect the fullscreen state, which
+        // prevents brief flashes when switching from a fullscreen application to them and back.
+        // Only looked up when needed, since this opens the foreground application's process.
+        if (
+            settings.IsForegroundApplicationNeeded
+            && _externalApplicationService.TryGetForegroundFullScreenMonitor(
+                out var fullScreenMonitor
+            )
+        )
+        {
+            _fullScreenMonitor = fullScreenMonitor;
+        }
 
         // Only the window in focus counts. It isn't looked up at all when there's nothing to match.
         var whitelistRules = settings.IsApplicationWhitelistEnabled
@@ -1025,8 +1052,8 @@ public partial class DashboardViewModel : ViewModelBase
         IsGrayscaleSnoozed =
             _grayscaleSnoozedUntil is not null || IsGrayscaleHeldUntilScheduleChange;
 
-        // Suspended while paused, and while a display is paused on its own for a fullscreen
-        // application (grayscale can't be limited to the other displays)
+        // Suspended while paused, and while any display is paused on its own (for a fullscreen
+        // or whitelisted window), as grayscale can't be limited to the other displays
         IsGrayscaleActive = GrayscaleController.IsApplied(
             isWanted && _grayscaleSnoozedUntil is null,
             IsActive,
@@ -1110,6 +1137,7 @@ public partial class DashboardViewModel : ViewModelBase
         _updateInstantTimer.Start();
         _updateConfigurationTimer.Start();
         _updateIsPausedTimer.Start();
+        _updateService.Start();
 
         // Hack: feign property changes to refresh the tray icon
         OnAllPropertiesChanged();
@@ -1117,15 +1145,29 @@ public partial class DashboardViewModel : ViewModelBase
         return Task.CompletedTask;
     }
 
+    // ---- Updates ----
+
+    public bool IsUpdateAvailable => _updateService.AvailableVersion is not null;
+
+    public string UpdateAvailableTooltip =>
+        _updateService.AvailableVersion is { } version
+            ? string.Format(
+                LocalizationManager.UpdateAvailableTooltip,
+                Program.DisplayName,
+                version.ToString(3)
+            )
+            : "";
+
+    // The release page, where the new version can be downloaded (nothing is installed by itself)
+    [RelayCommand]
+    private void OpenUpdate() =>
+        System.Diagnostics.Process.StartShellExecute($"{Program.ProjectReleasesUrl}/latest");
+
     [RelayCommand]
     private void DisableTemporarily(TimeSpan duration)
     {
         IsEnabled = false;
-        _enableAfterDelayRegistration?.Dispose();
-        _enableAfterDelayRegistration = Timer.QueueDelayedAction(
-            duration,
-            () => Dispatcher.UIThread.Post(() => IsEnabled = true)
-        );
+        _enableAt = DateTimeOffset.Now + duration;
     }
 
     private TimeSpan GetTimeUntilSunrise()
@@ -1162,8 +1204,6 @@ public partial class DashboardViewModel : ViewModelBase
             _updateInstantTimer.Dispose();
             _updateConfigurationTimer.Dispose();
             _updateIsPausedTimer.Dispose();
-
-            _enableAfterDelayRegistration?.Dispose();
         }
 
         base.Dispose(disposing);

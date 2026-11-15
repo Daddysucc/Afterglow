@@ -47,6 +47,18 @@
                     <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsStartMinimizedEnabled}" />
                 </Grid>
 
+                <!--  Check for updates  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.CheckForUpdatesLabel}"
+                    />
+                    <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsUpdateCheckEnabled}" />
+                </Grid>
+
                 <!--  Gamma smoothing  -->
                 <Grid
                     ColumnDefinitions="*,Auto"

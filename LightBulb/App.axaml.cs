@@ -53,6 +53,7 @@ public partial class App : Application, IDisposable
         services.AddSingleton<GrayscaleService>();
         services.AddSingleton<HotKeyService>();
         services.AddSingleton<SettingsService>();
+        services.AddSingleton<UpdateService>();
 
         // View models
         services.AddTransient<MainViewModel>();

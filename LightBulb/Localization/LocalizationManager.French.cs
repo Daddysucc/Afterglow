@@ -248,6 +248,12 @@ public partial class LocalizationManager
             "Mettre Afterglow en pause pendant que la session est verrouillée",
         [nameof(WhitelistCardSubtitle)] =
             "Mettre Afterglow en pause lorsqu'un programme sélectionné ou une fenêtre correspondante est au premier plan.",
+        [nameof(UpdateAvailableButton)] = "Mise à jour disponible",
+        [nameof(UpdateAvailableTooltip)] =
+            "{0} {1} est disponible. Cliquez pour ouvrir sa page de téléchargement.",
+        [nameof(CheckForUpdatesLabel)] = "Rechercher les mises à jour",
+        [nameof(CheckForUpdatesTooltip)] =
+            "Rechercher de temps en temps une nouvelle version sur GitHub. Rien n'est téléchargé automatiquement.",
         [nameof(UpstreamCreditText)] =
             "Afterglow est basé sur LightBulb de Tyrrrz (Oleksii Holub), utilisé sous licence MIT.",
         [nameof(UpstreamUkraineText)] =

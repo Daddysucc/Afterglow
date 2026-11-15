@@ -258,6 +258,12 @@ public partial class LocalizationManager
                 "Pause Afterglow while the workstation is locked",
             [nameof(WhitelistCardSubtitle)] =
                 "Pause Afterglow while a selected program or matching window is in the foreground.",
+            [nameof(UpdateAvailableButton)] = "Update available",
+            [nameof(UpdateAvailableTooltip)] =
+                "{0} {1} is available. Click to open its download page.",
+            [nameof(CheckForUpdatesLabel)] = "Check for updates",
+            [nameof(CheckForUpdatesTooltip)] =
+                "Look for a newer version on GitHub now and then. Nothing is downloaded by itself.",
             [nameof(UpstreamCreditText)] =
                 "Afterglow is built on LightBulb by Tyrrrz (Oleksii Holub), used under the MIT License.",
             [nameof(UpstreamUkraineText)] =

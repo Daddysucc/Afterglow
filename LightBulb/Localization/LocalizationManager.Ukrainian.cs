@@ -247,6 +247,12 @@ public partial class LocalizationManager
                 "Призупиняти Afterglow, поки комп'ютер заблоковано",
             [nameof(WhitelistCardSubtitle)] =
                 "Призупиняти Afterglow, поки вибрана програма або відповідне вікно на передньому плані.",
+            [nameof(UpdateAvailableButton)] = "Доступне оновлення",
+            [nameof(UpdateAvailableTooltip)] =
+                "Доступна версія {0} {1}. Натисніть, щоб відкрити сторінку завантаження.",
+            [nameof(CheckForUpdatesLabel)] = "Перевіряти оновлення",
+            [nameof(CheckForUpdatesTooltip)] =
+                "Час від часу шукати новішу версію на GitHub. Нічого не завантажується автоматично.",
             [nameof(UpstreamCreditText)] =
                 "Afterglow створено на основі LightBulb від Tyrrrz (Олексій Голуб), що використовується за ліцензією MIT.",
             [nameof(UpstreamUkraineText)] =
