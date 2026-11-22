@@ -24,6 +24,7 @@ public partial class LocalizationManager
             [nameof(OpenSettingsTooltip)] = "開啟設定",
             // Settings dialog
             [nameof(ResetTooltip)] = "將所有設定重設為預設值",
+            [nameof(ResetAllSettingsButton)] = "重設所有設定",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "語言",

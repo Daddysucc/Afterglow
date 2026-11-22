@@ -85,6 +85,10 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
     [RelayCommand]
     private async Task InstallUpdateAsync() => await _updateService.UpdateAsync();
 
+    // Puts every setting back to its default (shown at the bottom of this tab)
+    [RelayCommand]
+    private void ResetSettings() => SettingsService.Reset();
+
     protected override void Dispose(bool disposing)
     {
         if (disposing)

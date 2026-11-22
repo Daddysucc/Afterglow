@@ -22,6 +22,7 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
             [nameof(OpenSettingsTooltip)] = "Відкрити налаштування",
             [nameof(ResetTooltip)] = "Скинути всі налаштування до типових",
+            [nameof(ResetAllSettingsButton)] = "Скинути всі налаштування",
             [nameof(LanguageLabel)] = "Мова",
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",

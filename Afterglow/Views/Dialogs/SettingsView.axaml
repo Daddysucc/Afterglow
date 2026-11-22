@@ -59,11 +59,13 @@
             BorderThickness="0,0,0,1"
             PointerPressed="HeaderBorder_OnPointerPressed"
         >
-            <Grid ColumnDefinitions="Auto,*,Auto">
+            <!--  The outer columns are equal, so that the tabs stay centered  -->
+            <Grid ColumnDefinitions="*,Auto,*">
                 <!--  Back to the dashboard  -->
                 <Button
                     Grid.Column="0"
                     Padding="6"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Command="{Binding BackCommand}"
                     Foreground="{DynamicResource TextPrimaryBrush}"
@@ -115,19 +117,6 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </Border>
-
-                <!--  Reset all settings  -->
-                <Button
-                    Grid.Column="2"
-                    Padding="6"
-                    VerticalAlignment="Center"
-                    Command="{Binding ResetCommand}"
-                    Foreground="{DynamicResource TextMutedBrush}"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
-                >
-                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="Restore" />
-                </Button>
             </Grid>
         </Border>
 

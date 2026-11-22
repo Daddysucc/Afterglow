@@ -92,6 +92,7 @@ public partial class LocalizationManager
             [nameof(OpenSettingsTooltip)] = "Open settings",
             // Settings dialog
             [nameof(ResetTooltip)] = "Reset all settings to their defaults",
+            [nameof(ResetAllSettingsButton)] = "Reset all settings",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "Language",

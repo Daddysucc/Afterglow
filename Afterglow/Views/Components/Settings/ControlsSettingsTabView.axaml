@@ -350,5 +350,25 @@
                 </Grid>
             </StackPanel>
         </Border>
+
+        <!--  Reset all settings (at the very end, so that it isn't clicked by accident)  -->
+        <Button
+            Margin="0,4,0,0"
+            Padding="10,6"
+            HorizontalAlignment="Left"
+            Command="{Binding ResetSettingsCommand}"
+            Foreground="{DynamicResource TextMutedBrush}"
+            Theme="{DynamicResource MaterialFlatButton}"
+            ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
+        >
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <materialIcons:MaterialIcon Width="16" Height="16" Kind="Restore" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="{Binding LocalizationManager.ResetAllSettingsButton}"
+                />
+            </StackPanel>
+        </Button>
     </StackPanel>
 </UserControl>

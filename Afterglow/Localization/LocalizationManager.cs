@@ -164,6 +164,7 @@ public partial class LocalizationManager
     // ---- Settings dialog ----
 
     public string ResetTooltip => Get();
+    public string ResetAllSettingsButton => Get();
 
     // ---- Settings tabs ----
 

@@ -26,6 +26,7 @@ public partial class LocalizationManager
 
             // Settings dialog (设置对话框)
             [nameof(ResetTooltip)] = "将所有设置恢复为默认值",
+            [nameof(ResetAllSettingsButton)] = "重置所有设置",
 
             // Settings tabs (设置选项卡)
 

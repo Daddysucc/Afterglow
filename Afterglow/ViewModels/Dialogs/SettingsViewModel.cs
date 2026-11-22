@@ -55,9 +55,6 @@ public partial class SettingsViewModel : DialogViewModelBase
             ActivateTab(tab);
     }
 
-    [RelayCommand]
-    private void Reset() => _settingsService.Reset();
-
     // Settings are applied live, so going back to the dashboard just persists them
     [RelayCommand]
     private void Back()

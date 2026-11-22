@@ -22,6 +22,7 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "Vista previa del ciclo de 24 horas",
             [nameof(OpenSettingsTooltip)] = "Abrir ajustes",
             [nameof(ResetTooltip)] = "Restablecer todos los ajustes a sus valores predeterminados",
+            [nameof(ResetAllSettingsButton)] = "Restablecer todos los ajustes",
             [nameof(LanguageLabel)] = "Idioma",
             [nameof(LanguageTooltip)] = "Idioma de interfaz preferido",
             [nameof(StartWithWindowsLabel)] = "Iniciar con Windows",
