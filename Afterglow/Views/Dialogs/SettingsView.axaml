@@ -1,0 +1,143 @@
+<UserControl
+    x:Class="Afterglow.Views.Dialogs.SettingsView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Afterglow.Converters"
+    xmlns:dialogs="clr-namespace:Afterglow.ViewModels.Dialogs"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:settings="clr-namespace:Afterglow.ViewModels.Components.Settings"
+    Width="678"
+    Height="358"
+    x:DataType="dialogs:SettingsViewModel"
+    Background="{DynamicResource AppBackgroundBrush}"
+>
+    <UserControl.KeyBindings>
+        <KeyBinding Command="{Binding BackCommand}" Gesture="Escape" />
+    </UserControl.KeyBindings>
+
+    <UserControl.Styles>
+        <!--  Segmented pill tab  -->
+        <Style Selector="Button.pill">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="CornerRadius" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Medium" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <Style Selector="^:pointerover, ^:focus-visible">
+                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            </Style>
+
+            <Style Selector="^.active">
+                <Setter Property="Background" Value="{DynamicResource AccentSoftBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+            </Style>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*">
+        <!--  Navigation header (also lets the window be dragged, since it covers the title bar)  -->
+        <Border
+            Grid.Row="0"
+            Height="46"
+            Padding="4,0,6,0"
+            Background="{DynamicResource AppHeaderBrush}"
+            BorderBrush="{DynamicResource CardBorderBrush}"
+            BorderThickness="0,0,0,1"
+            PointerPressed="HeaderBorder_OnPointerPressed"
+        >
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <!--  Back to the dashboard  -->
+                <Button
+                    Grid.Column="0"
+                    Padding="6"
+                    VerticalAlignment="Center"
+                    Command="{Binding BackCommand}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.BackTooltip}"
+                >
+                    <materialIcons:MaterialIcon Width="22" Height="22" Kind="ArrowLeft" />
+                </Button>
+
+                <!--  Tabs  -->
+                <Border
+                    Grid.Column="1"
+                    Padding="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource CardBrush}"
+                    BorderBrush="{DynamicResource CardBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                >
+                    <ItemsControl ItemsSource="{Binding Tabs}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
+                                <Button
+                                    Classes="pill"
+                                    Classes.active="{Binding IsActive}"
+                                    Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
+                                    CommandParameter="{Binding}"
+                                >
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <materialIcons:MaterialIcon
+                                            Width="15"
+                                            Height="15"
+                                            VerticalAlignment="Center"
+                                            Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
+                                        />
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            Text="{Binding DisplayName}"
+                                        />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+
+                <!--  Reset all settings  -->
+                <Button
+                    Grid.Column="2"
+                    Padding="6"
+                    VerticalAlignment="Center"
+                    Command="{Binding ResetCommand}"
+                    Foreground="{DynamicResource TextMutedBrush}"
+                    Theme="{DynamicResource MaterialFlatButton}"
+                    ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
+                >
+                    <materialIcons:MaterialIcon Width="20" Height="20" Kind="Restore" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--  Active tab  -->
+        <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto"
+        >
+            <ContentControl Margin="16,14,16,16" Content="{Binding ActiveTab}" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

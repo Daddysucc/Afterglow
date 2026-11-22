@@ -1,0 +1,337 @@
+<UserControl
+    x:Class="Afterglow.Views.Components.Settings.ControlsSettingsTabView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Afterglow.Views.Controls"
+    xmlns:converters="clr-namespace:Afterglow.Converters"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:settings="clr-namespace:Afterglow.ViewModels.Components.Settings"
+    x:DataType="settings:ControlsSettingsTabViewModel"
+>
+    <UserControl.Styles>
+        <Style Selector="controls|HotKeyTextBox">
+            <Setter Property="Width" Value="140" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Orientation="Vertical" Spacing="12">
+        <!--  System preferences  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="12">
+                <TextBlock
+                    Classes="card-title"
+                    Text="{Binding LocalizationManager.SystemPreferencesCardTitle}"
+                />
+
+                <!--  Start with Windows  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.StartWithWindowsTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.StartWithWindowsLabel}"
+                    />
+                    <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsAutoStartEnabled}" />
+                </Grid>
+
+                <!--  Start minimized  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.StartMinimizedTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.StartMinimizedLabel}"
+                    />
+                    <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsStartMinimizedEnabled}" />
+                </Grid>
+
+                <!--  Check for updates  -->
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <Grid
+                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnSpacing="8"
+                        ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesTooltip}"
+                    >
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="setting-label"
+                            Text="{Binding LocalizationManager.CheckForUpdatesLabel}"
+                        />
+
+                        <!--  Check now  -->
+                        <Button
+                            Grid.Column="1"
+                            Padding="4"
+                            VerticalAlignment="Center"
+                            Command="{Binding CheckForUpdatesCommand}"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesNowTooltip}"
+                        >
+                            <materialIcons:MaterialIcon Width="20" Height="20" Kind="Refresh" />
+                        </Button>
+
+                        <ToggleSwitch
+                            Grid.Column="2"
+                            VerticalAlignment="Center"
+                            IsChecked="{Binding IsUpdateCheckEnabled}"
+                        />
+                    </Grid>
+
+                    <!--  Result of the last check (a link that installs the update, if there is one)  -->
+                    <TextBlock Classes="setting-hint" Text="{Binding UpdateStatusText}">
+                        <TextBlock.IsVisible>
+                            <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                <Binding
+                                    Converter="{x:Static ObjectConverters.IsNotNull}"
+                                    Path="UpdateStatusText"
+                                />
+                                <Binding
+                                    Converter="{x:Static BoolConverters.Not}"
+                                    Path="IsUpdateStatusLink"
+                                />
+                            </MultiBinding>
+                        </TextBlock.IsVisible>
+                    </TextBlock>
+                    <Button
+                        Padding="0,2"
+                        HorizontalAlignment="Left"
+                        Command="{Binding InstallUpdateCommand}"
+                        Cursor="Hand"
+                        Foreground="{DynamicResource AccentTextBrush}"
+                        IsVisible="{Binding IsUpdateStatusLink}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                    >
+                        <TextBlock FontSize="11.5" Text="{Binding UpdateStatusText}" />
+                    </Button>
+                </StackPanel>
+
+                <!--  Gamma smoothing  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.GammaSmoothingTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.GammaSmoothingLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding IsConfigurationSmoothingEnabled}"
+                    />
+                </Grid>
+
+                <!--  Extended gamma range  -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <ToolTip.Tip>
+                        <TextBlock
+                            MaxWidth="350"
+                            Text="{Binding LocalizationManager.ExtendedGammaRangeTooltip}"
+                            TextWrapping="Wrap"
+                        />
+                    </ToolTip.Tip>
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ExtendedGammaRangeLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        IsChecked="{Binding IsExtendedGammaRangeUnlocked}"
+                    />
+                </Grid>
+
+                <!--  Gamma polling  -->
+                <StackPanel Orientation="Vertical" Spacing="6">
+                    <Grid
+                        ColumnDefinitions="*,Auto"
+                        ToolTip.Tip="{Binding LocalizationManager.GammaPollingTooltip}"
+                    >
+                        <TextBlock
+                            Classes="setting-label"
+                            Text="{Binding LocalizationManager.GammaPollingLabel}"
+                        />
+                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsGammaPollingEnabled}" />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        IsEnabled="{Binding IsGammaPollingEnabled}"
+                        ToolTip.Tip="{Binding LocalizationManager.GammaPollingIntervalTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            Classes="setting-hint"
+                            VerticalAlignment="Center"
+                            Text="{Binding LocalizationManager.GammaPollingIntervalLabel}"
+                        />
+                        <Slider
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="1"
+                            Maximum="10"
+                            Minimum="0.5"
+                            SmallChange="0.5"
+                            TickFrequency="0.5"
+                            Value="{Binding GammaPollingIntervalSeconds}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="40"
+                            Classes="value"
+                            Text="{Binding GammaPollingIntervalText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                </StackPanel>
+
+                <!--  Language  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.LanguageTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.LanguageLabel}"
+                    />
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="140"
+                        ItemsSource="{Binding AvailableLanguages}"
+                        SelectedItem="{Binding Language}"
+                    >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:LanguageToStringConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!--  Global hotkeys  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HotkeysCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HotkeysCardSubtitle}"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleAfterglowHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleAfterglowHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleHotKey}" />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleWindowHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleWindowLabel}"
+                    />
+                    <controls:HotKeyTextBox Grid.Column="1" HotKey="{Binding ToggleWindowHotKey}" />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.IncreaseTemperatureOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.IncreaseTemperatureOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding IncreaseTemperatureOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.DecreaseTemperatureOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.DecreaseTemperatureOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding DecreaseTemperatureOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.IncreaseBrightnessOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.IncreaseBrightnessOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding IncreaseBrightnessOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.DecreaseBrightnessOffsetTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.DecreaseBrightnessOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding DecreaseBrightnessOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ResetOffsetHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ResetOffsetLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ResetConfigurationOffsetHotKey}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleGrayscaleHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleGrayscaleHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ToggleGrayscaleHotKey}"
+                    />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,269 @@
+<Application
+    x:Class="Afterglow.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:framework="clr-namespace:Afterglow.Framework"
+    xmlns:materialAssists="clr-namespace:Material.Styles.Assists;assembly=Material.Styles"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:materialStyles="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+    Name="Afterglow"
+    ActualThemeVariantChanged="Application_OnActualThemeVariantChanged"
+>
+    <Application.DataTemplates>
+        <framework:ViewManager />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <!--  The palette is customized in code to match the dark-slate design (see App.InitializeTheme)  -->
+        <materialStyles:MaterialTheme
+            BaseTheme="Dark"
+            PrimaryColor="Indigo"
+            SecondaryColor="Indigo"
+        />
+        <materialIcons:MaterialIconStyles />
+        <dialogHostAvalonia:DialogHostStyles />
+
+        <!--  Combo box  -->
+        <Style Selector="ComboBox">
+            <Setter Property="FontSize" Value="13" />
+
+            <Style Selector="^ /template/ Panel#PART_RootPanel">
+                <Setter Property="Height" Value="22" />
+            </Style>
+
+            <Style Selector="^ /template/ ToggleButton">
+                <Style Selector="^:checked, ^:unchecked">
+                    <Setter Property="Margin" Value="0" />
+                    <Setter Property="CornerRadius" Value="0" />
+
+                    <Style Selector="^ ContentPresenter#contentPresenter">
+                        <Setter Property="Margin" Value="12,8" />
+                    </Style>
+                </Style>
+            </Style>
+        </Style>
+
+        <!--  Dialog host  -->
+        <Style Selector="dialogHostAvalonia|DialogHost">
+            <Setter Property="DialogMargin" Value="0" />
+        </Style>
+
+        <Style Selector="dialogHostAvalonia|DialogOverlayPopupHost">
+            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+        </Style>
+
+        <!--  Radio button  -->
+        <Style Selector="RadioButton">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="materialAssists:SelectionControlAssist.Size" Value="18" />
+
+            <Style Selector="^:checked, ^:unchecked">
+                <Style Selector="^ /template/ Ellipse#PART_HoverEffect">
+                    <Setter Property="Width" Value="32" />
+                    <Setter Property="Height" Value="32" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!--  Slider (thin track)  -->
+        <Style Selector="Slider">
+            <Style Selector="^ /template/ ProgressBar#PART_ProgressLayer">
+                <Style Selector="^:horizontal">
+                    <Style Selector="^ Panel#PART_InnerPanel">
+                        <Setter Property="Height" Value="3" />
+
+                        <Style Selector="^ Border#PART_InactiveState">
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Height" Value="3" />
+                        </Style>
+
+                        <Style Selector="^ Border#PART_Indicator">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </Style>
+                </Style>
+            </Style>
+
+            <Style Selector="^ /template/ Track#PART_Track">
+                <Style Selector="^:horizontal">
+                    <Setter Property="Margin" Value="4,0" />
+                </Style>
+
+                <Style Selector="^ Border#PART_HoverEffect">
+                    <Setter Property="Width" Value="24" />
+                    <Setter Property="Height" Value="24" />
+                </Style>
+
+                <Style Selector="^ Border#PART_ThumbGrip">
+                    <Setter Property="Width" Value="14" />
+                    <Setter Property="Height" Value="14" />
+                </Style>
+            </Style>
+        </Style>
+
+        <!--  Text box  -->
+        <Style Selector="TextBox">
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <!--  Toggle button  -->
+        <Style Selector="ToggleButton">
+            <Setter Property="TextElement.FontWeight" Value="Medium" />
+        </Style>
+
+        <!--  Toggle switch  -->
+        <Style Selector="ToggleSwitch">
+            <Setter
+                Property="materialAssists:ToggleSwitchAssist.SwitchThumbOffBackground"
+                Value="{DynamicResource TextMutedBrush}"
+            />
+        </Style>
+
+        <!--  Tooltip  -->
+        <!--  Uses its own template so that the Material theme can never turn the text dark on the dark surface  -->
+        <Style Selector="ToolTip">
+            <Setter Property="Background" Value="{DynamicResource ToolTipBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource ToolTipForeground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToolTipBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+            <Setter Property="MaxWidth" Value="320" />
+            <Setter Property="TextElement.FontSize" Value="13" />
+            <Setter Property="TextElement.FontWeight" Value="Normal" />
+            <Setter Property="TextElement.FontStyle" Value="Normal" />
+            <Setter Property="TextElement.FontStretch" Value="Normal" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                    >
+                        <ContentPresenter
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Foreground="{TemplateBinding Foreground}"
+                            TextWrapping="Wrap"
+                        />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+
+            <!--  Custom tooltip content (e.g. with formatting) wraps too  -->
+            <Style Selector="^ TextBlock">
+                <Setter Property="TextWrapping" Value="Wrap" />
+            </Style>
+        </Style>
+
+        <!--  ==== Shared design system ====  -->
+
+        <!--  Elevated card surface  -->
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{DynamicResource CardBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,12" />
+        </Style>
+
+        <Style Selector="TextBlock.card-title">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.card-subtitle">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style Selector="TextBlock.setting-label">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+
+        <Style Selector="TextBlock.setting-hint">
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <!--  Highlighted value readouts next to sliders  -->
+        <Style Selector="TextBox.value">
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <!--  Thin horizontal divider  -->
+        <Style Selector="Border.divider">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Background" Value="{DynamicResource CardBorderBrush}" />
+        </Style>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <!--  ==== Design tokens (dark slate) ====  -->
+            <SolidColorBrush x:Key="AppBackgroundBrush" Color="#22262A" />
+            <SolidColorBrush x:Key="AppHeaderBrush" Color="#1B1E22" />
+            <SolidColorBrush x:Key="CardBrush" Color="#2B3037" />
+            <SolidColorBrush x:Key="CardBorderBrush" Color="#383F48" />
+            <SolidColorBrush x:Key="HoverBrush" Color="#343A43" />
+            <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F0F2F5" />
+            <SolidColorBrush x:Key="TextMutedBrush" Color="#9AA4B2" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#6C8CD5" />
+            <SolidColorBrush x:Key="AccentSoftBrush" Opacity="0.2" Color="#6C8CD5" />
+            <SolidColorBrush x:Key="AccentTextBrush" Color="#A9BEEE" />
+            <SolidColorBrush x:Key="WarmBrush" Color="#F5821F" />
+            <SolidColorBrush x:Key="AmberBrush" Color="#F4B942" />
+            <SolidColorBrush x:Key="GraphBrush" Color="#262A30" />
+            <SolidColorBrush x:Key="CurveBrush" Color="#D5DBE0" />
+            <SolidColorBrush x:Key="WaveBrush" Opacity="0.05" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="TrayMenuBrush" Color="#25292E" />
+
+            <!--  Tooltips (also overrides the brushes the Material theme would use for them)  -->
+            <SolidColorBrush x:Key="ToolTipBackground" Color="#1E2226" />
+            <SolidColorBrush x:Key="ToolTipForeground" Color="#F0F2F5" />
+            <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#3E4651" />
+            <SolidColorBrush x:Key="MaterialToolTipBackground" Color="#1E2226" />
+            <SolidColorBrush x:Key="MaterialToolTipForeground" Color="#F0F2F5" />
+            <SolidColorBrush x:Key="MaterialToolTipBackgroundBrush" Color="#1E2226" />
+
+            <!--  Text box  -->
+            <ControlTheme
+                x:Key="CompactTextBox"
+                BasedOn="{StaticResource {x:Type TextBox}}"
+                TargetType="{x:Type TextBox}"
+            >
+                <Styles>
+                    <Style Selector="TextBox">
+                        <Setter Property="Height" Value="22" />
+
+                        <Style Selector="^ /template/ Panel#PART_TextFieldPanel">
+                            <Setter Property="MinHeight" Value="0" />
+                        </Style>
+
+                        <Style Selector="^ /template/ Panel#PART_TextContainer">
+                            <Setter Property="Margin" Value="0" />
+                        </Style>
+                    </Style>
+                </Styles>
+            </ControlTheme>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

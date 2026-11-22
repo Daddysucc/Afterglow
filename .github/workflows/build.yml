@@ -85,24 +85,35 @@ jobs:
 
       - name: Publish app (for the installer)
         run: >
-          dotnet publish LightBulb
+          dotnet publish Afterglow
           -p:Version=${{ steps.version.outputs.value }}
           -p:CSharpier_Bypass=true
-          --output LightBulb/bin/publish/
+          --output Afterglow/bin/publish/
           --configuration Release
           --runtime ${{ matrix.rid }}
           --self-contained
 
       - name: Publish app (portable, as a single file)
         run: >
-          dotnet publish LightBulb
+          dotnet publish Afterglow
           -p:Version=${{ steps.version.outputs.value }}
           -p:CSharpier_Bypass=true
           -p:PublishSingleFile=true
-          --output LightBulb/bin/portable/
+          --output Afterglow/bin/portable/
           --configuration Release
           --runtime ${{ matrix.rid }}
           --self-contained
+
+      # A portable copy updates itself by replacing its executable, so anything published next to
+      # it would never be updated (it has to be bundled into the executable instead)
+      - name: Check that the portable app is a single file
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem -Path Afterglow/bin/portable/ -Recurse -File)
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'Afterglow.exe') {
+            $files | ForEach-Object { Write-Host $_.FullName }
+            throw "The portable app must be a single file (Afterglow.exe), but it has $($files.Count)."
+          }
 
       - name: Create installer
         shell: pwsh
@@ -114,7 +125,15 @@ jobs:
 
           choco install innosetup --no-progress
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          Copy-Item -Path LightBulb/bin/publish/ -Recurse -Destination Installer/Source/
+          Copy-Item -Path Afterglow/bin/publish/ -Recurse -Destination Installer/Source/
+
+          # Lists the app's files, so that an update can remove those the new version no longer has
+          # (plain ASCII, as the installer reads it)
+          $source = (Resolve-Path Installer/Source).Path
+          Get-ChildItem -Path $source -Recurse -File |
+            ForEach-Object { [IO.Path]::GetRelativePath($source, $_.FullName) } |
+            Sort-Object |
+            Set-Content -Path (Join-Path $source '.files') -Encoding ascii
 
           # Found rather than assumed, as its folder is named after its major version
           $compiler = Get-ChildItem -Path "${env:ProgramFiles(x86)}\Inno Setup *\ISCC.exe", "$env:ProgramFiles\Inno Setup *\ISCC.exe" -ErrorAction SilentlyContinue |
@@ -129,8 +148,8 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path packages | Out-Null
-          Move-Item LightBulb/bin/portable/LightBulb.exe packages/Afterglow.${{ matrix.rid }}.exe
-          Move-Item Installer/bin/LightBulb-Installer.exe packages/Afterglow-Installer.${{ matrix.rid }}.exe
+          Move-Item Afterglow/bin/portable/Afterglow.exe packages/Afterglow.${{ matrix.rid }}.exe
+          Move-Item Installer/bin/Afterglow-Installer.exe packages/Afterglow-Installer.${{ matrix.rid }}.exe
 
       - name: Upload packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

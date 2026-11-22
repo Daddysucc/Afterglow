@@ -38,6 +38,8 @@ Download the latest version from the [Releases](https://github.com/Daddysucc/Aft
 - **Portable:** `Afterglow.win-x64.exe`, a single file that runs without installing. Keep it in a permanent folder: when it runs from Downloads or a temporary folder, Afterglow keeps its settings in your user profile and doesn't start with Windows.
 
 On ARM devices (such as Snapdragon laptops), use the `win-arm64` versions instead, and on 32-bit Windows, the `win-x86` ones.
+
+When a new version comes out, Afterglow shows **Update available** on its dashboard. Click it, and Afterglow downloads the new version, checks that it's exactly the released file, installs it, and restarts. An installed copy asks for administrator rights to update; a portable one replaces its own file. If it can't update itself, the button opens the download page instead.
 Afterglow requires Windows 10 or later.
 
 > [!NOTE]
@@ -49,16 +51,21 @@ Afterglow requires Windows 10 or later.
 With the [.NET 10 SDK](https://dotnet.microsoft.com/download) installed, run:
 
 ```
-dotnet publish LightBulb/LightBulb.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.0.0
+dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.0.0
 ```
 
-This produces a standalone `LightBulb.exe` in `LightBulb/bin/Release/net10.0-windows/win-x64/publish/`.
+This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-windows/win-x64/publish/`.
 
-## Coming from LightBulb
+## Coming from LightBulb or an older Afterglow
 
-For compatibility, Afterglow keeps LightBulb's executable name (`LightBulb.exe`), settings location, and startup entry.
-The installer upgrades an existing LightBulb installation in place, keeping its settings, and a portable copy run from Downloads picks them up too.
-The two can't run at the same time: if LightBulb is running, Afterglow asks you to close it first.
+Older versions of Afterglow, like LightBulb, ran as `LightBulb.exe` and kept their settings in `%AppData%\LightBulb`.
+Windows sees Afterglow as a newer version of the same app, so there's nothing to uninstall by hand:
+
+- The installer copies your settings to `%AppData%\Afterglow`, uninstalls the previous version, and installs Afterglow in an `Afterglow` folder next to where it was. If the previous version was installed in a folder with a different name, it's upgraded in that folder instead.
+- If the previous version started with Windows, Afterglow does too.
+- A portable copy does the same on its first launch: it copies your settings from `%AppData%\LightBulb` and takes over the startup entry, if that entry launched the copy it replaces.
+
+The two can't run at the same time: if LightBulb or an older Afterglow is running, Afterglow asks you to close it first.
 
 ## Screenshots
 

@@ -1,0 +1,18 @@
+using Afterglow.Framework;
+using Afterglow.ViewModels.Dialogs;
+using Avalonia.Controls;
+using Avalonia.Input;
+
+namespace Afterglow.Views.Dialogs;
+
+public partial class SettingsView : UserControl<SettingsViewModel>
+{
+    public SettingsView() => InitializeComponent();
+
+    // The settings page covers the main window's title bar, so it needs to support dragging too
+    private void HeaderBorder_OnPointerPressed(object? sender, PointerPressedEventArgs args)
+    {
+        if (TopLevel.GetTopLevel(this) is Window window)
+            window.BeginMoveDrag(args);
+    }
+}

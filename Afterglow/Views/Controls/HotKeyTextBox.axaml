@@ -1,0 +1,15 @@
+<UserControl
+    x:Class="Afterglow.Views.Controls.HotKeyTextBox"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Afterglow.Views.Controls"
+>
+    <TextBox
+        x:Name="TextBox"
+        IsReadOnly="True"
+        IsUndoEnabled="False"
+        Text="{Binding $parent[controls:HotKeyTextBox].HotKey, Mode=OneWay}"
+        TextAlignment="Center"
+        Theme="{DynamicResource CompactTextBox}"
+    />
+</UserControl>

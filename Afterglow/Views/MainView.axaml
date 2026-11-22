@@ -1,0 +1,121 @@
+<Window
+    x:Class="Afterglow.Views.MainView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+    xmlns:afterglow="clr-namespace:Afterglow"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:viewModels="clr-namespace:Afterglow.ViewModels"
+    x:Name="Window"
+    Title="{x:Static afterglow:Program.DisplayName}"
+    Width="680"
+    Height="360"
+    x:DataType="viewModels:MainViewModel"
+    Background="{DynamicResource AppBackgroundBrush}"
+    CanResize="False"
+    Closing="Window_OnClosing"
+    Icon="/favicon.ico"
+    IsVisible="{Binding IsOpen, Mode=TwoWay}"
+    Loaded="Window_OnLoaded"
+    RenderOptions.BitmapInterpolationMode="HighQuality"
+    WindowDecorations="None"
+    WindowStartupLocation="CenterScreen"
+>
+    <Border
+        Background="{DynamicResource AppBackgroundBrush}"
+        BorderBrush="{DynamicResource CardBorderBrush}"
+        BorderThickness="1"
+    >
+        <dialogHostAvalonia:DialogHost x:Name="DialogHost" CloseOnClickAway="False">
+            <Grid RowDefinitions="Auto,*">
+                <!--  Title bar  -->
+                <Border
+                    x:Name="HeaderBorder"
+                    Grid.Row="0"
+                    Height="46"
+                    Padding="4,0,6,0"
+                    Background="{DynamicResource AppHeaderBrush}"
+                    BorderBrush="{DynamicResource CardBorderBrush}"
+                    BorderThickness="0,0,0,1"
+                    PointerPressed="HeaderBorder_OnPointerPressed"
+                >
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="4">
+                        <!--  Settings (hamburger menu)  -->
+                        <Button
+                            Grid.Column="0"
+                            Padding="6"
+                            VerticalAlignment="Center"
+                            Command="{Binding ShowSettingsCommand}"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding LocalizationManager.OpenSettingsTooltip}"
+                        >
+                            <materialIcons:MaterialIcon Width="24" Height="24" Kind="Menu" />
+                        </Button>
+
+                        <!--  Plain-language status  -->
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="4,0,8,0"
+                            VerticalAlignment="Center"
+                            FontSize="14"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Text="{Binding Dashboard.StatusSentence}"
+                            TextTrimming="CharacterEllipsis"
+                            ToolTip.Tip="{Binding Dashboard.StatusSentence}"
+                        />
+
+                        <!--  On/off  -->
+                        <ToggleButton
+                            Grid.Column="2"
+                            Width="30"
+                            Height="30"
+                            Padding="0"
+                            VerticalAlignment="Center"
+                            Background="{DynamicResource WarmBrush}"
+                            Foreground="#22262A"
+                            IsChecked="{Binding Dashboard.IsEnabled}"
+                            Theme="{DynamicResource MaterialIconToggleButton}"
+                            ToolTip.Tip="{Binding Dashboard.LocalizationManager.ToggleAfterglowTooltip}"
+                        >
+                            <ToggleButton.Content>
+                                <materialIcons:MaterialIcon Width="20" Height="20">
+                                    <materialIcons:MaterialIcon.Styles>
+                                        <Style Selector="ToggleButton materialIcons|MaterialIcon">
+                                            <Setter Property="Kind" Value="LightbulbOutline" />
+                                        </Style>
+                                        <Style Selector="ToggleButton:unchecked materialIcons|MaterialIcon">
+                                            <Setter Property="Kind" Value="LightbulbOffOutline" />
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Style>
+                                    </materialIcons:MaterialIcon.Styles>
+                                </materialIcons:MaterialIcon>
+                            </ToggleButton.Content>
+                        </ToggleButton>
+
+                        <!--  Hide to tray  -->
+                        <Button
+                            x:Name="HideButton"
+                            Grid.Column="3"
+                            Padding="4"
+                            VerticalAlignment="Center"
+                            Click="HideButton_OnClick"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding Dashboard.LocalizationManager.HideToTrayTooltip}"
+                        >
+                            <materialIcons:MaterialIcon
+                                Width="22"
+                                Height="22"
+                                Kind="WindowMinimize"
+                            />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <!--  Dashboard  -->
+                <ContentControl Grid.Row="1" Content="{Binding Dashboard}" />
+            </Grid>
+        </dialogHostAvalonia:DialogHost>
+    </Border>
+</Window>

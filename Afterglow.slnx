@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/Misc/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="License.txt" />
+    <File Path="NuGet.config" />
+    <File Path="ReadMe.md" />
+  </Folder>
+
+  <Project Path="Afterglow/Afterglow.csproj" />
+  <Project Path="Afterglow.Core.Tests/Afterglow.Core.Tests.csproj" />
+  <Project Path="Afterglow.Tests/Afterglow.Tests.csproj" />
+  <Project Path="Afterglow.Core/Afterglow.Core.csproj" />
+  <Project Path="Afterglow.PlatformInterop/Afterglow.PlatformInterop.csproj" />
+</Solution>
