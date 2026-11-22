@@ -7,6 +7,60 @@ namespace Afterglow.Core.Tests;
 public class CycleSpecs
 {
     [Fact]
+    public void I_observe_transitions_that_start_and_end_gently()
+    {
+        // Arrange
+        var solarTimes = new SolarTimes(new TimeOnly(07, 00), new TimeOnly(18, 00));
+        var transitionDuration = new TimeSpan(01, 30, 00);
+        var dayConfiguration = new ColorConfiguration(6600, 1);
+        var nightConfiguration = new ColorConfiguration(3600, 0.8);
+
+        double GetTemperature(DateTimeOffset instant) =>
+            Cycle
+                .InterpolateConfiguration(
+                    solarTimes,
+                    dayConfiguration,
+                    nightConfiguration,
+                    transitionDuration,
+                    0,
+                    instant
+                )
+                .Temperature;
+
+        // Act
+        // Every minute around sunset, which includes the whole transition
+        var start = new DateTimeOffset(2019, 01, 01, 15, 30, 00, TimeSpan.Zero);
+        var temperatures = new double[5 * 60];
+        for (var i = 0; i < temperatures.Length; i++)
+            temperatures[i] = GetTemperature(start.AddMinutes(i));
+
+        var first = Array.FindIndex(temperatures, t => t < dayConfiguration.Temperature);
+        var last = Array.FindLastIndex(temperatures, t => t > nightConfiguration.Temperature);
+
+        // Assert
+        // The transition is found, and only ever moves toward the night temperature
+        first.Should().BePositive();
+        last.Should().BeGreaterThan(first + 60);
+        for (var i = 1; i < temperatures.Length; i++)
+            temperatures[i].Should().BeLessThanOrEqualTo(temperatures[i - 1]);
+
+        // Halfway through, the temperature is halfway between the two
+        var middle = (first - 1 + last + 1) / 2.0;
+        var halfway = (dayConfiguration.Temperature + nightConfiguration.Temperature) / 2;
+        GetTemperature(start.AddMinutes(middle)).Should().BeApproximately(halfway, 5);
+
+        // The first and last minutes change much less than the middle one does
+        var firstStep = temperatures[first - 1] - temperatures[first];
+        var lastStep = temperatures[last] - temperatures[last + 1];
+        var middleStep =
+            GetTemperature(start.AddMinutes(middle - 0.5))
+            - GetTemperature(start.AddMinutes(middle + 0.5));
+
+        firstStep.Should().BeLessThan(middleStep / 10);
+        lastStep.Should().BeLessThan(middleStep / 10);
+    }
+
+    [Fact]
     public void I_observe_day_time_color_configuration_during_day_time()
     {
         // Arrange

@@ -247,10 +247,10 @@ public static class Cycle
 
         var progress = elapsed / current.Duration;
 
-        // Sunrise eases in, sunset and night ease out
-        return current.IsSunrise
-            ? toValue + (fromValue - toValue) * Math.Cos(progress * Math.PI / 2)
-            : fromValue + (toValue - fromValue) * Math.Sin(progress * Math.PI / 2);
+        // Every transition eases in and out (an S-curve), so it starts and ends gently, with no
+        // sudden change of pace on the screen (or corner in the graph that plots it)
+        var eased = (1 - Math.Cos(progress * Math.PI)) / 2;
+        return fromValue + (toValue - fromValue) * eased;
     }
 
     /// <summary>

@@ -6,6 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Documents;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Immutable;
 
 namespace Afterglow.Views.Controls;
 
@@ -91,7 +92,15 @@ public class CycleGraph : Control
     private StreamGeometry? _areaGeometry;
     private StreamGeometry? _backWaveGeometry;
     private StreamGeometry? _frontWaveGeometry;
+    private Geometry? _aboveCurveGeometry;
     private IBrush? _areaBrush;
+
+    // Inside the area under the curve, the waves are only a faint light texture, so that they
+    // don't read as part of what the area shows
+    private static readonly IBrush WaveTextureBrush = new ImmutableSolidColorBrush(
+        Color.Parse("#F0F2F5"),
+        0.04
+    );
     private (double Low, double High) _temperatureRange;
     private Size _geometrySize;
 
@@ -339,6 +348,22 @@ public class CycleGraph : Control
 
         _curveGeometry = curveGeometry;
         _areaGeometry = areaGeometry;
+
+        // The space above the curve, where the waves are drawn as they are
+        _aboveCurveGeometry = new CombinedGeometry(
+            GeometryCombineMode.Exclude,
+            new RectangleGeometry(new Rect(size)),
+            areaGeometry
+        );
+    }
+
+    private void DrawWaves(DrawingContext context, IBrush? brush)
+    {
+        if (_backWaveGeometry is not null)
+            context.DrawGeometry(brush, null, _backWaveGeometry);
+
+        if (_frontWaveGeometry is not null)
+            context.DrawGeometry(brush, null, _frontWaveGeometry);
     }
 
     private StreamGeometry CreateWaveGeometry(
@@ -463,18 +488,25 @@ public class CycleGraph : Control
 
         using (context.PushClip(new Rect(bounds.Size)))
         {
-            // Layered background waves
-            if (_backWaveGeometry is not null)
-                context.DrawGeometry(WaveBrush, null, _backWaveGeometry);
+            // Layered background waves, in the space above the curve
+            if (_aboveCurveGeometry is not null)
+            {
+                using (context.PushGeometryClip(_aboveCurveGeometry))
+                    DrawWaves(context, WaveBrush);
+            }
+            else
+            {
+                DrawWaves(context, WaveBrush);
+            }
 
-            if (_frontWaveGeometry is not null)
-                context.DrawGeometry(WaveBrush, null, _frontWaveGeometry);
-
-            // Shaded area under the curve
+            // Shaded area under the curve, with the waves continuing through it as a faint texture
             if (_areaGeometry is not null && _areaBrush is not null)
             {
                 using (context.PushOpacity(ShadeOpacity))
                     context.DrawGeometry(_areaBrush, null, _areaGeometry);
+
+                using (context.PushGeometryClip(_areaGeometry))
+                    DrawWaves(context, WaveTextureBrush);
             }
 
             // Curve
