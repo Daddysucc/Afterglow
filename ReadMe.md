@@ -58,7 +58,7 @@ This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-win
 
 **Dashboard.** The 24-hour curve shows how the day (6500 K), evening (4200 K), and night (2400 K) stages blend into each other, here with 3-hour transitions around sunrise, sunset, and bedtime, mid-way through sunrise.
 
-<img src=".assets/screenshot-dashboard.png" width="680" alt="Dashboard" />
+<img src=".assets/screenshot-dashboard-day.png" width="680" alt="Dashboard" />
 
 **Tray menu.** Pause or turn off grayscale for a while, right from the system tray.
 
