@@ -258,6 +258,7 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesTooltip)] =
                 "Час від часу шукати новішу версію на GitHub. Нічого не завантажується автоматично.",
             [nameof(CheckForUpdatesNowTooltip)] = "Перевірити оновлення зараз",
+            [nameof(CheckNowButton)] = "Перевірити зараз",
             [nameof(UpdateCheckingText)] = "Перевірка оновлень…",
             [nameof(UpToDateText)] = "{0} {1} — найновіша версія.",
             [nameof(UpdateCheckFailedText)] =

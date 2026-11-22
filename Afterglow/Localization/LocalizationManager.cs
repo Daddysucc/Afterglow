@@ -305,6 +305,7 @@ public partial class LocalizationManager
     public string CheckForUpdatesLabel => Get();
     public string CheckForUpdatesTooltip => Get();
     public string CheckForUpdatesNowTooltip => Get();
+    public string CheckNowButton => Get();
     public string UpdateCheckingText => Get();
     public string UpToDateText => Get();
     public string UpdateCheckFailedText => Get();

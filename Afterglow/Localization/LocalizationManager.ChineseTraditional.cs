@@ -238,6 +238,7 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesTooltip)] =
                 "不時在 GitHub 上檢查是否有新版本。不會自動下載任何內容。",
             [nameof(CheckForUpdatesNowTooltip)] = "立即檢查更新",
+            [nameof(CheckNowButton)] = "立即檢查",
             [nameof(UpdateCheckingText)] = "正在檢查更新…",
             [nameof(UpToDateText)] = "{0} {1} 已是最新版本。",
             [nameof(UpdateCheckFailedText)] = "無法檢查更新。請檢查網路連線後再試一次。",

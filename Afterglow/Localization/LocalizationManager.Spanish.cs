@@ -260,6 +260,7 @@ public partial class LocalizationManager
             [nameof(CheckForUpdatesTooltip)] =
                 "Buscar de vez en cuando una versión más reciente en GitHub. No se descarga nada automáticamente.",
             [nameof(CheckForUpdatesNowTooltip)] = "Buscar actualizaciones ahora",
+            [nameof(CheckNowButton)] = "Comprobar ahora",
             [nameof(UpdateCheckingText)] = "Buscando actualizaciones…",
             [nameof(UpToDateText)] = "{0} {1} es la versión más reciente.",
             [nameof(UpdateCheckFailedText)] =

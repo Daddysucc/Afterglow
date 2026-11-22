@@ -7,6 +7,11 @@
     <AssemblyTitle>Afterglow</AssemblyTitle>
     <!-- Trimming is only supported for self-contained apps (which is how releases are published) -->
     <PublishTrimmed Condition="'$(SelfContained)' == 'true'">true</PublishTrimmed>
+    <!-- Trimming removes the framework's precompiled code, so everything is compiled ahead of time
+         again instead, rather than on every launch: this halves the CPU used to start (at the cost
+         of larger files). It needs a target runtime, which releases are always published for. -->
+    <PublishReadyToRun Condition="'$(SelfContained)' == 'true' and '$(RuntimeIdentifier)' != ''"
+      >true</PublishReadyToRun>
     <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
     <!-- A single-file executable must also contain the native libraries (Skia, HarfBuzz, ANGLE),
          otherwise it can't start once it's copied anywhere on its own -->

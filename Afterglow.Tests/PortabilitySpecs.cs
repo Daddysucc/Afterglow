@@ -266,6 +266,27 @@ public class PortabilitySpecs : IDisposable
     }
 
     [Fact]
+    public void I_get_releases_that_start_without_compiling_the_app_first()
+    {
+        // Arrange
+        var project = ReadRepositoryFile(Path.Combine("Afterglow", "Afterglow.csproj"));
+
+        // Assert
+        // Trimming removes the framework's precompiled code, so releases (which are trimmed, and
+        // always published for a specific runtime) are compiled ahead of time again
+        project
+            .Should()
+            .Contain(
+                "<PublishTrimmed Condition=\"'$(SelfContained)' == 'true'\">true</PublishTrimmed>"
+            );
+        project
+            .Should()
+            .Contain(
+                "<PublishReadyToRun Condition=\"'$(SelfContained)' == 'true' and '$(RuntimeIdentifier)' != ''\""
+            );
+    }
+
+    [Fact]
     public void I_get_a_portable_copy_that_updates_everything_by_replacing_its_executable()
     {
         // Arrange

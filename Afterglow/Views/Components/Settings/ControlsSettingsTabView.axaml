@@ -61,17 +61,24 @@
                             Text="{Binding LocalizationManager.CheckForUpdatesLabel}"
                         />
 
-                        <!--  Check now  -->
+                        <!--  Check now (also works while checking now and then is turned off)  -->
                         <Button
                             Grid.Column="1"
-                            Padding="4"
+                            Padding="10,4"
                             VerticalAlignment="Center"
                             Command="{Binding CheckForUpdatesCommand}"
-                            Foreground="{DynamicResource TextMutedBrush}"
+                            Foreground="{DynamicResource AccentTextBrush}"
                             Theme="{DynamicResource MaterialFlatButton}"
                             ToolTip.Tip="{Binding LocalizationManager.CheckForUpdatesNowTooltip}"
                         >
-                            <materialIcons:MaterialIcon Width="20" Height="20" Kind="Refresh" />
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <materialIcons:MaterialIcon Width="16" Height="16" Kind="Refresh" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Text="{Binding LocalizationManager.CheckNowButton}"
+                                />
+                            </StackPanel>
                         </Button>
 
                         <ToggleSwitch
