@@ -9,6 +9,8 @@
 ; Lists the app's files (relative to the installation folder), written by the release workflow
 #define AppFilesListName ".files"
 #define AppVersion GetEnv("INSTALLER_APP_VERSION")
+; The version without any label (e.g. 3.2.0), as Windows shows it in the file's properties
+#define AppVersionNumber GetEnv("INSTALLER_APP_VERSION_NUMBER")
 ; Architecture of the packaged app: x64, arm64, or x86 (no restriction when not set)
 #define AppArchitecture GetEnv("INSTALLER_APP_ARCHITECTURE")
 
@@ -30,6 +32,14 @@ AppPublisher="{#AppName}"
 AppPublisherURL="{#AppUrl}"
 AppSupportURL="{#AppUrl}/issues"
 AppUpdatesURL="{#AppUrl}/releases"
+; The installer says it's Afterglow, in the version being released (code signing checks both,
+; see the .signpath folder)
+VersionInfoProductName={#AppName}
+VersionInfoProductTextVersion={#AppVersion}
+#if AppVersionNumber != ""
+VersionInfoVersion={#AppVersionNumber}
+VersionInfoProductVersion={#AppVersionNumber}
+#endif
 ; Neither this app nor an older copy (or LightBulb) can be running while files are replaced
 AppMutex={#AppName}_Identity,{#AppLegacyName}_Identity
 ; Where to install is decided in the code below, rather than always reusing the previous folder,

@@ -97,6 +97,28 @@ The two can't run at the same time: if LightBulb or an older Afterglow is runnin
 
 ![App & Controls settings](.assets/settings-app.png)
 
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
+
+- Committers and reviewers: [Daddysucc](https://github.com/Daddysucc)
+- Approvers: [Daddysucc](https://github.com/Daddysucc)
+
+Releases are built from this repository by GitHub Actions, and each one is signed only after it has been approved.
+Only Afterglow's own files are signed: the libraries it comes with are signed (or not) by their own authors.
+Windows shows the publisher of signed releases as SignPath Foundation.
+
+### Privacy
+
+Afterglow doesn't collect or send any personal information, and has no telemetry.
+It only connects to these services:
+
+- **GitHub** (`api.github.com`), to check for a newer version every 12 hours or so. This is on by default, and can be turned off in the settings (**App & Controls** › **Check for updates**). When you click **Update available**, the new version is downloaded from `github.com`.
+- **ip-api.com**, only when you ask Afterglow to detect your location. It sees your IP address.
+- **OpenStreetMap Nominatim** (`nominatim.openstreetmap.org`), only when you search for a place by name. It sees what you searched for.
+
+Like any website, these services see your IP address and Afterglow's version when they're contacted.
+
 ## License
 
 Afterglow is licensed under the [MIT License](License.txt), like LightBulb, and keeps LightBulb's original copyright notice.

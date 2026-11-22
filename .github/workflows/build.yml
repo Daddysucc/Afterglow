@@ -1,8 +1,17 @@
 name: build
 
 # Tests run on every push and pull request. Pushing a version tag (e.g. 3.0.0 or v3.0.0) also
-# builds the installer and the portable executable, and publishes them as a GitHub release.
-# Only the built-in GitHub token is used, so no secrets need to be set up.
+# builds the installer and the portable executable, has them signed by SignPath (see "Code signing
+# policy" in the readme), and publishes them as a GitHub release. Running the workflow by hand
+# builds the same packages, unsigned, for testing.
+#
+# Signing a release needs, in the repository's settings (Secrets and variables > Actions):
+#   - the secret SIGNPATH_API_TOKEN: the API token of a SignPath user who can submit signing
+#     requests for the project
+#   - the variable SIGNPATH_ORGANIZATION_ID: the ID of the SignPath organization
+# and, in SignPath, the project "afterglow" with the signing policy "release-signing", and the
+# artifact configurations "app" and "installer" (as in the .signpath folder). Each release is
+# signed in two requests (the app, then the installers), each of which is approved in SignPath.
 
 on:
   workflow_dispatch:
@@ -42,11 +51,178 @@ jobs:
       - name: Run tests
         run: dotnet test --configuration Release --no-build --logger GitHubActions
 
-  pack:
+  version:
     # Packages are only built for version tags, or when run manually
     if: ${{ github.ref_type == 'tag' || github.event_name == 'workflow_dispatch' }}
 
     needs: test
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions: {}
+
+    outputs:
+      value: ${{ steps.version.outputs.value }}
+      number: ${{ steps.version.outputs.number }}
+
+    steps:
+      # Tags may be written with or without a leading "v"; builds that aren't for a tag are
+      # marked as development builds. The number is the version without any label (as Windows
+      # shows it in the files' properties).
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          $version = if ('${{ github.ref_type }}' -eq 'tag') {
+            '${{ github.ref_name }}'.TrimStart('v', 'V')
+          } else {
+            '999.9.9-ci-${{ github.sha }}'
+          }
+          "value=$version" >> $env:GITHUB_OUTPUT
+          "number=$(($version -split '[-+]')[0])" >> $env:GITHUB_OUTPUT
+
+  publish:
+    needs: version
+
+    strategy:
+      matrix:
+        rid:
+          - win-x64
+          - win-arm64
+          - win-x86
+
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+
+      - name: Publish app (for the installer)
+        run: >
+          dotnet publish Afterglow
+          -p:Version=${{ needs.version.outputs.value }}
+          -p:CSharpier_Bypass=true
+          --output Afterglow/bin/publish/
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --self-contained
+
+      - name: Publish app (portable, as a single file)
+        run: >
+          dotnet publish Afterglow
+          -p:Version=${{ needs.version.outputs.value }}
+          -p:CSharpier_Bypass=true
+          -p:PublishSingleFile=true
+          --output Afterglow/bin/portable/
+          --configuration Release
+          --runtime ${{ matrix.rid }}
+          --self-contained
+
+      # A portable copy updates itself by replacing its executable, so anything published next to
+      # it would never be updated (it has to be bundled into the executable instead)
+      - name: Check that the portable app is a single file
+        shell: pwsh
+        run: |
+          $files = @(Get-ChildItem -Path Afterglow/bin/portable/ -Recurse -File)
+          if ($files.Count -ne 1 -or $files[0].Name -ne 'Afterglow.exe') {
+            $files | ForEach-Object { Write-Host $_.FullName }
+            throw "The portable app must be a single file (Afterglow.exe), but it has $($files.Count)."
+          }
+
+      # Contains publish/ (the files the installer installs) and portable/Afterglow.exe
+      - name: Upload app
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: app.${{ matrix.rid }}
+          path: |
+            Afterglow/bin/publish/
+            Afterglow/bin/portable/
+          if-no-files-found: error
+
+  sign-app:
+    # Only releases are signed
+    if: ${{ github.ref_type == 'tag' }}
+
+    needs:
+      - version
+      - publish
+
+    runs-on: ubuntu-latest
+    # Includes waiting for the signing request to be approved in SignPath
+    timeout-minutes: 360
+
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Download app
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: app.*
+          path: unsigned/
+
+      # Only the app's own files are signed: the libraries it comes with aren't its own. Laid out
+      # as <rid>/<file> and <rid>/portable/Afterglow.exe (see .signpath/app.xml).
+      - name: Collect the files to sign
+        shell: pwsh
+        run: |
+          foreach ($rid in 'win-x64', 'win-arm64', 'win-x86') {
+            New-Item -ItemType Directory -Force -Path "to-sign/$rid/portable" | Out-Null
+            Copy-Item -Path "unsigned/app.$rid/publish/Afterglow.exe", "unsigned/app.$rid/publish/Afterglow*.dll" -Destination "to-sign/$rid/"
+            Copy-Item -Path "unsigned/app.$rid/portable/Afterglow.exe" -Destination "to-sign/$rid/portable/"
+          }
+          Get-ChildItem -Path to-sign -Recurse -File | ForEach-Object { Write-Host $_.FullName }
+
+      - name: Upload files to sign
+        id: upload-unsigned
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-app
+          path: to-sign/
+          if-no-files-found: error
+
+      - name: Sign
+        uses: signpath/github-action-submit-signing-request@a2c5b60d9c75f073142b653c354b632eedce097b # v3.2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: afterglow
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: app
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 20700
+          output-artifact-directory: signed/
+          parameters: |
+            version: ${{ toJSON(needs.version.outputs.value) }}
+
+      - name: Upload signed files
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: signed-app
+          path: signed/
+          if-no-files-found: error
+
+  installer:
+    # Releases wait for the app to be signed, other builds use it as it is
+    if: >-
+      !cancelled() && needs.publish.result == 'success'
+      && (needs.sign-app.result == 'success' || needs.sign-app.result == 'skipped')
+
+    needs:
+      - version
+      - publish
+      - sign-app
 
     strategy:
       matrix:
@@ -67,58 +243,43 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Install .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+      # Restores Afterglow/bin/publish/ and Afterglow/bin/portable/
+      - name: Download app
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: app.${{ matrix.rid }}
+          path: Afterglow/bin/
 
-      # Tags may be written with or without a leading "v"; builds that aren't for a tag are
-      # marked as development builds
-      - name: Determine version
-        id: version
+      - name: Download signed files
+        if: ${{ needs.sign-app.result == 'success' }}
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: signed-app
+          path: signed/
+
+      # Puts the signed files in place of the unsigned ones, and makes sure they're all signed
+      - name: Use signed files
+        if: ${{ needs.sign-app.result == 'success' }}
         shell: pwsh
         run: |
-          $version = if ('${{ github.ref_type }}' -eq 'tag') {
-            '${{ github.ref_name }}'.TrimStart('v', 'V')
-          } else {
-            '999.9.9-ci-${{ github.sha }}'
-          }
-          "value=$version" >> $env:GITHUB_OUTPUT
+          $rid = '${{ matrix.rid }}'
+          Copy-Item -Path "signed/$rid/*" -Include 'Afterglow.exe', 'Afterglow*.dll' -Destination Afterglow/bin/publish/ -Force
+          Copy-Item -Path "signed/$rid/portable/Afterglow.exe" -Destination Afterglow/bin/portable/ -Force
 
-      - name: Publish app (for the installer)
-        run: >
-          dotnet publish Afterglow
-          -p:Version=${{ steps.version.outputs.value }}
-          -p:CSharpier_Bypass=true
-          --output Afterglow/bin/publish/
-          --configuration Release
-          --runtime ${{ matrix.rid }}
-          --self-contained
-
-      - name: Publish app (portable, as a single file)
-        run: >
-          dotnet publish Afterglow
-          -p:Version=${{ steps.version.outputs.value }}
-          -p:CSharpier_Bypass=true
-          -p:PublishSingleFile=true
-          --output Afterglow/bin/portable/
-          --configuration Release
-          --runtime ${{ matrix.rid }}
-          --self-contained
-
-      # A portable copy updates itself by replacing its executable, so anything published next to
-      # it would never be updated (it has to be bundled into the executable instead)
-      - name: Check that the portable app is a single file
-        shell: pwsh
-        run: |
-          $files = @(Get-ChildItem -Path Afterglow/bin/portable/ -Recurse -File)
-          if ($files.Count -ne 1 -or $files[0].Name -ne 'Afterglow.exe') {
-            $files | ForEach-Object { Write-Host $_.FullName }
-            throw "The portable app must be a single file (Afterglow.exe), but it has $($files.Count)."
+          $files = @(Get-ChildItem -Path Afterglow/bin/publish/ -File | Where-Object { $_.Name -like 'Afterglow*.dll' -or $_.Name -eq 'Afterglow.exe' }) +
+            @(Get-Item Afterglow/bin/portable/Afterglow.exe)
+          foreach ($file in $files) {
+            $signature = Get-AuthenticodeSignature -FilePath $file.FullName
+            if ($signature.Status -ne 'Valid') {
+              throw "$($file.FullName) isn't signed ($($signature.Status))."
+            }
           }
 
       - name: Create installer
         shell: pwsh
         env:
-          INSTALLER_APP_VERSION: ${{ steps.version.outputs.value }}
+          INSTALLER_APP_VERSION: ${{ needs.version.outputs.value }}
+          INSTALLER_APP_VERSION_NUMBER: ${{ needs.version.outputs.number }}
         run: |
           # x64, arm64, or x86, so that each installer only runs where its app can
           $env:INSTALLER_APP_ARCHITECTURE = '${{ matrix.rid }}'.Replace('win-', '')
@@ -151,6 +312,7 @@ jobs:
           Move-Item Afterglow/bin/portable/Afterglow.exe packages/Afterglow.${{ matrix.rid }}.exe
           Move-Item Installer/bin/Afterglow-Installer.exe packages/Afterglow-Installer.${{ matrix.rid }}.exe
 
+      # The installers in these are signed separately (for releases)
       - name: Upload packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -158,17 +320,20 @@ jobs:
           path: packages/
           if-no-files-found: error
 
-  release:
+  sign-installers:
     if: ${{ github.ref_type == 'tag' }}
 
-    needs: pack
+    needs:
+      - version
+      - installer
 
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Includes waiting for the signing request to be approved in SignPath
+    timeout-minutes: 360
 
     permissions:
-      actions: read
-      contents: write
+      actions: write
+      contents: read
 
     steps:
       - name: Download packages
@@ -178,6 +343,81 @@ jobs:
           path: packages/
           merge-multiple: true
 
+      # See .signpath/installer.xml
+      - name: Collect the installers to sign
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path to-sign | Out-Null
+          Copy-Item -Path packages/Afterglow-Installer.*.exe -Destination to-sign/
+
+      - name: Upload installers to sign
+        id: upload-unsigned
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-installers
+          path: to-sign/
+          if-no-files-found: error
+
+      - name: Sign
+        uses: signpath/github-action-submit-signing-request@a2c5b60d9c75f073142b653c354b632eedce097b # v3.2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: afterglow
+          signing-policy-slug: release-signing
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 20700
+          output-artifact-directory: signed/
+          parameters: |
+            version: ${{ toJSON(needs.version.outputs.value) }}
+
+      - name: Upload signed installers
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: signed-installers
+          path: signed/
+          if-no-files-found: error
+
+  release:
+    if: ${{ github.ref_type == 'tag' }}
+
+    needs:
+      - installer
+      - sign-installers
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+      # The portable executables (signed along with the app), and the installers, which are
+      # replaced by the signed ones
+      - name: Download packages
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: Afterglow.*
+          path: packages/
+          merge-multiple: true
+
+      - name: Download signed installers
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: signed-installers
+          path: signed/
+
+      - name: Use signed installers
+        run: |
+          for rid in win-x64 win-arm64 win-x86; do
+            test -f "signed/Afterglow-Installer.$rid.exe"
+            cp -f "signed/Afterglow-Installer.$rid.exe" packages/
+          done
+          ls -l packages/
+
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -186,5 +426,6 @@ jobs:
           packages/*
           --repo ${{ github.repository }}
           --title "Afterglow ${{ github.ref_name }}"
+          --notes "Signed with a free code signing certificate by SignPath Foundation, provided by SignPath.io (see the [code signing policy](${{ github.server_url }}/${{ github.repository }}#code-signing-policy))."
           --generate-notes
           --verify-tag

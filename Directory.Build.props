@@ -3,6 +3,10 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <Version>999.9.9-dev</Version>
     <Company>Afterglow</Company>
+    <!-- Every file says it's Afterglow, in exactly the version being released (code signing
+         checks both, see the .signpath folder), without the commit appended to the version -->
+    <Product>Afterglow</Product>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Copyright>Copyright (C) Oleksii Holub</Copyright>
     <Nullable>enable</Nullable>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SignPath artifact configuration "app": the app's own files, for each architecture, as collected
+  by the "sign-app" job of the build workflow. The libraries the app comes with aren't its own, so
+  they're not signed. Each file must say that it's Afterglow, in the version being released.
+-->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" default-value="0.0.0" />
+  </parameters>
+  <zip-file>
+    <directory path="win-x64">
+      <pe-file path="Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.Core.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.PlatformInterop.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="portable/Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+    </directory>
+    <directory path="win-arm64">
+      <pe-file path="Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.Core.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.PlatformInterop.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="portable/Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+    </directory>
+    <directory path="win-x86">
+      <pe-file path="Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.Core.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="Afterglow.PlatformInterop.dll" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+      <pe-file path="portable/Afterglow.exe" product-name="Afterglow" product-version="${version}">
+        <authenticode-sign />
+      </pe-file>
+    </directory>
+  </zip-file>
+</artifact-configuration>

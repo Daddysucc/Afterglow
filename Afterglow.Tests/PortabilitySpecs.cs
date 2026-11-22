@@ -316,6 +316,84 @@ public class PortabilitySpecs : IDisposable
     }
 
     [Fact]
+    public void I_get_releases_signed_with_every_file_of_afterglow_s_own_included()
+    {
+        // Arrange
+        var workflow = ReadRepositoryFile(Path.Combine(".github", "workflows", "build.yml"));
+        var props = ReadRepositoryFile("Directory.Build.props");
+        var installerScript = ReadRepositoryFile(Path.Combine("Installer", "Installer.iss"));
+
+        var app = System.Xml.Linq.XDocument.Parse(
+            ReadRepositoryFile(Path.Combine(".signpath", "app.xml"))
+        );
+        var installer = System.Xml.Linq.XDocument.Parse(
+            ReadRepositoryFile(Path.Combine(".signpath", "installer.xml"))
+        );
+
+        static string[] GetSignedPaths(System.Xml.Linq.XDocument configuration) =>
+            configuration
+                .Descendants()
+                .Where(e => e.Name.LocalName == "pe-file")
+                .Select(e =>
+                    string.Join(
+                        "/",
+                        e.AncestorsAndSelf()
+                            .Where(a => a.Name.LocalName is "pe-file" or "directory")
+                            .Reverse()
+                            .Select(a => (string?)a.Attribute("path"))
+                    )
+                )
+                .ToArray();
+
+        // Assert
+        // The app's own files (and the portable executable) for every architecture, and nothing
+        // else: the libraries it comes with aren't its own
+        string[] runtimeIds = ["win-x64", "win-arm64", "win-x86"];
+        GetSignedPaths(app)
+            .Should()
+            .BeEquivalentTo(
+                runtimeIds.SelectMany(rid =>
+                    new[]
+                    {
+                        "Afterglow.exe",
+                        "Afterglow.dll",
+                        "Afterglow.Core.dll",
+                        "Afterglow.PlatformInterop.dll",
+                        "portable/Afterglow.exe",
+                    }.Select(file => $"{rid}/{file}")
+                )
+            );
+        GetSignedPaths(installer)
+            .Should()
+            .BeEquivalentTo(runtimeIds.Select(rid => $"Afterglow-Installer.{rid}.exe"));
+
+        // Every signed file must say that it's Afterglow, in the version being released
+        app.Descendants()
+            .Concat(installer.Descendants())
+            .Where(e => e.Name.LocalName == "pe-file")
+            .Should()
+            .AllSatisfy(e =>
+            {
+                ((string?)e.Attribute("product-name")).Should().Be("Afterglow");
+                ((string?)e.Attribute("product-version")).Should().Be("${version}");
+            });
+        props.Should().Contain("<Product>Afterglow</Product>");
+        props
+            .Should()
+            .Contain(
+                "<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>"
+            );
+        installerScript.Should().Contain("VersionInfoProductName={#AppName}");
+        installerScript.Should().Contain("VersionInfoProductTextVersion={#AppVersion}");
+
+        // The workflow uses these configurations, and checks that the files it got back are signed
+        workflow.Should().Contain("artifact-configuration-slug: app");
+        workflow.Should().Contain("artifact-configuration-slug: installer");
+        workflow.Should().Contain("version: ${{ toJSON(needs.version.outputs.value) }}");
+        workflow.Should().Contain("Get-AuthenticodeSignature");
+    }
+
+    [Fact]
     public void I_can_package_releases_for_every_architecture_with_the_files_the_workflow_expects()
     {
         // Arrange
