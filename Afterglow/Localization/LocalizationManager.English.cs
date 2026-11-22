@@ -270,6 +270,13 @@ public partial class LocalizationManager
                 "Look for a newer version on GitHub now and then. Nothing is downloaded by itself.",
             [nameof(CheckForUpdatesNowTooltip)] = "Check for updates now",
             [nameof(CheckNowButton)] = "Check now",
+            [nameof(UpdateCheckNeverOption)] = "Never",
+            [nameof(UpdateCheckDailyOption)] = "Every day",
+            [nameof(UpdateCheckWeeklyOption)] = "Every week",
+            [nameof(UpdateCheckEveryTwoWeeksOption)] = "Every two weeks",
+            [nameof(CurrentVersionText)] = "Version {0}",
+            [nameof(LastUpdateCheckText)] = "Last checked: {0}",
+            [nameof(NeverCheckedText)] = "Not checked yet",
             [nameof(UpdateCheckingText)] = "Checking for updates…",
             [nameof(UpToDateText)] = "{0} {1} is the latest version.",
             [nameof(UpdateCheckFailedText)] =

@@ -45,16 +45,44 @@ public sealed record ReleaseAsset(string Name, Uri DownloadUrl, long Size, strin
 public sealed record Release(Version Version, IReadOnlyList<ReleaseAsset> Assets);
 
 /// <summary>
+/// How often to look for a newer release on GitHub, when that's turned on.
+/// </summary>
+public enum UpdateCheckFrequency
+{
+    Daily,
+    Weekly,
+    EveryTwoWeeks,
+}
+
+/// <summary>
 /// Finds out whether a newer version has been released on GitHub, and which files it has.
 /// </summary>
 public static class UpdateCheck
 {
     // How long to wait after the last successful check before checking again
-    public static TimeSpan Interval { get; } = TimeSpan.FromHours(12);
+    public static TimeSpan GetInterval(UpdateCheckFrequency frequency) =>
+        frequency switch
+        {
+            UpdateCheckFrequency.Daily => TimeSpan.FromDays(1),
+            UpdateCheckFrequency.EveryTwoWeeks => TimeSpan.FromDays(14),
+            _ => TimeSpan.FromDays(7),
+        };
 
-    // Checked against the clock, so that time spent asleep counts
-    public static bool IsDue(DateTimeOffset? lastCheckedAt, DateTimeOffset now) =>
-        lastCheckedAt is not { } at || now - at >= Interval || now < at;
+    // Checked against the clock (which is remembered between launches), so that time spent asleep
+    // or closed counts, and a clock that was set back doesn't postpone the next check
+    public static bool IsDue(
+        DateTimeOffset? lastCheckedAt,
+        DateTimeOffset now,
+        TimeSpan interval
+    ) => lastCheckedAt is not { } at || now - at >= interval || now < at;
+
+    /// <summary>
+    /// Whether the last check (possibly before the app was restarted) found a version that's newer
+    /// than this one. It's looked up again right away, so that it's offered again without waiting
+    /// for the next scheduled check.
+    /// </summary>
+    public static bool IsKnownUpdatePending(string? knownVersion, Version currentVersion) =>
+        TryParseVersion(knownVersion) is { } version && version > Normalize(currentVersion);
 
     /// <summary>
     /// Gets the version from a release tag, e.g. "v3.1.0" or "3.1", or <c>null</c> if it isn't one.

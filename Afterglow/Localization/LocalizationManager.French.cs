@@ -260,6 +260,13 @@ public partial class LocalizationManager
             "Rechercher de temps en temps une nouvelle version sur GitHub. Rien n'est téléchargé automatiquement.",
         [nameof(CheckForUpdatesNowTooltip)] = "Rechercher les mises à jour maintenant",
         [nameof(CheckNowButton)] = "Vérifier maintenant",
+        [nameof(UpdateCheckNeverOption)] = "Jamais",
+        [nameof(UpdateCheckDailyOption)] = "Tous les jours",
+        [nameof(UpdateCheckWeeklyOption)] = "Toutes les semaines",
+        [nameof(UpdateCheckEveryTwoWeeksOption)] = "Toutes les deux semaines",
+        [nameof(CurrentVersionText)] = "Version {0}",
+        [nameof(LastUpdateCheckText)] = "Dernière vérification : {0}",
+        [nameof(NeverCheckedText)] = "Pas encore vérifié",
         [nameof(UpdateCheckingText)] = "Recherche de mises à jour…",
         [nameof(UpToDateText)] = "{0} {1} est la dernière version.",
         [nameof(UpdateCheckFailedText)] =

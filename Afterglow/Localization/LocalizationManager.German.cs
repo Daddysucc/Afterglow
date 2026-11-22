@@ -254,6 +254,13 @@ public partial class LocalizationManager
             "Ab und zu auf GitHub nach einer neueren Version suchen. Es wird nichts automatisch heruntergeladen.",
         [nameof(CheckForUpdatesNowTooltip)] = "Jetzt nach Updates suchen",
         [nameof(CheckNowButton)] = "Jetzt prüfen",
+        [nameof(UpdateCheckNeverOption)] = "Nie",
+        [nameof(UpdateCheckDailyOption)] = "Täglich",
+        [nameof(UpdateCheckWeeklyOption)] = "Wöchentlich",
+        [nameof(UpdateCheckEveryTwoWeeksOption)] = "Alle zwei Wochen",
+        [nameof(CurrentVersionText)] = "Version {0}",
+        [nameof(LastUpdateCheckText)] = "Zuletzt geprüft: {0}",
+        [nameof(NeverCheckedText)] = "Noch nicht geprüft",
         [nameof(UpdateCheckingText)] = "Suche nach Updates…",
         [nameof(UpToDateText)] = "{0} {1} ist die neueste Version.",
         [nameof(UpdateCheckFailedText)] =

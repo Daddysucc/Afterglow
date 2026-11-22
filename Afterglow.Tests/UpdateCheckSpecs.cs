@@ -101,29 +101,66 @@ public class UpdateCheckSpecs : IDisposable
 
     private static readonly DateTimeOffset Now = new(2026, 11, 14, 20, 00, 00, TimeSpan.Zero);
 
+    private static readonly TimeSpan Week = UpdateCheck.GetInterval(UpdateCheckFrequency.Weekly);
+
     [Fact]
     public void I_get_updates_checked_when_they_have_not_been_yet()
     {
         // Act & assert
-        UpdateCheck.IsDue(null, Now).Should().BeTrue();
+        UpdateCheck.IsDue(null, Now, Week).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(UpdateCheckFrequency.Daily, 1)]
+    [InlineData(UpdateCheckFrequency.Weekly, 7)]
+    [InlineData(UpdateCheckFrequency.EveryTwoWeeks, 14)]
+    public void I_get_updates_checked_as_often_as_i_chose(UpdateCheckFrequency frequency, int days)
+    {
+        // Arrange
+        var interval = UpdateCheck.GetInterval(frequency);
+
+        // Act & assert
+        interval.Should().Be(TimeSpan.FromDays(days));
+        UpdateCheck
+            .IsDue(Now - interval + TimeSpan.FromMinutes(1), Now, interval)
+            .Should()
+            .BeFalse();
+        UpdateCheck.IsDue(Now - interval, Now, interval).Should().BeTrue();
     }
 
     [Fact]
     public void I_get_updates_checked_again_only_after_a_while()
     {
         // Act & assert
-        UpdateCheck.IsDue(Now - TimeSpan.FromHours(1), Now).Should().BeFalse();
-        UpdateCheck.IsDue(Now - UpdateCheck.Interval, Now).Should().BeTrue();
+        UpdateCheck.IsDue(Now - TimeSpan.FromHours(1), Now, Week).Should().BeFalse();
+        UpdateCheck.IsDue(Now - TimeSpan.FromDays(3), Now, Week).Should().BeFalse();
 
-        // Time asleep counts, as it's checked against the clock
-        UpdateCheck.IsDue(Now - TimeSpan.FromDays(2), Now).Should().BeTrue();
+        // Time asleep (or with the app closed) counts, as it's checked against the clock
+        UpdateCheck.IsDue(Now - TimeSpan.FromDays(10), Now, Week).Should().BeTrue();
     }
 
     [Fact]
     public void I_get_updates_checked_again_after_the_clock_was_set_back()
     {
         // Act & assert
-        UpdateCheck.IsDue(Now + TimeSpan.FromDays(1), Now).Should().BeTrue();
+        UpdateCheck.IsDue(Now + TimeSpan.FromDays(1), Now, Week).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("3.2.0", true)]
+    [InlineData("v4.0", true)]
+    [InlineData("3.1.0", false)]
+    [InlineData("3.0.1", false)]
+    [InlineData(null, false)]
+    [InlineData("", false)]
+    [InlineData("not a version", false)]
+    public void I_get_an_update_found_before_a_restart_offered_again_right_away(
+        string? knownVersion,
+        bool isPending
+    )
+    {
+        // Act & assert
+        UpdateCheck.IsKnownUpdatePending(knownVersion, CurrentVersion).Should().Be(isPending);
     }
 
     // ---- Settings ----
@@ -159,6 +196,113 @@ public class UpdateCheckSpecs : IDisposable
     {
         // Act & assert
         Load("""{ "IsAutoUpdateEnabled": false }""").IsUpdateCheckEnabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void I_get_updates_checked_weekly_by_default()
+    {
+        // Arrange
+        var settings = Load("{}");
+
+        // Assert
+        settings.UpdateCheckFrequency.Should().Be(UpdateCheckFrequency.Weekly);
+        settings.LastUpdateCheckTime.Should().BeNull();
+        settings.AvailableUpdateVersion.Should().BeNull();
+    }
+
+    [Fact]
+    public void I_keep_my_update_check_frequency_and_when_updates_were_last_checked()
+    {
+        // Arrange
+        var lastCheckTime = new DateTimeOffset(2026, 11, 21, 22, 5, 0, TimeSpan.FromHours(2));
+
+        var settings = Load("{}");
+        settings.UpdateCheckFrequency = UpdateCheckFrequency.EveryTwoWeeks;
+        settings.LastUpdateCheckTime = lastCheckTime;
+        settings.AvailableUpdateVersion = "3.4.0";
+
+        // Act
+        settings.TrySaveToFile().Should().BeTrue();
+
+        var reloaded = new SettingsService(Path.Combine(_directoryPath, "Settings.json"));
+        reloaded.Load();
+
+        // Assert
+        reloaded.UpdateCheckFrequency.Should().Be(UpdateCheckFrequency.EveryTwoWeeks);
+        reloaded.LastUpdateCheckTime.Should().Be(lastCheckTime);
+        reloaded.AvailableUpdateVersion.Should().Be("3.4.0");
+    }
+
+    [Fact]
+    public void I_get_updates_checked_weekly_if_the_saved_frequency_is_not_one_i_can_choose()
+    {
+        // Act
+        // E.g. from a newer version, or edited by hand
+        var settings = Load(
+            """{ "UpdateCheckFrequency": "Hourly", "NightStartTime": "23:30:00" }"""
+        );
+
+        // Assert
+        settings.UpdateCheckFrequency.Should().Be(UpdateCheckFrequency.Weekly);
+        settings.NightStartTime.Should().Be(new TimeOnly(23, 30));
+    }
+
+    [Theory]
+    [InlineData(0, false, UpdateCheckFrequency.Weekly)]
+    [InlineData(1, true, UpdateCheckFrequency.Daily)]
+    [InlineData(2, true, UpdateCheckFrequency.Weekly)]
+    [InlineData(3, true, UpdateCheckFrequency.EveryTwoWeeks)]
+    public void I_can_choose_how_often_updates_are_checked_or_turn_checking_off(
+        int index,
+        bool isEnabled,
+        UpdateCheckFrequency frequency
+    )
+    {
+        // Arrange
+        var settings = Load("{}");
+        using var localization = new Afterglow.Localization.LocalizationManager(settings);
+        using var updateService = new UpdateService(settings);
+        using var tab = new Afterglow.ViewModels.Components.Settings.ControlsSettingsTabViewModel(
+            settings,
+            localization,
+            updateService
+        );
+
+        // Act
+        tab.UpdateCheckFrequencyIndex = index;
+
+        // Assert
+        settings.IsUpdateCheckEnabled.Should().Be(isEnabled);
+        settings.UpdateCheckFrequency.Should().Be(frequency);
+        tab.UpdateCheckFrequencyIndex.Should().Be(index);
+    }
+
+    [Fact]
+    public void I_can_see_which_version_i_have_and_when_updates_were_last_checked()
+    {
+        // Arrange
+        var settings = Load("{}");
+        using var localization = new Afterglow.Localization.LocalizationManager(settings);
+        using var updateService = new UpdateService(settings);
+        using var tab = new Afterglow.ViewModels.Components.Settings.ControlsSettingsTabViewModel(
+            settings,
+            localization,
+            updateService
+        );
+
+        // Act & assert
+        tab.VersionText.Should().Contain(Program.VersionString);
+        tab.VersionText.Should().Contain(localization.NeverCheckedText);
+
+        settings.LastUpdateCheckTime = new DateTimeOffset(2026, 11, 21, 22, 5, 0, TimeSpan.Zero);
+        tab.VersionText.Should().Contain(Program.VersionString);
+        tab.VersionText.Should().NotContain(localization.NeverCheckedText);
+        tab.VersionText.Should()
+            .Contain(
+                settings
+                    .LastUpdateCheckTime.Value.ToLocalTime()
+                    .ToString("g", System.Globalization.CultureInfo.CurrentCulture)
+            );
     }
 
     public void Dispose()

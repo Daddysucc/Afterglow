@@ -259,6 +259,13 @@ public partial class LocalizationManager
                 "Час від часу шукати новішу версію на GitHub. Нічого не завантажується автоматично.",
             [nameof(CheckForUpdatesNowTooltip)] = "Перевірити оновлення зараз",
             [nameof(CheckNowButton)] = "Перевірити зараз",
+            [nameof(UpdateCheckNeverOption)] = "Ніколи",
+            [nameof(UpdateCheckDailyOption)] = "Щодня",
+            [nameof(UpdateCheckWeeklyOption)] = "Щотижня",
+            [nameof(UpdateCheckEveryTwoWeeksOption)] = "Раз на два тижні",
+            [nameof(CurrentVersionText)] = "Версія {0}",
+            [nameof(LastUpdateCheckText)] = "Остання перевірка: {0}",
+            [nameof(NeverCheckedText)] = "Ще не перевірялося",
             [nameof(UpdateCheckingText)] = "Перевірка оновлень…",
             [nameof(UpToDateText)] = "{0} {1} — найновіша версія.",
             [nameof(UpdateCheckFailedText)] =

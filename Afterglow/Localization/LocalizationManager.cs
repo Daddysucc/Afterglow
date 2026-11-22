@@ -306,6 +306,13 @@ public partial class LocalizationManager
     public string CheckForUpdatesTooltip => Get();
     public string CheckForUpdatesNowTooltip => Get();
     public string CheckNowButton => Get();
+    public string UpdateCheckNeverOption => Get();
+    public string UpdateCheckDailyOption => Get();
+    public string UpdateCheckWeeklyOption => Get();
+    public string UpdateCheckEveryTwoWeeksOption => Get();
+    public string CurrentVersionText => Get();
+    public string LastUpdateCheckText => Get();
+    public string NeverCheckedText => Get();
     public string UpdateCheckingText => Get();
     public string UpToDateText => Get();
     public string UpdateCheckFailedText => Get();

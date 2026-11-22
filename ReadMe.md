@@ -113,7 +113,7 @@ Windows shows the publisher of signed releases as SignPath Foundation.
 Afterglow doesn't collect or send any personal information, and has no telemetry.
 It only connects to these services:
 
-- **GitHub** (`api.github.com`), to check for a newer version every 12 hours or so. This is on by default, and can be turned off in the settings (**App & Controls** › **Check for updates**). When you click **Update available**, the new version is downloaded from `github.com`.
+- **GitHub** (`api.github.com`), to check for a newer version once a week. In the settings (**App & Controls** › **Check for updates**), you can choose every day, every two weeks, or never, and check right away with **Check now**. When you click **Update available**, the new version is downloaded from `github.com`.
 - **ip-api.com**, only when you ask Afterglow to detect your location. It sees your IP address.
 - **OpenStreetMap Nominatim** (`nominatim.openstreetmap.org`), only when you search for a place by name. It sees what you searched for.
 

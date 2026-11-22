@@ -8,6 +8,7 @@ using Afterglow.Core;
 using Afterglow.Utils;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
+using PowerKit;
 using PowerKit.Extensions;
 using Timer = Afterglow.PlatformInterop.Timer;
 
@@ -23,38 +24,45 @@ public partial class UpdateService : ObservableObject, IDisposable
     private readonly Timer _timer;
     private readonly IDisposable _settingsSubscription;
 
-    // Only set once a check succeeds, so that failed checks (e.g. no connection yet) are retried
-    private DateTimeOffset? _lastCheckedAt;
     private int _isChecking;
     private bool _isStarted;
+
+    // Whether a check has succeeded since the app started
+    private bool _hasCheckedSinceStart;
 
     public UpdateService(SettingsService settingsService)
     {
         _settingsService = settingsService;
 
         // Not right away: the connection may not be up yet when starting with Windows. After that,
-        // every half an hour, which only checks again if the last check was a while ago.
+        // every half an hour, which only checks once the chosen time has passed since the last
+        // successful check (which is remembered between launches, so failed checks are retried).
         _timer = new Timer(
             TimeSpan.FromSeconds(15),
             TimeSpan.FromMinutes(30),
-            () => _ = CheckIfDueAsync()
+            () => Dispatcher.UIThread.Post(() => _ = CheckIfDueAsync())
         );
 
-        _settingsSubscription = settingsService.WatchProperty(
-            o => o.IsUpdateCheckEnabled,
-            isEnabled =>
-            {
-                // Checked again as soon as it's turned back on
-                _lastCheckedAt = null;
-
-                if (isEnabled)
-                    _ = CheckIfDueAsync();
-                else
+        _settingsSubscription = Disposable.Merge(
+            settingsService.WatchProperty(
+                o => o.IsUpdateCheckEnabled,
+                isEnabled =>
                 {
-                    AvailableVersion = null;
-                    Status = UpdateCheckStatus.None;
+                    // Checked as soon as it's turned (back) on
+                    if (isEnabled)
+                        _ = CheckIfDueAsync(true);
+                    else
+                    {
+                        AvailableVersion = null;
+                        Status = UpdateCheckStatus.None;
+                    }
                 }
-            }
+            ),
+            // Checked right away if that makes a check due (e.g. after switching to daily checks)
+            settingsService.WatchProperty(
+                o => o.UpdateCheckFrequency,
+                frequency => _ = CheckIfDueAsync()
+            )
         );
     }
 
@@ -78,15 +86,31 @@ public partial class UpdateService : ObservableObject, IDisposable
     [ObservableProperty]
     public partial UpdateCheckStatus Status { get; private set; }
 
-    private async Task CheckIfDueAsync()
+    // Must be called on the UI thread, like everything that reads or changes the settings
+    private async Task CheckIfDueAsync(bool isForced = false)
     {
         if (!_isStarted || !_settingsService.IsUpdateCheckEnabled)
             return;
 
-        if (!UpdateCheck.IsDue(_lastCheckedAt, DateTimeOffset.Now))
-            return;
+        var isDue =
+            isForced
+            || UpdateCheck.IsDue(
+                _settingsService.LastUpdateCheckTime,
+                DateTimeOffset.Now,
+                UpdateCheck.GetInterval(_settingsService.UpdateCheckFrequency)
+            )
+            // An update found before the app was restarted is offered again right away, rather
+            // than only after the next scheduled check
+            || (
+                !_hasCheckedSinceStart
+                && UpdateCheck.IsKnownUpdatePending(
+                    _settingsService.AvailableUpdateVersion,
+                    Program.Version
+                )
+            );
 
-        await CheckAsync();
+        if (isDue)
+            await CheckAsync();
     }
 
     /// <summary>
@@ -116,10 +140,16 @@ public partial class UpdateService : ObservableObject, IDisposable
                 cancellation.Token
             );
 
-            _lastCheckedAt = DateTimeOffset.Now;
+            var checkedAt = DateTimeOffset.Now;
 
             Dispatcher.UIThread.Post(() =>
             {
+                // Remembered for the next launch (as shown in the settings, too)
+                _hasCheckedSinceStart = true;
+                _settingsService.LastUpdateCheckTime = checkedAt;
+                _settingsService.AvailableUpdateVersion = release?.Version.ToString(3);
+                _settingsService.TrySaveToFile();
+
                 // A newer release may have come out since an update failed, so try again
                 if (
                     release?.Version != AvailableVersion

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Afterglow.Core;
 using Afterglow.Localization;
 using Afterglow.Models;
 using Afterglow.Services;
@@ -114,11 +115,42 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
         set => SettingsService.IsStartMinimizedEnabled = value;
     }
 
-    public bool IsUpdateCheckEnabled
+    // The choice of how often to check for updates: never (0), or one of the frequencies, in order
+    public int UpdateCheckFrequencyIndex
     {
-        get => SettingsService.IsUpdateCheckEnabled;
-        set => SettingsService.IsUpdateCheckEnabled = value;
+        get =>
+            SettingsService.IsUpdateCheckEnabled
+                ? (int)SettingsService.UpdateCheckFrequency + 1
+                : 0;
+        set
+        {
+            if (value <= 0)
+            {
+                SettingsService.IsUpdateCheckEnabled = false;
+            }
+            else if (Enum.IsDefined((UpdateCheckFrequency)(value - 1)))
+            {
+                // The frequency first, so that turning checks on applies it right away
+                SettingsService.UpdateCheckFrequency = (UpdateCheckFrequency)(value - 1);
+                SettingsService.IsUpdateCheckEnabled = true;
+            }
+
+            OnPropertyChanged();
+        }
     }
+
+    // e.g. "Version 3.3.0 · Last checked: 21/11/2026 22:05"
+    public string VersionText =>
+        string.Format(LocalizationManager.CurrentVersionText, Program.VersionString)
+        + " · "
+        + (
+            SettingsService.LastUpdateCheckTime is { } lastCheckTime
+                ? string.Format(
+                    LocalizationManager.LastUpdateCheckText,
+                    lastCheckTime.ToLocalTime().ToString("g", CultureInfo.CurrentCulture)
+                )
+                : LocalizationManager.NeverCheckedText
+        );
 
     public bool IsConfigurationSmoothingEnabled
     {

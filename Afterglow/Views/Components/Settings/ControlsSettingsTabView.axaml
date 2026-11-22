@@ -81,12 +81,22 @@
                             </StackPanel>
                         </Button>
 
-                        <ToggleSwitch
+                        <!--  How often to check by itself (or never)  -->
+                        <ComboBox
                             Grid.Column="2"
+                            MinWidth="150"
                             VerticalAlignment="Center"
-                            IsChecked="{Binding IsUpdateCheckEnabled}"
-                        />
+                            SelectedIndex="{Binding UpdateCheckFrequencyIndex}"
+                        >
+                            <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckNeverOption}" />
+                            <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckDailyOption}" />
+                            <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckWeeklyOption}" />
+                            <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckEveryTwoWeeksOption}" />
+                        </ComboBox>
                     </Grid>
+
+                    <!--  The version that's running, and when updates were last checked for  -->
+                    <TextBlock Classes="setting-hint" Text="{Binding VersionText}" />
 
                     <!--  Result of the last check (a link that installs the update, if there is one)  -->
                     <TextBlock Classes="setting-hint" Text="{Binding UpdateStatusText}">

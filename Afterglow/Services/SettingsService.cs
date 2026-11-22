@@ -137,6 +137,22 @@ public partial class SettingsService : SettingsBase
     [JsonPropertyName("IsAutoUpdateEnabled")]
     public partial bool IsUpdateCheckEnabled { get; set; } = true;
 
+    // How often to look for newer releases, when that's turned on. Weekly by default: releases
+    // don't come out more often, and a fix for a new release has time to come out before most
+    // copies even see that release.
+    [ObservableProperty]
+    public partial UpdateCheckFrequency UpdateCheckFrequency { get; set; } =
+        UpdateCheckFrequency.Weekly;
+
+    // When the last check for updates succeeded, and the newer version it found (if any). They're
+    // remembered between launches, so that checks follow the chosen frequency rather than happening
+    // on every launch, and so that an update that was found is offered again after a restart.
+    [ObservableProperty]
+    public partial DateTimeOffset? LastUpdateCheckTime { get; set; }
+
+    [ObservableProperty]
+    public partial string? AvailableUpdateVersion { get; set; }
+
     [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 
@@ -607,6 +623,9 @@ public partial class SettingsService : SettingsBase
         // Numeric values that don't correspond to any schedule
         if (!Enum.IsDefined(GrayscaleSchedule))
             GrayscaleSchedule = GrayscaleSchedule.Off;
+
+        if (!Enum.IsDefined(UpdateCheckFrequency))
+            UpdateCheckFrequency = UpdateCheckFrequency.Weekly;
 
         // With grayscale always on, turning it off manually only lasts for the session
         if (GrayscaleSchedule == GrayscaleSchedule.On)
