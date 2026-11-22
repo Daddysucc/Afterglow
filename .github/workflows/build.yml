@@ -1,9 +1,10 @@
 name: build
 
 # Tests run on every push and pull request. Pushing a version tag (e.g. 3.0.0 or v3.0.0) also
-# builds the installer and the portable executable, has them signed by SignPath (see "Code signing
-# policy" in the readme), and publishes them as a GitHub release. Running the workflow by hand
-# builds the same packages, unsigned, for testing.
+# builds the installer and the portable executable, has them signed by SignPath once that's set up
+# (see "Code signing policy" in the readme), and publishes them as a GitHub release. Until then,
+# releases are published unsigned. Running the workflow by hand builds the same packages,
+# unsigned, for testing.
 #
 # Signing a release needs, in the repository's settings (Secrets and variables > Actions):
 #   - the secret SIGNPATH_API_TOKEN: the API token of a SignPath user who can submit signing
@@ -149,8 +150,9 @@ jobs:
           if-no-files-found: error
 
   sign-app:
-    # Only releases are signed
-    if: ${{ github.ref_type == 'tag' }}
+    # Only releases are signed, once SignPath has been set up (until then, they're published
+    # unsigned). If the variable is set but signing fails, nothing is released.
+    if: ${{ github.ref_type == 'tag' && vars.SIGNPATH_ORGANIZATION_ID != '' }}
 
     needs:
       - version
@@ -321,7 +323,8 @@ jobs:
           if-no-files-found: error
 
   sign-installers:
-    if: ${{ github.ref_type == 'tag' }}
+    # Like the app, once SignPath has been set up
+    if: ${{ github.ref_type == 'tag' && vars.SIGNPATH_ORGANIZATION_ID != '' }}
 
     needs:
       - version
@@ -381,7 +384,10 @@ jobs:
           if-no-files-found: error
 
   release:
-    if: ${{ github.ref_type == 'tag' }}
+    # Signed installers are used once SignPath has been set up, unsigned ones until then
+    if: >-
+      !cancelled() && github.ref_type == 'tag' && needs.installer.result == 'success'
+      && (needs.sign-installers.result == 'success' || needs.sign-installers.result == 'skipped')
 
     needs:
       - installer
@@ -405,12 +411,14 @@ jobs:
           merge-multiple: true
 
       - name: Download signed installers
+        if: ${{ needs.sign-installers.result == 'success' }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: signed-installers
           path: signed/
 
       - name: Use signed installers
+        if: ${{ needs.sign-installers.result == 'success' }}
         run: |
           for rid in win-x64 win-arm64 win-x86; do
             test -f "signed/Afterglow-Installer.$rid.exe"
@@ -418,14 +426,24 @@ jobs:
           done
           ls -l packages/
 
+      # Only signed releases say so
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
-          gh release create ${{ github.ref_name }}
-          packages/*
-          --repo ${{ github.repository }}
-          --title "Afterglow ${{ github.ref_name }}"
-          --notes "Signed with a free code signing certificate by SignPath Foundation, provided by SignPath.io (see the [code signing policy](${{ github.server_url }}/${{ github.repository }}#code-signing-policy))."
-          --generate-notes
-          --verify-tag
+          IS_SIGNED: ${{ needs.sign-installers.result == 'success' }}
+          SIGNING_NOTE: >-
+            Signed with a free code signing certificate by SignPath Foundation, provided by
+            SignPath.io (see the [code signing
+            policy](${{ github.server_url }}/${{ github.repository }}#code-signing-policy)).
+        run: |
+          notes=()
+          if [ "$IS_SIGNED" = "true" ]; then
+            notes=(--notes "$SIGNING_NOTE")
+          fi
+
+          gh release create "${{ github.ref_name }}" packages/* \
+            --repo "${{ github.repository }}" \
+            --title "Afterglow ${{ github.ref_name }}" \
+            "${notes[@]}" \
+            --generate-notes \
+            --verify-tag

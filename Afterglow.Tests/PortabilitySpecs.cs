@@ -312,7 +312,7 @@ public class PortabilitySpecs : IDisposable
             .BeGreaterThan(curStepChanged.IndexOf("if CurStep = ssPostInstall then"));
 
         // Nothing outside the installation folder can be removed
-        script.Should().Contain("(Pos('..', Result) > 0) or (Pos(':', Result) > 0)");
+        script.Should().Contain("(Pos('..', Normalized) > 0) or (Pos(':', Normalized) > 0)");
     }
 
     [Fact]
@@ -385,6 +385,16 @@ public class PortabilitySpecs : IDisposable
             );
         installerScript.Should().Contain("VersionInfoProductName={#AppName}");
         installerScript.Should().Contain("VersionInfoProductTextVersion={#AppVersion}");
+
+        // Signing only happens once SignPath has been set up: until then, releases are published
+        // unsigned (rather than not at all), without claiming to be signed
+        workflow
+            .Split("vars.SIGNPATH_ORGANIZATION_ID != ''")
+            .Should()
+            .HaveCount(3, "both signing jobs only run once SignPath has been set up");
+        workflow.Should().Contain("needs.sign-app.result == 'skipped'");
+        workflow.Should().Contain("needs.sign-installers.result == 'skipped'");
+        workflow.Should().Contain("IS_SIGNED: ${{ needs.sign-installers.result == 'success' }}");
 
         // The workflow uses these configurations, and checks that the files it got back are signed
         workflow.Should().Contain("artifact-configuration-slug: app");

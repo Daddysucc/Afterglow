@@ -83,7 +83,7 @@ Root: HKLM; Subkey: "Software\Microsoft\Windows NT\CurrentVersion\ICM"; ValueTyp
 Filename: "{app}\{#AppName}.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 ; When the app updates itself (installing silently), it's started again afterwards, without
 ; administrator rights (as postinstall entries run as the user who started the installer)
-Filename: "{app}\{#AppName}.exe"; Flags: nowait postinstall; Check: IsUpdating
+Filename: "{app}\{#AppName}.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall; Check: IsUpdating
 
 [UninstallDelete]
 Name: "{userappdata}\{#AppName}"; Type: filesandordirs
@@ -109,7 +109,8 @@ var
   PreviousAppFiles: TArrayOfString;
 
 const
-  Synchronize = $00100000;
+  // Access right needed to wait for a process to exit
+  ProcessSynchronizeAccess = $00100000;
 
 function OpenProcess(DesiredAccess: DWORD; InheritHandle: BOOL; ProcessId: DWORD): THandle;
   external 'OpenProcess@kernel32.dll stdcall';
@@ -134,7 +135,7 @@ begin
   if ProcessId <= 0 then
     Exit;
 
-  Handle := OpenProcess(Synchronize, False, ProcessId);
+  Handle := OpenProcess(ProcessSynchronizeAccess, False, ProcessId);
   if Handle = 0 then
     Exit;
 
@@ -375,13 +376,17 @@ end;
 // A path from the list, as a path relative to the installation folder, or '' if it isn't one
 // (so that nothing outside the installation folder can ever be removed)
 function NormalizeListedPath(const Path: String): String;
+var
+  Normalized: String;
 begin
-  Result := Trim(Path);
-  StringChangeEx(Result, '/', '\', True);
+  Normalized := Trim(Path);
+  StringChangeEx(Normalized, '/', '\', True);
 
-  if (Result = '') or (Pos('..', Result) > 0) or (Pos(':', Result) > 0) or
-    (Copy(Result, 1, 1) = '\') or (Pos('*', Result) > 0) or (Pos('?', Result) > 0) then
-    Result := '';
+  if (Normalized = '') or (Pos('..', Normalized) > 0) or (Pos(':', Normalized) > 0) or
+    (Copy(Normalized, 1, 1) = '\') or (Pos('*', Normalized) > 0) or (Pos('?', Normalized) > 0) then
+    Normalized := '';
+
+  Result := Normalized;
 end;
 
 function IsListed(const Paths: TArrayOfString; const Path: String): Boolean;
@@ -410,18 +415,19 @@ begin
 end;
 
 // Removes the folders that held a removed file, as long as they're empty
-procedure RemoveEmptyDirs(DirPath: String);
+procedure RemoveEmptyDirs(const DirPath: String);
 var
-  AppDirPath: String;
+  AppDirPath, CurrentDirPath: String;
 begin
   AppDirPath := ExpandConstant('{app}');
+  CurrentDirPath := DirPath;
 
-  while (Length(DirPath) > Length(AppDirPath)) and not IsSameDir(DirPath, AppDirPath) do
+  while (Length(CurrentDirPath) > Length(AppDirPath)) and not IsSameDir(CurrentDirPath, AppDirPath) do
   begin
-    if not RemoveDir(DirPath) then
+    if not RemoveDir(CurrentDirPath) then
       Exit;
 
-    DirPath := ExtractFileDir(DirPath);
+    CurrentDirPath := ExtractFileDir(CurrentDirPath);
   end;
 end;
 
