@@ -1,11 +1,5 @@
 # Afterglow
 
-> **LightBulb was made in Ukraine.** Afterglow is built on [LightBulb](https://github.com/Tyrrrz/LightBulb) by [Tyrrrz (Oleksii Holub)](https://github.com/Tyrrrz). Its author asks users to condemn Russia's war against Ukraine and support its territorial integrity.
->
-> [Read his statement](https://tyrrrz.me/ukraine) · [Donate to Tyrrrz](https://tyrrrz.me/donate)
-
-A fork of [LightBulb](https://github.com/Tyrrrz/LightBulb) by [Oleksii Holub (Tyrrrz)](https://github.com/Tyrrrz), with multi-monitor support, a three-stage day cycle, and a grayscale mode.
-
 <p align="center">
     <img src="favicon.png" alt="Icon" />
 </p>
@@ -22,6 +16,8 @@ It runs quietly in the system tray and has minimal impact on performance.
 - **Smart auto-pause.** Restore normal colors only on the display that runs a fullscreen application, while the screen is locked, during remote streaming (Remote Desktop, or Sunshine and other streaming hosts by port), or while a whitelisted application, or a window whose title contains a whitelisted keyword, is in the foreground (optionally pausing only its display).
 - **Tray menu with snooze chips.** Pause Afterglow, or temporarily disable grayscale, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
 - **Redesigned interface.** A dashboard with a 24-hour color curve and a plain-language status line, and a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
+- **Gentle transitions.** Every transition eases in and out, so the screen changes smoothly at both ends instead of starting or stopping abruptly.
+- **Updates in one click.** Afterglow checks for a new version once a week (or as often as you choose), and installs it when you click **Update available**.
 
 Also included from LightBulb:
 
@@ -71,7 +67,7 @@ The two can't run at the same time: if LightBulb or an older Afterglow is runnin
 
 **Dashboard.** The 24-hour curve shows how the day (6500 K), evening (4200 K), and night (2400 K) stages blend into each other, here with 1.5-hour transitions around sunset and bedtime.
 
-![Dashboard](.assets/dashboard.png)
+<img src=".assets/dashboard.png" width="680" alt="Dashboard" />
 
 **Tray menu.** Pause or turn off grayscale for a while, right from the system tray.
 
@@ -79,7 +75,7 @@ The two can't run at the same time: if LightBulb or an older Afterglow is runnin
 
 **Settings.** Everything is on one full-page screen, split into four tabs.
 
-![Settings](.assets/settings.png)
+<img src=".assets/settings.png" width="680" alt="Settings" />
 
 **Cycle & Colors.** The temperature and brightness of each stage, the bedtime that starts the night, how long transitions take, and when grayscale turns on.
 
@@ -93,9 +89,9 @@ The two can't run at the same time: if LightBulb or an older Afterglow is runnin
 
 ![Rules & Whitelist settings](.assets/settings-rules.png)
 
-**App & Controls.** Startup, updates, and gamma options, the language, and global hotkeys.
+**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, global hotkeys, and resetting all settings.
 
-![App & Controls settings](.assets/settings-app.png)
+<img src=".assets/settings-app.png" width="648" alt="App & Controls settings" />
 
 ## Code signing policy
 
@@ -121,4 +117,4 @@ Like any website, these services see your IP address and Afterglow's version whe
 
 ## License
 
-Afterglow is licensed under the [MIT License](License.txt), like LightBulb, and keeps LightBulb's original copyright notice.
+Afterglow is licensed under the [MIT License](License.txt).
