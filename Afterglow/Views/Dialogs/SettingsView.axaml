@@ -20,7 +20,7 @@
         <Style Selector="Button.pill">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
-            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="Padding" Value="8,5" />
             <Setter Property="CornerRadius" Value="13" />
             <Setter Property="Cursor" Value="Hand" />
             <Setter Property="FontSize" Value="12" />
@@ -46,6 +46,10 @@
                 <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
             </Style>
         </Style>
+        <!--  When the labelled tabs don't fit (in some languages), only the active one is labelled  -->
+        <Style Selector="Border.compact Button.pill:not(.active) TextBlock.tab-label">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*">
@@ -60,9 +64,10 @@
             PointerPressed="HeaderBorder_OnPointerPressed"
         >
             <!--  The outer columns are equal, so that the tabs stay centered  -->
-            <Grid ColumnDefinitions="*,Auto,*">
+            <Grid x:Name="HeaderGrid" ColumnDefinitions="*,Auto,*">
                 <!--  Back to the dashboard  -->
                 <Button
+                    x:Name="BackButton"
                     Grid.Column="0"
                     Padding="6"
                     HorizontalAlignment="Left"
@@ -75,8 +80,10 @@
                     <materialIcons:MaterialIcon Width="22" Height="22" Kind="ArrowLeft" />
                 </Button>
 
-                <!--  Tabs  -->
+                <!--  Tabs (each labelled, unless they don't fit, when only the active one is: the
+                     others show their icon, and their name when pointed at)  -->
                 <Border
+                    x:Name="TabsBorder"
                     Grid.Column="1"
                     Padding="3"
                     HorizontalAlignment="Center"
@@ -99,8 +106,9 @@
                                     Classes.active="{Binding IsActive}"
                                     Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
                                     CommandParameter="{Binding}"
+                                    ToolTip.Tip="{Binding DisplayName}"
                                 >
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <StackPanel Orientation="Horizontal" Spacing="5">
                                         <materialIcons:MaterialIcon
                                             Width="15"
                                             Height="15"
@@ -109,6 +117,7 @@
                                         />
                                         <TextBlock
                                             VerticalAlignment="Center"
+                                            Classes="tab-label"
                                             Text="{Binding DisplayName}"
                                         />
                                     </StackPanel>

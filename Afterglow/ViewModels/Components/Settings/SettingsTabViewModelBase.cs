@@ -3,6 +3,7 @@ using Afterglow.Framework;
 using Afterglow.Localization;
 using Afterglow.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PowerKit;
 using PowerKit.Extensions;
 
@@ -42,6 +43,19 @@ public abstract partial class SettingsTabViewModelBase : ViewModelBase
     public int Order { get; }
 
     public abstract string DisplayName { get; }
+
+    // e.g. "Reset Cycle & Colors settings" (at the bottom of the tab)
+    public string ResetTabButtonText =>
+        string.Format(LocalizationManager.ResetTabSettingsButton, DisplayName);
+
+    /// <summary>
+    /// Puts the settings on this tab back to their defaults (taken from the given settings, which
+    /// have nothing but defaults), leaving every other setting as it is.
+    /// </summary>
+    protected abstract void ResetTabSettings(SettingsService defaults);
+
+    [RelayCommand]
+    private void ResetTab() => ResetTabSettings(SettingsService.CreateDefaults());
 
     protected override void Dispose(bool disposing)
     {

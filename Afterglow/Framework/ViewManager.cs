@@ -23,6 +23,7 @@ public partial class ViewManager
             RulesSettingsTabViewModel => new RulesSettingsTabView(),
             CycleSettingsTabViewModel => new CycleSettingsTabView(),
             ControlsSettingsTabViewModel => new ControlsSettingsTabView(),
+            SmartLightsSettingsTabViewModel => new SmartLightsSettingsTabView(),
             ScheduleSettingsTabViewModel => new ScheduleSettingsTabView(),
             _ => null,
         };

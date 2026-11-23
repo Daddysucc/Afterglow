@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Afterglow.Core;
 using Afterglow.Localization;
 using Afterglow.Models;
 using Afterglow.Services;
 using Afterglow.Utils;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using PowerKit.Extensions;
 
 namespace Afterglow.ViewModels.Components.Settings;
@@ -25,7 +28,6 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
         : base(settingsService, localizationManager, 3)
     {
         _updateService = updateService;
-
         _updateSubscription = updateService.WatchProperties(
             [o => o.Status, o => o.AvailableVersion, o => o.InstallState, o => o.DownloadProgress],
             () =>
@@ -38,6 +40,28 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
     }
 
     public override string DisplayName => LocalizationManager.ControlsTabName;
+
+    protected override void ResetTabSettings(SettingsService defaults)
+    {
+        SettingsService.IsAutoStartEnabled = defaults.IsAutoStartEnabled;
+        SettingsService.IsStartMinimizedEnabled = defaults.IsStartMinimizedEnabled;
+        SettingsService.IsUpdateCheckEnabled = defaults.IsUpdateCheckEnabled;
+        SettingsService.UpdateCheckFrequency = defaults.UpdateCheckFrequency;
+        SettingsService.Language = defaults.Language;
+        SettingsService.IsConfigurationSmoothingEnabled = defaults.IsConfigurationSmoothingEnabled;
+        SettingsService.IsExtendedGammaRangeUnlocked = defaults.IsExtendedGammaRangeUnlocked;
+        SettingsService.IsGammaPollingEnabled = defaults.IsGammaPollingEnabled;
+        SettingsService.GammaPollingInterval = defaults.GammaPollingInterval;
+        SettingsService.ToggleHotKey = defaults.ToggleHotKey;
+        SettingsService.ToggleWindowHotKey = defaults.ToggleWindowHotKey;
+        SettingsService.IncreaseTemperatureOffsetHotKey = defaults.IncreaseTemperatureOffsetHotKey;
+        SettingsService.DecreaseTemperatureOffsetHotKey = defaults.DecreaseTemperatureOffsetHotKey;
+        SettingsService.IncreaseBrightnessOffsetHotKey = defaults.IncreaseBrightnessOffsetHotKey;
+        SettingsService.DecreaseBrightnessOffsetHotKey = defaults.DecreaseBrightnessOffsetHotKey;
+        SettingsService.ResetConfigurationOffsetHotKey = defaults.ResetConfigurationOffsetHotKey;
+        SettingsService.ToggleGrayscaleHotKey = defaults.ToggleGrayscaleHotKey;
+        SettingsService.ToggleLightsPauseHotKey = defaults.ToggleLightsPauseHotKey;
+    }
 
     // ---- Updates ----
 
@@ -85,14 +109,12 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
     [RelayCommand]
     private async Task InstallUpdateAsync() => await _updateService.UpdateAsync();
 
-    // Puts every setting back to its default (shown at the bottom of this tab)
-    [RelayCommand]
-    private void ResetSettings() => SettingsService.Reset();
-
     protected override void Dispose(bool disposing)
     {
         if (disposing)
+        {
             _updateSubscription.Dispose();
+        }
 
         base.Dispose(disposing);
     }
@@ -237,5 +259,11 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
     {
         get => SettingsService.ToggleGrayscaleHotKey;
         set => SettingsService.ToggleGrayscaleHotKey = value;
+    }
+
+    public HotKey ToggleLightsPauseHotKey
+    {
+        get => SettingsService.ToggleLightsPauseHotKey;
+        set => SettingsService.ToggleLightsPauseHotKey = value;
     }
 }

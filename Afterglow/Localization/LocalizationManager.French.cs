@@ -23,8 +23,9 @@ public partial class LocalizationManager
         [nameof(StopPreviewTooltip)] = "Arrêter l'aperçu",
         [nameof(StartPreviewTooltip)] = "Aperçu du cycle de 24 heures",
         [nameof(OpenSettingsTooltip)] = "Ouvrir les paramètres",
-        [nameof(ResetTooltip)] = "Réinitialiser tous les paramètres à leurs valeurs par défaut",
-        [nameof(ResetAllSettingsButton)] = "Réinitialiser tous les paramètres",
+        [nameof(ResetTooltip)] =
+            "Remettre les paramètres de cet onglet à leurs valeurs par défaut (les autres onglets gardent les leurs)",
+        [nameof(ResetTabSettingsButton)] = "Réinitialiser les paramètres « {0} »",
         [nameof(LanguageLabel)] = "Langue",
         [nameof(LanguageTooltip)] = "Langue d'interface préférée",
         [nameof(StartWithWindowsLabel)] = "Démarrer avec Windows",
@@ -267,6 +268,131 @@ public partial class LocalizationManager
         [nameof(UpdateCheckEveryTwoWeeksOption)] = "Toutes les deux semaines",
         [nameof(CurrentVersionText)] = "Version {0}",
         [nameof(LastUpdateCheckText)] = "Dernière vérification : {0}",
+        [nameof(HueCardTitle)] = "Philips Hue",
+        [nameof(HueCardSubtitle)] =
+            "Faire suivre le cycle de couleurs aux lampes Hue tant que ce PC est allumé et paraître aussi chaudes que l'écran.",
+        [nameof(HueEnabledLabel)] = "Contrôler les lampes Hue",
+        [nameof(HueEnabledTooltip)] =
+            "Les lampes allumées des pièces choisies suivent le cycle de couleurs. Elles ne sont jamais allumées par Afterglow, et reviennent à leur état d'avant quand Afterglow s'arrête (y compris quand le PC s'éteint ou se met en veille). Une lampe que vous modifiez vous-même est laissée telle quelle jusqu'à ce qu'elle soit éteinte puis rallumée.",
+        [nameof(HueBridgeLabel)] = "Adresse du pont",
+        [nameof(HueBridgeTooltip)] =
+            "L'adresse IP de votre pont Hue (indiquée dans l'application Hue, sous Paramètres, Ponts). Laissez-la vide pour trouver le pont automatiquement.",
+        [nameof(HueBridgePlaceholder)] = "Rechercher automatiquement",
+        [nameof(HueConnectButton)] = "Connecter",
+        [nameof(HueReconnectButton)] = "Reconnecter",
+        [nameof(HueDisconnectButton)] = "Déconnecter",
+        [nameof(HueDisconnectTooltip)] =
+            "Remettre les lampes comme avant et oublier ce pont (pour se reconnecter, il faudra appuyer à nouveau sur son bouton)",
+        [nameof(HueCancelButton)] = "Annuler",
+        [nameof(HueConnectTooltip)] =
+            "Se connecter au pont : après avoir cliqué, appuyez sur le bouton du pont dans les 30 secondes",
+        [nameof(HueRoomsLabel)] = "Pièces",
+        [nameof(HueFollowTemperatureLabel)] = "Suivre la température",
+        [nameof(HueFollowTemperatureTooltip)] =
+            "Les lampes prennent la température de couleur du cycle (dans la mesure du possible, d’environ 2000 K à 6500 K)",
+        [nameof(LightWarmthLabel)] = "Chaleur",
+        [nameof(LightWarmthTooltip)] =
+            "À quel point les lumières sont réglées plus chaudes que l'écran, pour paraître aussi chaudes que lui. Les lumières qui affichent des couleurs passent à l'ambre et à l'orange une fois à court de blancs chauds.",
+        [nameof(HueFollowBrightnessLabel)] = "Suivre la luminosité",
+        [nameof(HueFollowBrightnessTooltip)] =
+            "Les lampes prennent la luminosité du cycle (les 100 % d'Afterglow correspondent à la pleine luminosité)",
+        [nameof(HuePauseWithScreenLabel)] = "Suspendre avec l'écran",
+        [nameof(HuePauseWithScreenTooltip)] =
+            "Les lumières reviennent aussi à leur état précédent tant que l'écran est suspendu automatiquement (applications en plein écran, applications de la liste blanche, streaming à distance, écran verrouillé)",
+        [nameof(LightDimmingLabel)] = "Atténuation",
+        [nameof(LightDimmingTooltip)] =
+            "À quel point les lumières baissent quand l'écran baisse. À ×1.0, elles suivent la luminosité de l'écran ; des valeurs plus élevées les baissent davantage, et la pleine luminosité reste toujours pleine.",
+        [nameof(HueNotConnectedText)] =
+            "Cliquez sur Connecter, puis appuyez sur le bouton de votre pont Hue.",
+        [nameof(HueSearchingText)] = "Recherche du pont Hue…",
+        [nameof(HueNoBridgeFoundText)] =
+            "Aucun pont Hue n'a été trouvé. Saisissez son adresse IP, puis cliquez sur Connecter.",
+        [nameof(HueWaitingForButtonText)] =
+            "Appuyez sur le bouton situé sur le dessus du pont Hue…",
+        [nameof(HueButtonNotPressedText)] =
+            "Le bouton du pont n'a pas été pressé à temps. Cliquez sur Connecter pour réessayer.",
+        [nameof(HueConnectedText)] = "Connecté au pont Hue.",
+        [nameof(HueNoRoomsText)] =
+            "Connecté. Choisissez les pièces dont les lampes suivent Afterglow.",
+        [nameof(HuePausedText)] =
+            "Connecté. Les lampes suivront de nouveau Afterglow dès qu'il sera réactivé.",
+        [nameof(HuePausedWithScreenText)] =
+            "Connecté. Les lumières sont suspendues avec l'écran et suivront de nouveau Afterglow dès sa reprise.",
+        [nameof(HueFollowingText)] = "Lampes qui suivent Afterglow : {0}",
+        [nameof(HueFollowingUnresponsiveText)] =
+            "Lampes qui suivent Afterglow : {0} ({1} ne répondent pas, nouvel essai de temps en temps)",
+        [nameof(HueShowLightsTooltip)] =
+            "Afficher ou masquer les lampes des pièces choisies, pour choisir celles qui suivent Afterglow",
+        [nameof(HueUnnamedLightText)] = "Lampe sans nom",
+        [nameof(HueLightFollowingText)] = "Suit Afterglow",
+        [nameof(HueLightNotRespondingText)] = "Ne répond pas, nouvel essai de temps en temps",
+        [nameof(HueLightLeftAloneText)] =
+            "Modifiée ailleurs, laissée telle quelle jusqu'à ce qu'elle soit éteinte puis rallumée",
+        [nameof(HueLightOffText)] = "Éteinte",
+        [nameof(HueLightExcludedText)] = "Exclue",
+        [nameof(HueLightWaitingText)] = "Ne suit pas encore",
+        [nameof(HueFollowAgainButton)] = "Suivre à nouveau",
+        [nameof(HueFollowAgainTooltip)] = "Faire suivre à nouveau Afterglow à cette lampe",
+        [nameof(HuePausedUntilText)] =
+            "Les lampes sont en pause jusqu'à {0} et reviennent à leur état précédent d'ici là.",
+        [nameof(HuePausedUntilResumedText)] =
+            "Les lampes sont en pause jusqu'à leur reprise depuis la zone de notification, et reviennent à leur état précédent d'ici là.",
+        [nameof(TrayPauseLightsMenuItem)] = "Mettre les lampes en pause",
+        [nameof(TrayResumeLightsMenuItem)] = "Reprendre les lampes",
+        [nameof(TrayTurnOnLightsMenuItem)] = "Allumer les lampes ({0})",
+        [nameof(HueLightNotAdjustableText)] = "Non réglable (seulement allumée et éteinte)",
+        [nameof(HueLightNothingFollowedText)] =
+            "Rien à suivre (elle ne peut faire que ce qui n'est pas suivi)",
+        [nameof(HueLightPausedText)] = "En pause",
+        [nameof(HueFollowingNoneText)] =
+            "Aucune lampe ne suit Afterglow pour le moment. Les lampes des pièces choisies le suivent dès qu'elles sont allumées.",
+        [nameof(HueShutdownLabel)] = "À l'arrêt ou à la mise en veille du PC",
+        [nameof(HueShutdownTooltip)] =
+            "Ce qui arrive aux lampes qui suivent Afterglow quand ce PC s'éteint, redémarre, se déconnecte ou se met en veille. Les lampes allumées par Afterglow sont éteintes (sauf avec un réglage personnalisé), et celles que vous avez modifiées vous-même restent telles quelles.",
+        [nameof(HueShutdownLeaveOption)] = "Laisser les lampes telles quelles",
+        [nameof(HueShutdownRestoreOption)] = "Remettre les lampes comme avant",
+        [nameof(HueShutdownTurnOffOption)] = "Éteindre les lampes",
+        [nameof(HuePauseActionLabel)] = "Quand les lampes sont en pause",
+        [nameof(HuePauseActionTooltip)] =
+            "Ce que font les lampes qui suivent Afterglow pendant une pause : depuis la zone de notification ou avec un raccourci, pendant la pause d'Afterglow, ou avec l'écran. Les lampes éteintes pour une pause sont rallumées ensuite.",
+        [nameof(HueCustomOption)] = "Personnalisé",
+        [nameof(HueLookTemperatureLabel)] = "Température",
+        [nameof(HueLookTemperatureTooltip)] =
+            "La température de couleur des lampes elles-mêmes (les lampes de couleur vont un peu plus chaud que les lampes blanches). Maintenez le bouton de la souris enfoncé sur le curseur pour la voir sur les lampes ; elles reviennent dès que vous relâchez.",
+        [nameof(HueLookBrightnessLabel)] = "Luminosité",
+        [nameof(HueLookBrightnessTooltip)] =
+            "La luminosité des lampes. Maintenez le bouton de la souris enfoncé sur le curseur pour la voir sur les lampes ; elles reviennent dès que vous relâchez.",
+        [nameof(HueTurnOnAtStartLabel)] = "Allumer les lampes au démarrage d'Afterglow",
+        [nameof(HueTurnOnAtStartTooltip)] =
+            "Allume toutes les lampes des pièces choisies (sauf celles exclues) au démarrage d'Afterglow, par exemple au démarrage du PC ou à l'ouverture de session, et à la sortie de veille",
+        [nameof(HueReclaimLabel)] = "Quand les lampes sont modifiées ailleurs",
+        [nameof(HueReclaimTooltip)] =
+            "Quand une lampe est modifiée hors d'Afterglow (dans l'app Hue, avec un interrupteur, une scène ou un assistant vocal), elle est laissée telle quelle ; voici pendant combien de temps, à compter de sa dernière modification. « Suivre à nouveau » dans la liste des lampes la fait suivre tout de suite.",
+        [nameof(HueReclaimNeverOption)] =
+            "Laisser telles quelles jusqu'à être éteintes puis rallumées",
+        [nameof(HueLightLeftAloneUntilText)] = "Modifiée ailleurs, suivie à nouveau à {0}",
+        [nameof(SmartLightsTabName)] = "Lampes connectées",
+        [nameof(HueReclaimAfterOption)] = "Suivre à nouveau après une durée choisie",
+        [nameof(HueReclaimAfterLabel)] = "Après",
+        [nameof(MinutesValueText)] = "{0} min",
+        [nameof(HoursValueText)] = "{0} h",
+        [nameof(HoursMinutesValueText)] = "{0} h {1} min",
+        [nameof(HueFollowingCardTitle)] = "Suivi",
+        [nameof(HueFollowingCardSubtitle)] =
+            "Ce que les lampes reprennent de l'écran, et à quel point elles sont plus chaudes et plus sombres que lui.",
+        [nameof(HueReclaimCardTitle)] = "Modifications ailleurs",
+        [nameof(HueReclaimCardSubtitle)] =
+            "Les lampes modifiées dans l'app Hue, avec un interrupteur, une scène ou un assistant vocal sont laissées telles quelles un moment.",
+        [nameof(HuePausingCardTitle)] = "Pause",
+        [nameof(HuePausingCardSubtitle)] = "Ce que font les lampes pendant une pause.",
+        [nameof(HueStartupCardTitle)] = "Démarrage et arrêt",
+        [nameof(HueStartupCardSubtitle)] =
+            "Ce que font les lampes au démarrage d'Afterglow, et quand le PC s'éteint ou se met en veille.",
+        [nameof(HueUnreachableText)] = "Impossible de joindre le pont Hue. Nouvel essai sous peu.",
+        [nameof(HueUnauthorizedText)] =
+            "Le pont Hue n'accepte plus Afterglow. Cliquez sur Reconnecter, puis appuyez sur le bouton du pont.",
+        [nameof(HueCertificateChangedText)] =
+            "Un autre appareil que votre pont Hue a répondu à cette adresse. Si vous avez remplacé le pont, cliquez sur Reconnecter.",
         [nameof(NeverCheckedText)] = "Pas encore vérifié",
         [nameof(UpdateCheckingText)] = "Recherche de mises à jour…",
         [nameof(UpToDateText)] = "{0} {1} est la dernière version.",
@@ -361,6 +487,9 @@ public partial class LocalizationManager
         [nameof(ToggleGrayscaleHotkeyLabel)] = "Basculer les niveaux de gris",
         [nameof(ToggleGrayscaleHotkeyTooltip)] =
             "Raccourci global pour activer/désactiver le mode niveaux de gris",
+        [nameof(ToggleLightsPauseHotkeyLabel)] = "Suspendre/reprendre les lampes Hue",
+        [nameof(ToggleLightsPauseHotkeyTooltip)] =
+            "Raccourci global pour suspendre les lampes Hue (revenues à leur état précédent) ou les reprendre",
         [nameof(GrayscaleCardTitle)] = "Niveaux de gris",
         [nameof(GrayscaleCardSubtitle)] =
             "Retirer les couleurs de l'écran, manuellement ou selon un horaire.",

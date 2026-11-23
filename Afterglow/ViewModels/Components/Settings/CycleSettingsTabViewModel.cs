@@ -16,6 +16,21 @@ public class CycleSettingsTabViewModel(
 {
     public override string DisplayName => LocalizationManager.CycleTabName;
 
+    protected override void ResetTabSettings(SettingsService defaults)
+    {
+        SettingsService.DayConfiguration = defaults.DayConfiguration;
+        SettingsService.EveningConfiguration = defaults.EveningConfiguration;
+        SettingsService.NightConfiguration = defaults.NightConfiguration;
+        SettingsService.IsEveningConfigurationEnabled = defaults.IsEveningConfigurationEnabled;
+        SettingsService.NightStartTime = defaults.NightStartTime;
+        SettingsService.ConfigurationTransitionDuration = defaults.ConfigurationTransitionDuration;
+        SettingsService.ConfigurationTransitionOffset = defaults.ConfigurationTransitionOffset;
+        SettingsService.GrayscaleSchedule = defaults.GrayscaleSchedule;
+        SettingsService.GrayscaleOverride = defaults.GrayscaleOverride;
+        SettingsService.IsGrayscaleTemperatureShiftEnabled =
+            defaults.IsGrayscaleTemperatureShiftEnabled;
+    }
+
     // This value is used for slider bounds, but it's not an actual restriction
     public double RecommendedMaximumDayTemperature => Math.Max(6600, DayTemperature);
 

@@ -23,8 +23,8 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "預覽 24 小時週期",
             [nameof(OpenSettingsTooltip)] = "開啟設定",
             // Settings dialog
-            [nameof(ResetTooltip)] = "將所有設定重設為預設值",
-            [nameof(ResetAllSettingsButton)] = "重設所有設定",
+            [nameof(ResetTooltip)] = "將此分頁上的設定重設為預設值（其他分頁保持不變）",
+            [nameof(ResetTabSettingsButton)] = "重設「{0}」設定",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "語言",
@@ -246,6 +246,120 @@ public partial class LocalizationManager
             [nameof(UpdateCheckEveryTwoWeeksOption)] = "每兩週",
             [nameof(CurrentVersionText)] = "版本 {0}",
             [nameof(LastUpdateCheckText)] = "上次檢查：{0}",
+            [nameof(HueCardTitle)] = "Philips Hue",
+            [nameof(HueCardSubtitle)] =
+                "在這台電腦開機時，讓 Hue 燈跟隨色彩週期，並且看起來和螢幕一樣暖。",
+            [nameof(HueEnabledLabel)] = "控制 Hue 燈",
+            [nameof(HueEnabledTooltip)] =
+                "所選房間中開著的燈會跟隨色彩週期。燈不會被開啟，並會在 Afterglow 停止時（包括電腦關機或睡眠時）恢復原狀。你自己調整過的燈會保持不變，直到它被關掉再開啟。",
+            [nameof(HueBridgeLabel)] = "橋接器位址",
+            [nameof(HueBridgeTooltip)] =
+                "Hue 橋接器的 IP 位址（可在 Hue 應用程式的「設定」›「橋接器」中找到）。留空即可自動尋找橋接器。",
+            [nameof(HueBridgePlaceholder)] = "自動尋找",
+            [nameof(HueConnectButton)] = "連線",
+            [nameof(HueReconnectButton)] = "重新連線",
+            [nameof(HueDisconnectButton)] = "中斷連線",
+            [nameof(HueDisconnectTooltip)] =
+                "將燈恢復原狀並忘記此橋接器（重新連線需要再次按下其按鈕）",
+            [nameof(HueCancelButton)] = "取消",
+            [nameof(HueConnectTooltip)] =
+                "連線到橋接器：按一下後，請在 30 秒內按下橋接器頂部的按鈕",
+            [nameof(HueRoomsLabel)] = "房間",
+            [nameof(HueFollowTemperatureLabel)] = "跟隨色溫",
+            [nameof(HueFollowTemperatureTooltip)] =
+                "燈會採用週期的色溫（在其支援的範圍內，約 2000 K 到 6500 K）",
+            [nameof(LightWarmthLabel)] = "暖度",
+            [nameof(LightWarmthTooltip)] =
+                "燈比螢幕設得暖多少，以便看起來和螢幕一樣暖。可顯示顏色的燈在暖白色用盡後會變為琥珀色和橙色。",
+            [nameof(HueFollowBrightnessLabel)] = "跟隨亮度",
+            [nameof(HueFollowBrightnessTooltip)] =
+                "燈會採用週期的亮度（Afterglow 的 100% 即為最大亮度）",
+            [nameof(HuePauseWithScreenLabel)] = "隨螢幕暫停",
+            [nameof(HuePauseWithScreenTooltip)] =
+                "螢幕自動暫停時（全螢幕應用程式、白名單應用程式、遠端串流、鎖定畫面），燈也會恢復到先前的狀態",
+            [nameof(LightDimmingLabel)] = "調暗",
+            [nameof(LightDimmingTooltip)] =
+                "螢幕變暗時燈變暗的程度。×1.0 時與螢幕亮度一致；數值越高燈越暗，滿亮度始終保持滿亮度。",
+            [nameof(HueNotConnectedText)] = "按一下「連線」，然後按下 Hue 橋接器上的按鈕。",
+            [nameof(HueSearchingText)] = "正在尋找 Hue 橋接器…",
+            [nameof(HueNoBridgeFoundText)] =
+                "找不到 Hue 橋接器。請輸入其 IP 位址，然後按一下「連線」。",
+            [nameof(HueWaitingForButtonText)] = "請按下 Hue 橋接器頂部的按鈕…",
+            [nameof(HueButtonNotPressedText)] = "未及時按下橋接器的按鈕。請按一下「連線」重試。",
+            [nameof(HueConnectedText)] = "已連線到 Hue 橋接器。",
+            [nameof(HueNoRoomsText)] = "已連線。請選擇燈光跟隨 Afterglow 的房間。",
+            [nameof(HuePausedText)] = "已連線。Afterglow 重新開啟後，燈會再次跟隨它。",
+            [nameof(HuePausedWithScreenText)] =
+                "已連線。燈已隨螢幕暫停，螢幕恢復後會再次跟隨 Afterglow。",
+            [nameof(HueFollowingText)] = "跟隨 Afterglow 的燈：{0}",
+            [nameof(HueFollowingUnresponsiveText)] =
+                "跟隨 Afterglow 的燈：{0}（{1} 個無回應，會不時重試）",
+            [nameof(HueShowLightsTooltip)] = "顯示或隱藏所選房間中的燈，以選擇哪些燈跟隨 Afterglow",
+            [nameof(HueUnnamedLightText)] = "未命名的燈",
+            [nameof(HueLightFollowingText)] = "正在跟隨",
+            [nameof(HueLightNotRespondingText)] = "無回應，會不時重試",
+            [nameof(HueLightLeftAloneText)] = "已在別處變更，在關閉並重新開啟之前保持不變",
+            [nameof(HueLightOffText)] = "已關閉",
+            [nameof(HueLightExcludedText)] = "已排除",
+            [nameof(HueLightWaitingText)] = "尚未跟隨",
+            [nameof(HueFollowAgainButton)] = "重新跟隨",
+            [nameof(HueFollowAgainTooltip)] = "讓這盞燈重新跟隨 Afterglow",
+            [nameof(HuePausedUntilText)] = "燈已暫停至 {0}，在此期間恢復為原來的狀態。",
+            [nameof(HuePausedUntilResumedText)] =
+                "燈已暫停，直到從系統匣恢復，在此期間恢復為原來的狀態。",
+            [nameof(TrayPauseLightsMenuItem)] = "暫停燈",
+            [nameof(TrayResumeLightsMenuItem)] = "恢復燈",
+            [nameof(TrayTurnOnLightsMenuItem)] = "開燈 ({0})",
+            [nameof(HueLightNotAdjustableText)] = "無法調節（只能開關）",
+            [nameof(HueLightNothingFollowedText)] = "無可跟隨（它只能做未被跟隨的事）",
+            [nameof(HueLightPausedText)] = "已暫停",
+            [nameof(HueFollowingNoneText)] =
+                "目前沒有燈在跟隨。所選房間中的燈在開啟後就會跟隨 Afterglow。",
+            [nameof(HueShutdownLabel)] = "電腦關機或睡眠時",
+            [nameof(HueShutdownTooltip)] =
+                "這台電腦關機、重新開機、登出或睡眠時，跟隨 Afterglow 的燈會如何。由 Afterglow 開啟的燈會關閉（除非選擇自訂），你自己調整過的燈保持不變。",
+            [nameof(HueShutdownLeaveOption)] = "保持燈的現狀",
+            [nameof(HueShutdownRestoreOption)] = "將燈恢復原狀",
+            [nameof(HueShutdownTurnOffOption)] = "關燈",
+            [nameof(HuePauseActionLabel)] = "燈暫停時",
+            [nameof(HuePauseActionTooltip)] =
+                "跟隨 Afterglow 的燈在暫停時會如何：從系統匣或用快速鍵暫停、Afterglow 暫停時，或隨螢幕暫停時。為暫停而關閉的燈之後會重新開啟。",
+            [nameof(HueCustomOption)] = "自訂",
+            [nameof(HueLookTemperatureLabel)] = "色溫",
+            [nameof(HueLookTemperatureTooltip)] =
+                "燈本身的色溫（彩色燈可以比白光燈更暖一些）。在滑桿上按住滑鼠按鈕即可在燈上看到效果；放開後燈會立即恢復。",
+            [nameof(HueLookBrightnessLabel)] = "亮度",
+            [nameof(HueLookBrightnessTooltip)] =
+                "燈的亮度。在滑桿上按住滑鼠按鈕即可在燈上看到效果；放開後燈會立即恢復。",
+            [nameof(HueTurnOnAtStartLabel)] = "Afterglow 啟動時開燈",
+            [nameof(HueTurnOnAtStartTooltip)] =
+                "Afterglow 啟動時（如電腦開機或登入時）以及電腦從睡眠中喚醒時，開啟所選房間中的所有燈（已排除的除外）",
+            [nameof(HueReclaimLabel)] = "燈在別處被變更時",
+            [nameof(HueReclaimTooltip)] =
+                "當燈在 Afterglow 之外被變更（在 Hue App 中、用開關、場景或語音助理），會被保持不變；這是保持的時長，從最後一次變更算起。在燈列表中點擊「重新跟隨」可立即重新跟隨。",
+            [nameof(HueReclaimNeverOption)] = "保持不變，直到關閉並重新開啟",
+            [nameof(HueLightLeftAloneUntilText)] = "已在別處變更，將於 {0} 重新跟隨",
+            [nameof(SmartLightsTabName)] = "智慧燈具",
+            [nameof(HueReclaimAfterOption)] = "在設定時間後重新跟隨",
+            [nameof(HueReclaimAfterLabel)] = "之後",
+            [nameof(MinutesValueText)] = "{0} 分鐘",
+            [nameof(HoursValueText)] = "{0} 小時",
+            [nameof(HoursMinutesValueText)] = "{0} 小時 {1} 分鐘",
+            [nameof(HueFollowingCardTitle)] = "跟隨",
+            [nameof(HueFollowingCardSubtitle)] =
+                "燈從螢幕上跟隨哪些內容，以及在螢幕旁邊要暖多少、暗多少。",
+            [nameof(HueReclaimCardTitle)] = "在別處變更",
+            [nameof(HueReclaimCardSubtitle)] =
+                "在 Hue App 中、用開關、場景或語音助理變更的燈會保持一段時間不變。",
+            [nameof(HuePausingCardTitle)] = "暫停",
+            [nameof(HuePausingCardSubtitle)] = "燈在暫停時會如何。",
+            [nameof(HueStartupCardTitle)] = "啟動與關機",
+            [nameof(HueStartupCardSubtitle)] = "Afterglow 啟動時，以及電腦關機或睡眠時，燈會如何。",
+            [nameof(HueUnreachableText)] = "無法連線到 Hue 橋接器。稍後會再試。",
+            [nameof(HueUnauthorizedText)] =
+                "Hue 橋接器不再接受 Afterglow。請按一下「重新連線」，然後按下橋接器的按鈕。",
+            [nameof(HueCertificateChangedText)] =
+                "在此位址回應的不是你的 Hue 橋接器。如果你更換了橋接器，請按一下「重新連線」。",
             [nameof(NeverCheckedText)] = "尚未檢查",
             [nameof(UpdateCheckingText)] = "正在檢查更新…",
             [nameof(UpToDateText)] = "{0} {1} 已是最新版本。",
@@ -325,6 +439,9 @@ public partial class LocalizationManager
             [nameof(TrayGrayscaleMenuItem)] = "灰階模式",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "切換灰階模式",
             [nameof(ToggleGrayscaleHotkeyTooltip)] = "用於開啟/關閉灰階模式的全域快捷鍵",
+            [nameof(ToggleLightsPauseHotkeyLabel)] = "暫停/恢復 Hue 燈",
+            [nameof(ToggleLightsPauseHotkeyTooltip)] =
+                "用於暫停 Hue 燈（恢復為原來的狀態）或恢復它們的全域快速鍵",
             [nameof(GrayscaleCardTitle)] = "灰階模式",
             [nameof(GrayscaleCardSubtitle)] = "手動或依排程移除螢幕色彩。",
             [nameof(GrayscaleScheduleLabel)] = "自動灰階",

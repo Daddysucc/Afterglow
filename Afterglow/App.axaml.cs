@@ -33,6 +33,7 @@ public partial class App : Application, IDisposable
 
     private NotifyIcon? _notifyIcon;
     private IDisposable? _notifyIconSubscription;
+    private IDisposable? _hueSubscription;
     private TrayMenuWindow? _trayMenu;
     private int _isDisposed;
 
@@ -54,6 +55,7 @@ public partial class App : Application, IDisposable
         services.AddSingleton<HotKeyService>();
         services.AddSingleton<SettingsService>();
         services.AddSingleton<UpdateService>();
+        services.AddSingleton<HueService>();
 
         // View models
         services.AddTransient<MainViewModel>();
@@ -64,6 +66,7 @@ public partial class App : Application, IDisposable
         services.AddTransient<SettingsTabViewModelBase, ScheduleSettingsTabViewModel>();
         services.AddTransient<SettingsTabViewModelBase, RulesSettingsTabViewModel>();
         services.AddTransient<SettingsTabViewModelBase, ControlsSettingsTabViewModel>();
+        services.AddTransient<SettingsTabViewModelBase, SmartLightsSettingsTabViewModel>();
 
         _services = services.BuildServiceProvider(true);
         _settingsService = _services.GetRequiredService<SettingsService>();
@@ -116,6 +119,50 @@ public partial class App : Application, IDisposable
     {
         // Load settings
         _settingsService.Load();
+
+        // Make Hue lights follow the cycle as the screen shows it, if that's turned on (only
+        // while Afterglow is on, or the cycle preview is playing)
+        var hueService = _services.GetRequiredService<HueService>();
+        var dashboard = _mainViewModel.Dashboard;
+        hueService.SetCycleEnabled(dashboard.IsEnabled);
+        hueService.SetTargetSource(() =>
+            new HueTarget(
+                dashboard.LightConfiguration,
+                dashboard.IsScreenPausedAutomatically,
+                dashboard.IsCyclePreviewEnabled
+            )
+        );
+
+        void OnDashboardChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
+        {
+            switch (args.PropertyName)
+            {
+                case nameof(DashboardViewModel.IsEnabled):
+                    hueService.SetCycleEnabled(dashboard.IsEnabled);
+                    break;
+
+                // Adjusted by the user (with hotkeys), rather than by the cycle moving on
+                case nameof(DashboardViewModel.TemperatureOffset)
+                or nameof(DashboardViewModel.BrightnessOffset):
+                    hueService.NotifyUserChange();
+                    hueService.NotifyTargetChanged();
+                    break;
+
+                // Whatever changes what the screen shows (the instant moves on every update)
+                case nameof(DashboardViewModel.TargetConfiguration)
+                or nameof(DashboardViewModel.IsCyclePreviewEnabled)
+                or nameof(DashboardViewModel.IsPaused)
+                or nameof(DashboardViewModel.PausedMonitors):
+                    hueService.NotifyTargetChanged();
+                    break;
+            }
+        }
+
+        dashboard.PropertyChanged += OnDashboardChanged;
+        _hueSubscription = PowerKit.Disposable.Create(() =>
+            dashboard.PropertyChanged -= OnDashboardChanged
+        );
+        hueService.Start();
 
         // Initialize the lifetime
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
@@ -264,6 +311,7 @@ public partial class App : Application, IDisposable
         // (in particular, disposing the services is what restores gamma)
         TryRun(() => _trayMenu?.Close());
         TryRun(() => _notifyIconSubscription?.Dispose());
+        TryRun(() => _hueSubscription?.Dispose());
         TryRun(() => _notifyIcon?.Dispose());
         TryRun(_services.Dispose);
     }

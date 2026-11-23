@@ -21,8 +21,9 @@ public partial class LocalizationManager
             [nameof(StopPreviewTooltip)] = "Зупинити демонстрацію",
             [nameof(StartPreviewTooltip)] = "Запустити демонстрацію 24-годинного циклу",
             [nameof(OpenSettingsTooltip)] = "Відкрити налаштування",
-            [nameof(ResetTooltip)] = "Скинути всі налаштування до типових",
-            [nameof(ResetAllSettingsButton)] = "Скинути всі налаштування",
+            [nameof(ResetTooltip)] =
+                "Скинути налаштування на цій вкладці до типових (інші вкладки зберігають свої)",
+            [nameof(ResetTabSettingsButton)] = "Скинути налаштування «{0}»",
             [nameof(LanguageLabel)] = "Мова",
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",
@@ -266,6 +267,131 @@ public partial class LocalizationManager
             [nameof(UpdateCheckEveryTwoWeeksOption)] = "Раз на два тижні",
             [nameof(CurrentVersionText)] = "Версія {0}",
             [nameof(LastUpdateCheckText)] = "Остання перевірка: {0}",
+            [nameof(HueCardTitle)] = "Philips Hue",
+            [nameof(HueCardSubtitle)] =
+                "Лампи Hue слідують колірному циклу, поки цей ПК увімкнено і виглядають так само тепло, як екран.",
+            [nameof(HueEnabledLabel)] = "Керувати лампами Hue",
+            [nameof(HueEnabledTooltip)] =
+                "Увімкнені лампи у вибраних кімнатах слідують колірному циклу. Лампи ніколи не вмикаються самі й повертаються до попереднього стану, коли Afterglow зупиняється (зокрема коли ПК вимикається або переходить у сон). Лампу, яку ви змінили самі, буде залишено як є, доки її не вимкнуть і не ввімкнуть знову.",
+            [nameof(HueBridgeLabel)] = "Адреса мосту",
+            [nameof(HueBridgeTooltip)] =
+                "IP-адреса вашого мосту Hue (див. у застосунку Hue, у розділі «Налаштування», «Мости»). Залиште порожнім, щоб знайти міст автоматично.",
+            [nameof(HueBridgePlaceholder)] = "Знайти автоматично",
+            [nameof(HueConnectButton)] = "Під’єднати",
+            [nameof(HueReconnectButton)] = "Під’єднати знову",
+            [nameof(HueDisconnectButton)] = "Від'єднати",
+            [nameof(HueDisconnectTooltip)] =
+                "Повернути лампи як було й забути цей міст (щоб під'єднатися знову, потрібно ще раз натиснути його кнопку)",
+            [nameof(HueCancelButton)] = "Скасувати",
+            [nameof(HueConnectTooltip)] =
+                "Під’єднатися до мосту: після натискання натисніть кнопку зверху на мосту протягом 30 секунд",
+            [nameof(HueRoomsLabel)] = "Кімнати",
+            [nameof(HueFollowTemperatureLabel)] = "Слідувати за температурою",
+            [nameof(HueFollowTemperatureTooltip)] =
+                "Лампи набувають колірної температури циклу (наскільки можуть, приблизно від 2000 K до 6500 K)",
+            [nameof(LightWarmthLabel)] = "Теплота",
+            [nameof(LightWarmthTooltip)] =
+                "Наскільки теплішим за екран налаштовується освітлення, щоб воно здавалося таким самим теплим. Кольорові лампи переходять на бурштиновий і помаранчевий, коли теплі відтінки білого закінчуються.",
+            [nameof(HueFollowBrightnessLabel)] = "Слідувати за яскравістю",
+            [nameof(HueFollowBrightnessTooltip)] =
+                "Лампи набувають яскравості циклу (100 % в Afterglow — це повна яскравість)",
+            [nameof(HuePauseWithScreenLabel)] = "Призупиняти разом з екраном",
+            [nameof(HuePauseWithScreenTooltip)] =
+                "Освітлення також повертається до попереднього стану, поки екран призупинено автоматично (повноекранні застосунки, застосунки з білого списку, віддалена трансляція, заблокований екран)",
+            [nameof(LightDimmingLabel)] = "Приглушення",
+            [nameof(LightDimmingTooltip)] =
+                "Наскільки сильно приглушується освітлення, коли екран тьмянішає. При ×1.0 воно відповідає яскравості екрана; більші значення приглушують його сильніше, а повна яскравість завжди лишається повною.",
+            [nameof(HueNotConnectedText)] =
+                "Натисніть «Під’єднати», а потім кнопку на вашому мосту Hue.",
+            [nameof(HueSearchingText)] = "Пошук мосту Hue…",
+            [nameof(HueNoBridgeFoundText)] =
+                "Міст Hue не знайдено. Введіть його IP-адресу й натисніть «Під’єднати».",
+            [nameof(HueWaitingForButtonText)] = "Натисніть кнопку зверху на вашому мосту Hue…",
+            [nameof(HueButtonNotPressedText)] =
+                "Кнопку мосту не натиснули вчасно. Натисніть «Під’єднати», щоб спробувати знову.",
+            [nameof(HueConnectedText)] = "Під’єднано до мосту Hue.",
+            [nameof(HueNoRoomsText)] =
+                "Під’єднано. Виберіть кімнати, лампи яких слідують Afterglow.",
+            [nameof(HuePausedText)] =
+                "Під’єднано. Лампи знову слідуватимуть Afterglow, щойно його буде ввімкнено.",
+            [nameof(HuePausedWithScreenText)] =
+                "Підключено. Освітлення призупинено разом з екраном, і воно знову слідуватиме за Afterglow, щойно той відновить роботу.",
+            [nameof(HueFollowingText)] = "Лампи, що слідують Afterglow: {0}",
+            [nameof(HueFollowingUnresponsiveText)] =
+                "Лампи, що слідують Afterglow: {0} ({1} не відповідають, спроби повторюються час від часу)",
+            [nameof(HueShowLightsTooltip)] =
+                "Показати або сховати лампи у вибраних кімнатах, щоб вибрати, які з них слідують Afterglow",
+            [nameof(HueUnnamedLightText)] = "Лампа без назви",
+            [nameof(HueLightFollowingText)] = "Слідує",
+            [nameof(HueLightNotRespondingText)] = "Не відповідає, спроби повторюються час від часу",
+            [nameof(HueLightLeftAloneText)] =
+                "Змінено деінде, лишається як є, доки її не вимкнуть і не ввімкнуть",
+            [nameof(HueLightOffText)] = "Вимкнено",
+            [nameof(HueLightExcludedText)] = "Виключено",
+            [nameof(HueLightWaitingText)] = "Ще не слідує",
+            [nameof(HueFollowAgainButton)] = "Слідувати знову",
+            [nameof(HueFollowAgainTooltip)] = "Знову змусити цю лампу слідувати Afterglow",
+            [nameof(HuePausedUntilText)] =
+                "Освітлення призупинено до {0}, і доти воно повернуто до попереднього стану.",
+            [nameof(HuePausedUntilResumedText)] =
+                "Освітлення призупинено, доки його не відновлять із системного лотка, і доти воно повернуто до попереднього стану.",
+            [nameof(TrayPauseLightsMenuItem)] = "Призупинити освітлення",
+            [nameof(TrayResumeLightsMenuItem)] = "Відновити освітлення",
+            [nameof(TrayTurnOnLightsMenuItem)] = "Увімкнути освітлення ({0})",
+            [nameof(HueLightNotAdjustableText)] =
+                "Не налаштовується (лише вмикається й вимикається)",
+            [nameof(HueLightNothingFollowedText)] =
+                "Нема чого відстежувати (вона вміє лише те, що не відстежується)",
+            [nameof(HueLightPausedText)] = "Призупинено",
+            [nameof(HueFollowingNoneText)] =
+                "Зараз жодна лампа не слідує. Лампи у вибраних кімнатах слідують Afterglow, щойно їх увімкнуть.",
+            [nameof(HueShutdownLabel)] = "Коли ПК вимикається або засинає",
+            [nameof(HueShutdownTooltip)] =
+                "Що відбувається з лампами, які слідують Afterglow, коли цей ПК вимикається, перезапускається, виходить із сеансу або засинає. Лампи, які увімкнув Afterglow, вимикаються (якщо не вибрано власне налаштування), а лампи, які ви змінили самі, лишаються як є.",
+            [nameof(HueShutdownLeaveOption)] = "Лишити лампи як є",
+            [nameof(HueShutdownRestoreOption)] = "Повернути лампи як було",
+            [nameof(HueShutdownTurnOffOption)] = "Вимкнути лампи",
+            [nameof(HuePauseActionLabel)] = "Коли освітлення призупинено",
+            [nameof(HuePauseActionTooltip)] =
+                "Що роблять лампи, які слідують Afterglow, поки призупинені: із системного лотка чи гарячою клавішею, поки Afterglow призупинено або разом з екраном. Лампи, вимкнені на час паузи, потім вмикаються знову.",
+            [nameof(HueCustomOption)] = "Власне налаштування",
+            [nameof(HueLookTemperatureLabel)] = "Температура",
+            [nameof(HueLookTemperatureTooltip)] =
+                "Колірна температура самих ламп (кольорові лампи можуть бути трохи теплішими за білі). Утримуйте кнопку миші на повзунку, щоб побачити її на лампах; вони повернуться, щойно ви відпустите.",
+            [nameof(HueLookBrightnessLabel)] = "Яскравість",
+            [nameof(HueLookBrightnessTooltip)] =
+                "Наскільки яскраві лампи. Утримуйте кнопку миші на повзунку, щоб побачити це на лампах; вони повернуться, щойно ви відпустите.",
+            [nameof(HueTurnOnAtStartLabel)] = "Вмикати освітлення під час запуску Afterglow",
+            [nameof(HueTurnOnAtStartTooltip)] =
+                "Вмикає всі лампи у вибраних кімнатах (крім виключених), коли запускається Afterglow, як-от під час запуску ПК чи входу в систему, і коли ПК прокидається зі сну",
+            [nameof(HueReclaimLabel)] = "Коли лампи змінено деінде",
+            [nameof(HueReclaimTooltip)] =
+                "Коли лампу змінено поза Afterglow (у застосунку Hue, вимикачем, сценою чи голосовим помічником), її лишають як є; ось як довго, рахуючи від останньої зміни. «Слідувати знову» у списку ламп одразу знову вмикає слідування.",
+            [nameof(HueReclaimNeverOption)] = "Лишати як є, доки не вимкнуть і не ввімкнуть",
+            [nameof(HueLightLeftAloneUntilText)] = "Змінено деінде, знову слідуватиме о {0}",
+            [nameof(SmartLightsTabName)] = "Розумне освітлення",
+            [nameof(HueReclaimAfterOption)] = "Знову слідувати через заданий час",
+            [nameof(HueReclaimAfterLabel)] = "Через",
+            [nameof(MinutesValueText)] = "{0} хв",
+            [nameof(HoursValueText)] = "{0} год",
+            [nameof(HoursMinutesValueText)] = "{0} год {1} хв",
+            [nameof(HueFollowingCardTitle)] = "Слідування",
+            [nameof(HueFollowingCardSubtitle)] =
+                "Що лампи переймають від екрана, і наскільки вони тепліші й тьмяніші поруч із ним.",
+            [nameof(HueReclaimCardTitle)] = "Зміни деінде",
+            [nameof(HueReclaimCardSubtitle)] =
+                "Лампи, змінені в застосунку Hue, вимикачем, сценою чи голосовим помічником, деякий час лишаються як є.",
+            [nameof(HuePausingCardTitle)] = "Пауза",
+            [nameof(HuePausingCardSubtitle)] = "Що роблять лампи, поки призупинені.",
+            [nameof(HueStartupCardTitle)] = "Запуск і вимкнення",
+            [nameof(HueStartupCardSubtitle)] =
+                "Що роблять лампи під час запуску Afterglow, і коли ПК вимикається або засинає.",
+            [nameof(HueUnreachableText)] =
+                "Не вдалося з’єднатися з мостом Hue. Нова спроба незабаром.",
+            [nameof(HueUnauthorizedText)] =
+                "Міст Hue більше не приймає Afterglow. Натисніть «Під’єднати знову», а потім кнопку на мосту.",
+            [nameof(HueCertificateChangedText)] =
+                "За цією адресою відповів не ваш міст Hue. Якщо ви замінили міст, натисніть «Під’єднати знову».",
             [nameof(NeverCheckedText)] = "Ще не перевірялося",
             [nameof(UpdateCheckingText)] = "Перевірка оновлень…",
             [nameof(UpToDateText)] = "{0} {1} — найновіша версія.",
@@ -358,6 +484,9 @@ public partial class LocalizationManager
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Відтінки сірого",
             [nameof(ToggleGrayscaleHotkeyTooltip)] =
                 "Глобальна гаряча клавіша для ввімкнення/вимкнення відтінків сірого",
+            [nameof(ToggleLightsPauseHotkeyLabel)] = "Призупинити/відновити лампи Hue",
+            [nameof(ToggleLightsPauseHotkeyTooltip)] =
+                "Глобальна гаряча клавіша, щоб призупинити лампи Hue (повернувши їх до попереднього стану) або відновити їх",
             [nameof(GrayscaleCardTitle)] = "Відтінки сірого",
             [nameof(GrayscaleCardSubtitle)] = "Прибрати кольори з екрана вручну або за розкладом.",
             [nameof(GrayscaleScheduleLabel)] = "Автоматичні відтінки сірого",

@@ -1,0 +1,693 @@
+<UserControl
+    x:Class="Afterglow.Views.Components.Settings.SmartLightsSettingsTabView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:settings="clr-namespace:Afterglow.ViewModels.Components.Settings"
+    x:DataType="settings:SmartLightsSettingsTabViewModel"
+>
+    <StackPanel Orientation="Vertical" Spacing="12">
+        <!--  Philips Hue  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HueCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HueCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.HueEnabledTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueEnabledLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsHueEnabled}"
+                    />
+                </Grid>
+
+                <!--  The bridge, and which lights follow (only while it's turned on)  -->
+                <StackPanel IsVisible="{Binding IsHueEnabled}" Orientation="Vertical" Spacing="10">
+                    <Grid
+                        ColumnDefinitions="*,Auto,Auto"
+                        ColumnSpacing="8"
+                        ToolTip.Tip="{Binding LocalizationManager.HueBridgeTooltip}"
+                    >
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Classes="setting-label"
+                            Text="{Binding LocalizationManager.HueBridgeLabel}"
+                        />
+                        <TextBox
+                            Grid.Column="1"
+                            Width="180"
+                            VerticalAlignment="Center"
+                            PlaceholderText="{Binding LocalizationManager.HueBridgePlaceholder}"
+                            Text="{Binding HueBridgeAddress, UpdateSourceTrigger=LostFocus}"
+                            Theme="{DynamicResource CompactTextBox}"
+                        />
+                        <Button
+                            Grid.Column="2"
+                            MinWidth="92"
+                            Padding="10,4"
+                            VerticalAlignment="Center"
+                            Command="{Binding ConnectHueCommand}"
+                            Foreground="{DynamicResource AccentTextBrush}"
+                            Theme="{DynamicResource MaterialFlatButton}"
+                            ToolTip.Tip="{Binding HueConnectButtonTooltip}"
+                        >
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <materialIcons:MaterialIcon
+                                    Width="16"
+                                    Height="16"
+                                    Kind="{Binding HueConnectButtonIcon}"
+                                />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Text="{Binding HueConnectButtonText}"
+                                />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!--  How it's going (which opens the list of lights, once there are any)  -->
+                    <TextBlock
+                        Classes="setting-hint"
+                        IsVisible="{Binding !HasHueLights}"
+                        Text="{Binding HueStatusText}"
+                        TextWrapping="Wrap"
+                    />
+                    <Button
+                        Margin="-6,-4"
+                        Padding="6,4"
+                        HorizontalAlignment="Left"
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding ToggleHueLightListCommand}"
+                        Cursor="Hand"
+                        IsVisible="{Binding HasHueLights}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.HueShowLightsTooltip}"
+                    >
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Classes="setting-hint"
+                                Text="{Binding HueStatusText}"
+                                TextWrapping="Wrap"
+                            />
+                            <materialIcons:MaterialIcon
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                Opacity="0.7"
+                                IsVisible="{Binding !IsHueLightListOpen}"
+                                Kind="ChevronDown"
+                            />
+                            <materialIcons:MaterialIcon
+                                Width="16"
+                                Height="16"
+                                VerticalAlignment="Center"
+                                Opacity="0.7"
+                                IsVisible="{Binding IsHueLightListOpen}"
+                                Kind="ChevronUp"
+                            />
+                        </StackPanel>
+                    </Button>
+
+                    <!--  The lights in the chosen rooms, each of which can be left out  -->
+                    <ItemsControl
+                        IsVisible="{Binding IsHueLightListShown}"
+                        ItemsSource="{Binding HueLightGroups}"
+                    >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" Spacing="8" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="settings:HueLightGroupViewModel">
+                                <StackPanel Orientation="Vertical" Spacing="2">
+                                    <TextBlock
+                                        Classes="setting-label"
+                                        FontSize="13"
+                                        Text="{Binding Name}"
+                                    />
+                                    <ItemsControl Margin="8,0,0,0" ItemsSource="{Binding Lights}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="settings:HueLightViewModel">
+                                                <CheckBox
+                                                    FontSize="13"
+                                                    IsChecked="{Binding IsIncluded}"
+                                                >
+                                                    <StackPanel
+                                                        Orientation="Horizontal"
+                                                        Spacing="8"
+                                                    >
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            Text="{Binding Name}"
+                                                        />
+                                                        <TextBlock
+                                                            VerticalAlignment="Center"
+                                                            Classes="setting-hint"
+                                                            IsVisible="{Binding HasStateText}"
+                                                            Text="{Binding StateText}"
+                                                        />
+                                                        <Button
+                                                            Padding="6,0"
+                                                            VerticalAlignment="Center"
+                                                            Command="{Binding FollowAgainCommand}"
+                                                            Content="{Binding FollowAgainText}"
+                                                            Cursor="Hand"
+                                                            FontSize="12"
+                                                            Foreground="{DynamicResource AccentTextBrush}"
+                                                            IsVisible="{Binding CanFollowAgain}"
+                                                            Theme="{DynamicResource MaterialFlatButton}"
+                                                            ToolTip.Tip="{Binding FollowAgainTooltip}"
+                                                        />
+                                                    </StackPanel>
+                                                </CheckBox>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <StackPanel
+                        IsVisible="{Binding IsHuePaired}"
+                        Orientation="Vertical"
+                        Spacing="10"
+                    >
+                        <!--  Rooms and zones whose lights follow  -->
+                        <StackPanel
+                            IsVisible="{Binding HasHueRooms}"
+                            Orientation="Vertical"
+                            Spacing="4"
+                        >
+                            <TextBlock
+                                Classes="setting-label"
+                                Text="{Binding LocalizationManager.HueRoomsLabel}"
+                            />
+                            <ItemsControl ItemsSource="{Binding HueRooms}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel ItemSpacing="16" Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="settings:HueRoomViewModel">
+                                        <CheckBox
+                                            Content="{Binding Name}"
+                                            FontSize="13"
+                                            IsChecked="{Binding IsSelected}"
+                                        />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  What the lights follow  -->
+        <Border Classes="card" IsVisible="{Binding IsHueControlShown}">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HueFollowingCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HueFollowingCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.HueFollowTemperatureTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueFollowTemperatureLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsHueTemperatureFollowed}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="Auto,*,Auto"
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsHueTemperatureFollowed}"
+                    ToolTip.Tip="{Binding LocalizationManager.LightWarmthTooltip}"
+                >
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Classes="setting-hint"
+                        Text="{Binding LocalizationManager.LightWarmthLabel}"
+                    />
+                    <Slider
+                        Grid.Column="1"
+                        IsSnapToTickEnabled="True"
+                        LargeChange="0.5"
+                        Maximum="4"
+                        Minimum="1"
+                        SmallChange="0.1"
+                        TickFrequency="0.1"
+                        Value="{Binding LightWarmth}"
+                    />
+                    <TextBlock
+                        Grid.Column="2"
+                        MinWidth="40"
+                        Classes="value"
+                        Text="{Binding LightWarmthText}"
+                        TextAlignment="Right"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.HueFollowBrightnessTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueFollowBrightnessLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsHueBrightnessFollowed}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="Auto,*,Auto"
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsHueBrightnessFollowed}"
+                    ToolTip.Tip="{Binding LocalizationManager.LightDimmingTooltip}"
+                >
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Classes="setting-hint"
+                        Text="{Binding LocalizationManager.LightDimmingLabel}"
+                    />
+                    <Slider
+                        Grid.Column="1"
+                        IsSnapToTickEnabled="True"
+                        LargeChange="0.5"
+                        Maximum="4"
+                        Minimum="0.5"
+                        SmallChange="0.1"
+                        TickFrequency="0.1"
+                        Value="{Binding LightDimming}"
+                    />
+                    <TextBlock
+                        Grid.Column="2"
+                        MinWidth="40"
+                        Classes="value"
+                        Text="{Binding LightDimmingText}"
+                        TextAlignment="Right"
+                    />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!--  Lights changed by something else  -->
+        <Border Classes="card" IsVisible="{Binding IsHueControlShown}">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HueReclaimCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HueReclaimCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.HueReclaimTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueReclaimLabel}"
+                        TextWrapping="Wrap"
+                    />
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="180"
+                        VerticalAlignment="Center"
+                        SelectedIndex="{Binding HueReclaimModeIndex}"
+                    >
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueReclaimNeverOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueReclaimAfterOption}" />
+                    </ComboBox>
+                </Grid>
+
+                <!--  How long  -->
+                <StackPanel
+                    Margin="16,0,0,0"
+                    IsVisible="{Binding IsHueReclaimDurationShown}"
+                    Orientation="Vertical"
+                    Spacing="6"
+                >
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        ToolTip.Tip="{Binding LocalizationManager.HueReclaimTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            MinWidth="90"
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.HueReclaimAfterLabel}"
+                        />
+                        <Slider
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="30"
+                            Maximum="{Binding MaximumHueReclaimMinutes}"
+                            Minimum="{Binding MinimumHueReclaimMinutes}"
+                            SmallChange="5"
+                            TickFrequency="5"
+                            Value="{Binding HueReclaimMinutes}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="72"
+                            Classes="value"
+                            Text="{Binding HueReclaimText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  Pausing  -->
+        <Border Classes="card" IsVisible="{Binding IsHueControlShown}">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HuePausingCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HuePausingCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.HuePauseWithScreenTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HuePauseWithScreenLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsHuePausedWithScreen}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.HuePauseActionTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HuePauseActionLabel}"
+                        TextWrapping="Wrap"
+                    />
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="180"
+                        VerticalAlignment="Center"
+                        SelectedIndex="{Binding HuePauseActionIndex}"
+                    >
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownLeaveOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownRestoreOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownTurnOffOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueCustomOption}" />
+                    </ComboBox>
+                </Grid>
+
+                <!--  The custom look (shown on the lights while one of its sliders is held down)  -->
+                <StackPanel
+                    Margin="16,0,0,0"
+                    IsVisible="{Binding IsHuePauseLookShown}"
+                    Orientation="Vertical"
+                    Spacing="6"
+                >
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        ToolTip.Tip="{Binding LocalizationManager.HueLookTemperatureTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            MinWidth="90"
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.HueLookTemperatureLabel}"
+                        />
+                        <Slider
+                            x:Name="HuePauseTemperatureSlider"
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="500"
+                            Maximum="{Binding MaximumLookTemperature}"
+                            Minimum="{Binding MinimumLookTemperature}"
+                            SmallChange="50"
+                            TickFrequency="50"
+                            Value="{Binding HuePauseTemperature}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="56"
+                            Classes="value"
+                            Text="{Binding HuePauseTemperatureText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        ToolTip.Tip="{Binding LocalizationManager.HueLookBrightnessTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            MinWidth="90"
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.HueLookBrightnessLabel}"
+                        />
+                        <Slider
+                            x:Name="HuePauseBrightnessSlider"
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Minimum="0.01"
+                            SmallChange="0.01"
+                            TickFrequency="0.01"
+                            Value="{Binding HuePauseBrightness}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="56"
+                            Classes="value"
+                            Text="{Binding HuePauseBrightnessText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  Starting up and shutting down  -->
+        <Border Classes="card" IsVisible="{Binding IsHueControlShown}">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.HueStartupCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.HueStartupCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.HueTurnOnAtStartTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueTurnOnAtStartLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsHueTurnedOnAtStart}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="12"
+                    ToolTip.Tip="{Binding LocalizationManager.HueShutdownTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.HueShutdownLabel}"
+                        TextWrapping="Wrap"
+                    />
+                    <ComboBox
+                        Grid.Column="1"
+                        MinWidth="180"
+                        VerticalAlignment="Center"
+                        SelectedIndex="{Binding HueShutdownActionIndex}"
+                    >
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownLeaveOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownRestoreOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownTurnOffOption}" />
+                        <ComboBoxItem Content="{Binding LocalizationManager.HueCustomOption}" />
+                    </ComboBox>
+                </Grid>
+
+                <!--  The custom look (shown on the lights while one of its sliders is held down)  -->
+                <StackPanel
+                    Margin="16,0,0,0"
+                    IsVisible="{Binding IsHueShutdownLookShown}"
+                    Orientation="Vertical"
+                    Spacing="6"
+                >
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        ToolTip.Tip="{Binding LocalizationManager.HueLookTemperatureTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            MinWidth="90"
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.HueLookTemperatureLabel}"
+                        />
+                        <Slider
+                            x:Name="HueShutdownTemperatureSlider"
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="500"
+                            Maximum="{Binding MaximumLookTemperature}"
+                            Minimum="{Binding MinimumLookTemperature}"
+                            SmallChange="50"
+                            TickFrequency="50"
+                            Value="{Binding HueShutdownTemperature}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="56"
+                            Classes="value"
+                            Text="{Binding HueShutdownTemperatureText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                    <Grid
+                        ColumnDefinitions="Auto,*,Auto"
+                        ColumnSpacing="12"
+                        ToolTip.Tip="{Binding LocalizationManager.HueLookBrightnessTooltip}"
+                    >
+                        <TextBlock
+                            Grid.Column="0"
+                            MinWidth="90"
+                            VerticalAlignment="Center"
+                            Classes="setting-hint"
+                            Text="{Binding LocalizationManager.HueLookBrightnessLabel}"
+                        />
+                        <Slider
+                            x:Name="HueShutdownBrightnessSlider"
+                            Grid.Column="1"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="0.1"
+                            Maximum="1"
+                            Minimum="0.01"
+                            SmallChange="0.01"
+                            TickFrequency="0.01"
+                            Value="{Binding HueShutdownBrightness}"
+                        />
+                        <TextBlock
+                            Grid.Column="2"
+                            MinWidth="56"
+                            Classes="value"
+                            Text="{Binding HueShutdownBrightnessText}"
+                            TextAlignment="Right"
+                        />
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  Reset this tab's settings (at the very end, so that it isn't clicked by accident)  -->
+        <Button
+            Margin="0,4,0,0"
+            Padding="10,6"
+            HorizontalAlignment="Left"
+            Command="{Binding ResetTabCommand}"
+            Foreground="{DynamicResource TextMutedBrush}"
+            Theme="{DynamicResource MaterialFlatButton}"
+            ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
+        >
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <materialIcons:MaterialIcon Width="16" Height="16" Kind="Restore" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Text="{Binding ResetTabButtonText}"
+                />
+            </StackPanel>
+        </Button>
+    </StackPanel>
+</UserControl>

@@ -65,6 +65,30 @@ public partial class RulesSettingsTabViewModel : SettingsTabViewModelBase
 
     public override string DisplayName => LocalizationManager.RulesTabName;
 
+    protected override void ResetTabSettings(SettingsService defaults)
+    {
+        SettingsService.IsApplicationWhitelistEnabled = defaults.IsApplicationWhitelistEnabled;
+        SettingsService.IsDefaultToDayConfigurationEnabled =
+            defaults.IsDefaultToDayConfigurationEnabled;
+        SettingsService.IsPauseWhenFullScreenEnabled = defaults.IsPauseWhenFullScreenEnabled;
+        SettingsService.IsPauseWhenScreenLockedEnabled = defaults.IsPauseWhenScreenLockedEnabled;
+        SettingsService.IsPerMonitorFullscreenPauseEnabled =
+            defaults.IsPerMonitorFullscreenPauseEnabled;
+        SettingsService.IsPerMonitorWhitelistPauseEnabled =
+            defaults.IsPerMonitorWhitelistPauseEnabled;
+        SettingsService.IsPerceptualMonitorOffsetEnabled =
+            defaults.IsPerceptualMonitorOffsetEnabled;
+        SettingsService.IsStreamingAutoPauseEnabled = defaults.IsStreamingAutoPauseEnabled;
+        SettingsService.IsWhitelistedApplicationPauseEnabled =
+            defaults.IsWhitelistedApplicationPauseEnabled;
+        SettingsService.IsWhitelistedWindowTitlePauseEnabled =
+            defaults.IsWhitelistedWindowTitlePauseEnabled;
+        SettingsService.StreamingPorts = defaults.StreamingPorts;
+        SettingsService.WhitelistedApplications = defaults.WhitelistedApplications;
+        SettingsService.WhitelistedWindowTitles = defaults.WhitelistedWindowTitles;
+        SettingsService.MonitorProfiles = defaults.MonitorProfiles;
+    }
+
     // ---- Smart auto-pause ----
 
     public bool IsPauseWhenFullScreenEnabled

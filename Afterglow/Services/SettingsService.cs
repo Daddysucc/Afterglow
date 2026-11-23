@@ -153,6 +153,88 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial string? AvailableUpdateVersion { get; set; }
 
+    // Philips Hue lights following the cycle directly (off unless turned on)
+    [ObservableProperty]
+    public partial bool IsHueEnabled { get; set; }
+
+    // The bridge's IP address (or host name), and its ID (to find it again if its address changes)
+    [ObservableProperty]
+    public partial string? HueBridgeAddress { get; set; }
+
+    [ObservableProperty]
+    public partial string? HueBridgeId { get; set; }
+
+    // The application key the bridge gave when its button was pressed, encrypted for this
+    // Windows user (see SecretProtection)
+    [ObservableProperty]
+    public partial string? HueProtectedAppKey { get; set; }
+
+    // The bridge's certificate (SHA-256), as first seen when connecting, so that nothing else can
+    // pose as it later
+    [ObservableProperty]
+    public partial string? HueCertificateHash { get; set; }
+
+    // Rooms (and zones) whose lights follow the cycle
+    [ObservableProperty]
+    public partial IReadOnlyList<string>? HueRoomIds { get; set; }
+
+    // Lights in the chosen rooms that are left out (by their ID)
+    [ObservableProperty]
+    public partial IReadOnlyList<string>? HueExcludedLightIds { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsHueTemperatureFollowed { get; set; } = true;
+
+    [ObservableProperty]
+    public partial bool IsHueBrightnessFollowed { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsHuePausedWithScreen { get; set; }
+
+    // Whether a light changed by something else is followed again after a while (rather than left
+    // alone until it's turned off and on), and how long after it was last changed
+    [ObservableProperty]
+    public partial bool IsHueReclaimEnabled { get; set; } = true;
+
+    [ObservableProperty]
+    public partial TimeSpan HueReclaimDuration { get; set; } = TimeSpan.FromHours(1);
+
+    // What happens to the lights while they're paused
+    [ObservableProperty]
+    public partial HuePauseAction HuePauseAction { get; set; } = HuePauseAction.Restore;
+
+    // The look lights are set to while paused (with a custom look): the color temperature of the
+    // light itself, and its brightness (0 to 1)
+    [ObservableProperty]
+    public partial double HuePauseTemperature { get; set; } = 2700;
+
+    [ObservableProperty]
+    public partial double HuePauseBrightness { get; set; } = 1;
+
+    // What happens to the lights when the PC shuts down or goes to sleep
+    [ObservableProperty]
+    public partial HueShutdownAction HueShutdownAction { get; set; }
+
+    // The look lights are set to when the PC shuts down or goes to sleep (with a custom look)
+    [ObservableProperty]
+    public partial double HueShutdownTemperature { get; set; } = 2200;
+
+    [ObservableProperty]
+    public partial double HueShutdownBrightness { get; set; } = 0.3;
+
+    // All the lights in the chosen rooms are turned on when Afterglow starts (and when the PC
+    // wakes up)
+    [ObservableProperty]
+    public partial bool IsHueTurnedOnAtStart { get; set; }
+
+    // How much warmer lights are set than the screen's tint, to look about as warm as it
+    [ObservableProperty]
+    public partial double LightWarmth { get; set; } = HueLightController.DefaultWarmth;
+
+    // How strongly lights dim as the screen dims
+    [ObservableProperty]
+    public partial double LightDimming { get; set; } = HueLightController.DefaultDimming;
+
     [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 
@@ -253,6 +335,9 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial HotKey ToggleGrayscaleHotKey { get; set; }
 
+    [ObservableProperty]
+    public partial HotKey ToggleLightsPauseHotKey { get; set; }
+
     // Grayscale
 
     [ObservableProperty]
@@ -267,15 +352,33 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial bool? GrayscaleOverride { get; set; }
 
+    /// <summary>
+    /// Settings with nothing but their defaults (e.g. to reset only some of them from).
+    /// </summary>
+    public SettingsService CreateDefaults() => new(_filePath);
+
     public override void Reset()
     {
         var isGammaRangePromptEnabled = IsGammaRangePromptEnabled;
+
+        // The connection to the Hue bridge is kept, as making it again takes more than a click
+        // (pressing the button on the bridge). What it's used for is reset like everything else
+        // (Hue control is turned off).
+        var hueBridgeAddress = HueBridgeAddress;
+        var hueBridgeId = HueBridgeId;
+        var hueProtectedAppKey = HueProtectedAppKey;
+        var hueCertificateHash = HueCertificateHash;
 
         base.Reset();
 
         // Don't reset the first-time experience, or bring back prompts that were already shown
         IsFirstTimeExperienceEnabled = false;
         IsGammaRangePromptEnabled = isGammaRangePromptEnabled;
+
+        HueBridgeAddress = hueBridgeAddress;
+        HueBridgeId = hueBridgeId;
+        HueProtectedAppKey = hueProtectedAppKey;
+        HueCertificateHash = hueCertificateHash;
 
         // Trigger UI updates
         OnPropertyChanged(string.Empty);
@@ -623,6 +726,18 @@ public partial class SettingsService : SettingsBase
         // Numeric values that don't correspond to any schedule
         if (!Enum.IsDefined(GrayscaleSchedule))
             GrayscaleSchedule = GrayscaleSchedule.Off;
+
+        if (!Enum.IsDefined(HueShutdownAction))
+            HueShutdownAction = HueShutdownAction.Leave;
+
+        if (!Enum.IsDefined(HuePauseAction))
+            HuePauseAction = HuePauseAction.Restore;
+
+        HueReclaimDuration = ClampTime(
+            HueReclaimDuration,
+            HueService.MinimumReclaimDuration,
+            HueService.MaximumReclaimDuration
+        );
 
         if (!Enum.IsDefined(UpdateCheckFrequency))
             UpdateCheckFrequency = UpdateCheckFrequency.Weekly;

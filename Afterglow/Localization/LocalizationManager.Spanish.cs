@@ -21,8 +21,9 @@ public partial class LocalizationManager
             [nameof(StopPreviewTooltip)] = "Detener vista previa",
             [nameof(StartPreviewTooltip)] = "Vista previa del ciclo de 24 horas",
             [nameof(OpenSettingsTooltip)] = "Abrir ajustes",
-            [nameof(ResetTooltip)] = "Restablecer todos los ajustes a sus valores predeterminados",
-            [nameof(ResetAllSettingsButton)] = "Restablecer todos los ajustes",
+            [nameof(ResetTooltip)] =
+                "Restablecer los ajustes de esta pestaña a sus valores predeterminados (las demás pestañas conservan los suyos)",
+            [nameof(ResetTabSettingsButton)] = "Restablecer ajustes de «{0}»",
             [nameof(LanguageLabel)] = "Idioma",
             [nameof(LanguageTooltip)] = "Idioma de interfaz preferido",
             [nameof(StartWithWindowsLabel)] = "Iniciar con Windows",
@@ -268,6 +269,133 @@ public partial class LocalizationManager
             [nameof(UpdateCheckEveryTwoWeeksOption)] = "Cada dos semanas",
             [nameof(CurrentVersionText)] = "Versión {0}",
             [nameof(LastUpdateCheckText)] = "Última comprobación: {0}",
+            [nameof(HueCardTitle)] = "Philips Hue",
+            [nameof(HueCardSubtitle)] =
+                "Haz que las luces Hue sigan el ciclo de color mientras este PC está encendido y se vean tan cálidas como la pantalla.",
+            [nameof(HueEnabledLabel)] = "Controlar las luces Hue",
+            [nameof(HueEnabledTooltip)] =
+                "Las luces encendidas de las habitaciones elegidas siguen el ciclo de color. Nunca se encienden solas, y vuelven a como estaban cuando Afterglow se detiene (también cuando el PC se apaga o entra en suspensión). Una luz que cambies tú se deja como está hasta que se apague y se vuelva a encender.",
+            [nameof(HueBridgeLabel)] = "Dirección del puente",
+            [nameof(HueBridgeTooltip)] =
+                "La dirección IP de tu puente Hue (aparece en la app Hue, en Ajustes, Puentes). Déjala vacía para encontrar el puente automáticamente.",
+            [nameof(HueBridgePlaceholder)] = "Buscar automáticamente",
+            [nameof(HueConnectButton)] = "Conectar",
+            [nameof(HueReconnectButton)] = "Volver a conectar",
+            [nameof(HueDisconnectButton)] = "Desconectar",
+            [nameof(HueDisconnectTooltip)] =
+                "Devolver las luces a como estaban y olvidar este puente (para volver a conectarse hay que pulsar de nuevo su botón)",
+            [nameof(HueCancelButton)] = "Cancelar",
+            [nameof(HueConnectTooltip)] =
+                "Conectar con el puente: después de hacer clic, pulsa el botón de la parte superior del puente antes de 30 segundos",
+            [nameof(HueRoomsLabel)] = "Habitaciones",
+            [nameof(HueFollowTemperatureLabel)] = "Seguir la temperatura",
+            [nameof(HueFollowTemperatureTooltip)] =
+                "Las luces adoptan la temperatura de color del ciclo (hasta donde pueden, de unos 2000 K a 6500 K)",
+            [nameof(LightWarmthLabel)] = "Calidez",
+            [nameof(LightWarmthTooltip)] =
+                "Cuánto más cálidas que la pantalla se ajustan las luces, para que parezcan tan cálidas como ella. Las luces que muestran colores pasan a ámbar y naranja cuando se quedan sin blancos cálidos.",
+            [nameof(HueFollowBrightnessLabel)] = "Seguir el brillo",
+            [nameof(HueFollowBrightnessTooltip)] =
+                "Las luces adoptan el brillo del ciclo (el 100 % de Afterglow es el brillo máximo)",
+            [nameof(HuePauseWithScreenLabel)] = "Pausar con la pantalla",
+            [nameof(HuePauseWithScreenTooltip)] =
+                "Las luces también vuelven a su estado anterior mientras la pantalla está en pausa automáticamente (aplicaciones a pantalla completa, aplicaciones de la lista blanca, transmisión remota, pantalla bloqueada)",
+            [nameof(LightDimmingLabel)] = "Atenuación",
+            [nameof(LightDimmingTooltip)] =
+                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×1.0 siguen el brillo de la pantalla; los valores más altos las atenúan más, y el brillo máximo siempre se mantiene.",
+            [nameof(HueNotConnectedText)] =
+                "Haz clic en Conectar y pulsa el botón de tu puente Hue.",
+            [nameof(HueSearchingText)] = "Buscando tu puente Hue…",
+            [nameof(HueNoBridgeFoundText)] =
+                "No se encontró ningún puente Hue. Escribe su dirección IP y haz clic en Conectar.",
+            [nameof(HueWaitingForButtonText)] =
+                "Pulsa el botón de la parte superior de tu puente Hue…",
+            [nameof(HueButtonNotPressedText)] =
+                "No se pulsó el botón del puente a tiempo. Haz clic en Conectar para volver a intentarlo.",
+            [nameof(HueConnectedText)] = "Conectado al puente Hue.",
+            [nameof(HueNoRoomsText)] =
+                "Conectado. Elige las habitaciones cuyas luces siguen a Afterglow.",
+            [nameof(HuePausedText)] =
+                "Conectado. Las luces volverán a seguir a Afterglow en cuanto se vuelva a activar.",
+            [nameof(HuePausedWithScreenText)] =
+                "Conectado. Las luces están en pausa junto con la pantalla y volverán a seguir a Afterglow cuando se reanude.",
+            [nameof(HueFollowingText)] = "Luces que siguen a Afterglow: {0}",
+            [nameof(HueFollowingUnresponsiveText)] =
+                "Luces que siguen a Afterglow: {0} ({1} no responden; se vuelve a intentar de vez en cuando)",
+            [nameof(HueShowLightsTooltip)] =
+                "Mostrar u ocultar las luces de las habitaciones elegidas, para elegir cuáles siguen a Afterglow",
+            [nameof(HueUnnamedLightText)] = "Luz sin nombre",
+            [nameof(HueLightFollowingText)] = "Siguiendo",
+            [nameof(HueLightNotRespondingText)] =
+                "No responde; se vuelve a intentar de vez en cuando",
+            [nameof(HueLightLeftAloneText)] =
+                "Cambiada en otro lugar; se deja así hasta que se apague y se vuelva a encender",
+            [nameof(HueLightOffText)] = "Apagada",
+            [nameof(HueLightExcludedText)] = "Excluida",
+            [nameof(HueLightWaitingText)] = "Aún no sigue",
+            [nameof(HueFollowAgainButton)] = "Volver a seguir",
+            [nameof(HueFollowAgainTooltip)] = "Hacer que esta luz vuelva a seguir a Afterglow",
+            [nameof(HuePausedUntilText)] =
+                "Las luces están en pausa hasta las {0} y vuelven a como estaban mientras tanto.",
+            [nameof(HuePausedUntilResumedText)] =
+                "Las luces están en pausa hasta que se reanuden desde la bandeja, y vuelven a como estaban mientras tanto.",
+            [nameof(TrayPauseLightsMenuItem)] = "Pausar luces",
+            [nameof(TrayResumeLightsMenuItem)] = "Reanudar luces",
+            [nameof(TrayTurnOnLightsMenuItem)] = "Encender luces ({0})",
+            [nameof(HueLightNotAdjustableText)] = "No se puede ajustar (solo encender y apagar)",
+            [nameof(HueLightNothingFollowedText)] =
+                "Nada que seguir (solo puede hacer lo que no se sigue)",
+            [nameof(HueLightPausedText)] = "En pausa",
+            [nameof(HueFollowingNoneText)] =
+                "Ninguna luz está siguiendo ahora mismo. Las luces de las habitaciones elegidas siguen a Afterglow en cuanto se encienden.",
+            [nameof(HueShutdownLabel)] = "Al apagar o suspender el PC",
+            [nameof(HueShutdownTooltip)] =
+                "Qué pasa con las luces que siguen a Afterglow cuando este PC se apaga, se reinicia, cierra la sesión o se suspende. Las luces que encendió Afterglow se apagan (salvo con un ajuste personalizado), y las que cambiaste tú se dejan como están.",
+            [nameof(HueShutdownLeaveOption)] = "Dejar las luces como están",
+            [nameof(HueShutdownRestoreOption)] = "Devolver las luces a como estaban",
+            [nameof(HueShutdownTurnOffOption)] = "Apagar las luces",
+            [nameof(HuePauseActionLabel)] = "Cuando las luces están en pausa",
+            [nameof(HuePauseActionTooltip)] =
+                "Qué hacen las luces que siguen a Afterglow mientras están en pausa: desde la bandeja o con un atajo, mientras Afterglow está en pausa, o junto con la pantalla. Las luces apagadas para una pausa se vuelven a encender después.",
+            [nameof(HueCustomOption)] = "Personalizado",
+            [nameof(HueLookTemperatureLabel)] = "Temperatura",
+            [nameof(HueLookTemperatureTooltip)] =
+                "La temperatura de color de las propias luces (las luces de color llegan un poco más cálidas que las blancas). Mantén pulsado el botón del ratón sobre el control para verla en las luces; vuelven en cuanto lo sueltas.",
+            [nameof(HueLookBrightnessLabel)] = "Brillo",
+            [nameof(HueLookBrightnessTooltip)] =
+                "Qué tan brillantes son las luces. Mantén pulsado el botón del ratón sobre el control para verlo en las luces; vuelven en cuanto lo sueltas.",
+            [nameof(HueTurnOnAtStartLabel)] = "Encender las luces al iniciar Afterglow",
+            [nameof(HueTurnOnAtStartTooltip)] =
+                "Enciende todas las luces de las habitaciones elegidas (excepto las excluidas) al iniciar Afterglow, como al encender el PC o iniciar sesión, y al despertar de la suspensión",
+            [nameof(HueReclaimLabel)] = "Cuando las luces se cambian en otro lugar",
+            [nameof(HueReclaimTooltip)] =
+                "Cuando una luz se cambia fuera de Afterglow (en la app Hue, con un interruptor, una escena o un asistente de voz), se deja como está; este es el tiempo, contado desde su último cambio. «Volver a seguir» en la lista de luces la sigue de nuevo al instante.",
+            [nameof(HueReclaimNeverOption)] = "Dejarlas así hasta apagarlas y encenderlas",
+            [nameof(HueLightLeftAloneUntilText)] =
+                "Cambiada en otro lugar; se sigue de nuevo a las {0}",
+            [nameof(SmartLightsTabName)] = "Luces inteligentes",
+            [nameof(HueReclaimAfterOption)] = "Volver a seguir tras un tiempo fijado",
+            [nameof(HueReclaimAfterLabel)] = "Tras",
+            [nameof(MinutesValueText)] = "{0} min",
+            [nameof(HoursValueText)] = "{0} h",
+            [nameof(HoursMinutesValueText)] = "{0} h {1} min",
+            [nameof(HueFollowingCardTitle)] = "Seguimiento",
+            [nameof(HueFollowingCardSubtitle)] =
+                "Qué toman las luces de la pantalla, y cuánto más cálidas y tenues son a su lado.",
+            [nameof(HueReclaimCardTitle)] = "Cambios en otro lugar",
+            [nameof(HueReclaimCardSubtitle)] =
+                "Las luces cambiadas en la app Hue, con un interruptor, una escena o un asistente de voz se dejan como están un rato.",
+            [nameof(HuePausingCardTitle)] = "Pausa",
+            [nameof(HuePausingCardSubtitle)] = "Qué hacen las luces mientras están en pausa.",
+            [nameof(HueStartupCardTitle)] = "Inicio y apagado",
+            [nameof(HueStartupCardSubtitle)] =
+                "Qué hacen las luces al iniciar Afterglow, y cuando el PC se apaga o se suspende.",
+            [nameof(HueUnreachableText)] =
+                "No se pudo conectar con el puente Hue. Se volverá a intentar en breve.",
+            [nameof(HueUnauthorizedText)] =
+                "El puente Hue ya no acepta Afterglow. Haz clic en Volver a conectar y pulsa el botón del puente.",
+            [nameof(HueCertificateChangedText)] =
+                "En esta dirección ha respondido algo distinto de tu puente Hue. Si has cambiado de puente, haz clic en Volver a conectar.",
             [nameof(NeverCheckedText)] = "Aún no se ha comprobado",
             [nameof(UpdateCheckingText)] = "Buscando actualizaciones…",
             [nameof(UpToDateText)] = "{0} {1} es la versión más reciente.",
@@ -362,6 +490,9 @@ public partial class LocalizationManager
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Alternar escala de grises",
             [nameof(ToggleGrayscaleHotkeyTooltip)] =
                 "Atajo global para activar/desactivar la escala de grises",
+            [nameof(ToggleLightsPauseHotkeyLabel)] = "Pausar/reanudar luces Hue",
+            [nameof(ToggleLightsPauseHotkeyTooltip)] =
+                "Atajo global para pausar las luces Hue (de vuelta a como estaban) o reanudarlas",
             [nameof(GrayscaleCardTitle)] = "Escala de grises",
             [nameof(GrayscaleCardSubtitle)] =
                 "Quita los colores de la pantalla, manualmente o según un horario.",

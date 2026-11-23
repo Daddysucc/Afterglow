@@ -91,8 +91,9 @@ public partial class LocalizationManager
             [nameof(StartPreviewTooltip)] = "Preview 24-hour cycle",
             [nameof(OpenSettingsTooltip)] = "Open settings",
             // Settings dialog
-            [nameof(ResetTooltip)] = "Reset all settings to their defaults",
-            [nameof(ResetAllSettingsButton)] = "Reset all settings",
+            [nameof(ResetTooltip)] =
+                "Put the settings on this tab back to their defaults (the other tabs keep theirs)",
+            [nameof(ResetTabSettingsButton)] = "Reset {0} settings",
             // Settings tabs
             // Advanced settings tab
             [nameof(LanguageLabel)] = "Language",
@@ -277,6 +278,128 @@ public partial class LocalizationManager
             [nameof(UpdateCheckEveryTwoWeeksOption)] = "Every two weeks",
             [nameof(CurrentVersionText)] = "Version {0}",
             [nameof(LastUpdateCheckText)] = "Last checked: {0}",
+            [nameof(HueCardTitle)] = "Philips Hue",
+            [nameof(HueCardSubtitle)] =
+                "Make Hue lights follow the color cycle while this PC is on and look as warm as the screen.",
+            [nameof(HueEnabledLabel)] = "Control Hue lights",
+            [nameof(HueEnabledTooltip)] =
+                "Lights in the chosen rooms follow the color cycle while they're on. Lights are never turned on, and go back to how they were when Afterglow stops (also when the PC shuts down or goes to sleep). A light you change yourself is left alone until it's turned off and on again.",
+            [nameof(HueBridgeLabel)] = "Bridge address",
+            [nameof(HueBridgeTooltip)] =
+                "The IP address of your Hue bridge (shown in the Hue app, under Settings, Bridges). Leave it empty to find the bridge automatically.",
+            [nameof(HueBridgePlaceholder)] = "Find automatically",
+            [nameof(HueConnectButton)] = "Connect",
+            [nameof(HueReconnectButton)] = "Reconnect",
+            [nameof(HueDisconnectButton)] = "Disconnect",
+            [nameof(HueDisconnectTooltip)] =
+                "Put the lights back and forget this bridge (connecting again takes another press of its button)",
+            [nameof(HueCancelButton)] = "Cancel",
+            [nameof(HueConnectTooltip)] =
+                "Connect to the bridge: after clicking, press the button on top of the bridge within 30 seconds",
+            [nameof(HueRoomsLabel)] = "Rooms",
+            [nameof(HueFollowTemperatureLabel)] = "Follow temperature",
+            [nameof(HueFollowTemperatureTooltip)] =
+                "Lights take on the color temperature of the cycle (as far as they can, from about 2000 K to 6500 K)",
+            [nameof(LightWarmthLabel)] = "Warmth",
+            [nameof(LightWarmthTooltip)] =
+                "How much warmer lights are set than the screen, to look as warm as it does. Lights that show colors turn amber and orange once they run out of warm whites.",
+            [nameof(HueFollowBrightnessLabel)] = "Follow brightness",
+            [nameof(HueFollowBrightnessTooltip)] =
+                "Lights take on the brightness of the cycle (Afterglow's 100% is full brightness)",
+            [nameof(HuePauseWithScreenLabel)] = "Pause with the screen",
+            [nameof(HuePauseWithScreenTooltip)] =
+                "Lights also go back to how they were while the screen is paused on its own (fullscreen applications, whitelisted applications, remote streaming, a locked screen)",
+            [nameof(LightDimmingLabel)] = "Dimming",
+            [nameof(LightDimmingTooltip)] =
+                "How strongly lights dim as the screen dims. At ×1.0 they match the screen's brightness; higher values dim them more, and full brightness always stays full.",
+            [nameof(HueNotConnectedText)] =
+                "Click Connect, then press the button on your Hue bridge.",
+            [nameof(HueSearchingText)] = "Looking for your Hue bridge…",
+            [nameof(HueNoBridgeFoundText)] =
+                "No Hue bridge was found. Enter its IP address, then click Connect.",
+            [nameof(HueWaitingForButtonText)] = "Press the button on top of your Hue bridge…",
+            [nameof(HueButtonNotPressedText)] =
+                "The bridge's button wasn't pressed in time. Click Connect to try again.",
+            [nameof(HueConnectedText)] = "Connected to the Hue bridge.",
+            [nameof(HueNoRoomsText)] = "Connected. Choose the rooms whose lights follow Afterglow.",
+            [nameof(HuePausedText)] =
+                "Connected. Lights follow Afterglow again once it's turned back on.",
+            [nameof(HuePausedWithScreenText)] =
+                "Connected. Lights are paused along with the screen, and follow Afterglow again once it resumes.",
+            [nameof(HueFollowingText)] = "Lights following Afterglow: {0}",
+            [nameof(HueFollowingUnresponsiveText)] =
+                "Lights following Afterglow: {0} ({1} not responding, so tried again now and then)",
+            [nameof(HueShowLightsTooltip)] =
+                "Show or hide the lights in the chosen rooms, to choose which of them follow Afterglow",
+            [nameof(HueUnnamedLightText)] = "Unnamed light",
+            [nameof(HueLightFollowingText)] = "Following",
+            [nameof(HueLightNotRespondingText)] = "Not responding, tried again now and then",
+            [nameof(HueLightLeftAloneText)] =
+                "Changed elsewhere, left alone until it's turned off and on",
+            [nameof(HueLightOffText)] = "Off",
+            [nameof(HueLightExcludedText)] = "Left out",
+            [nameof(HueLightWaitingText)] = "Not following yet",
+            [nameof(HueFollowAgainButton)] = "Follow again",
+            [nameof(HueFollowAgainTooltip)] = "Make this light follow Afterglow again",
+            [nameof(HuePausedUntilText)] =
+                "Lights are paused until {0}, and back to how they were meanwhile.",
+            [nameof(HuePausedUntilResumedText)] =
+                "Lights are paused until they're resumed from the tray, and back to how they were meanwhile.",
+            [nameof(TrayPauseLightsMenuItem)] = "Pause lights",
+            [nameof(TrayResumeLightsMenuItem)] = "Resume lights",
+            [nameof(TrayTurnOnLightsMenuItem)] = "Turn on lights ({0})",
+            [nameof(HueLightNotAdjustableText)] = "Can't be adjusted (only turned on and off)",
+            [nameof(HueLightNothingFollowedText)] =
+                "Nothing to follow (it can only do what isn't followed)",
+            [nameof(HueLightPausedText)] = "Paused",
+            [nameof(HueFollowingNoneText)] =
+                "No lights are following right now. Lights in the chosen rooms follow Afterglow once they're turned on.",
+            [nameof(HueShutdownLabel)] = "When the PC shuts down or sleeps",
+            [nameof(HueShutdownTooltip)] =
+                "What happens to the lights following Afterglow when this PC shuts down, restarts, signs out, or goes to sleep. Lights that Afterglow turned on are turned off (unless you set a custom look), and lights you changed yourself are left alone.",
+            [nameof(HueShutdownLeaveOption)] = "Leave lights as they are",
+            [nameof(HueShutdownRestoreOption)] = "Put lights back as they were",
+            [nameof(HueShutdownTurnOffOption)] = "Turn lights off",
+            [nameof(HuePauseActionLabel)] = "When lights are paused",
+            [nameof(HuePauseActionTooltip)] =
+                "What the lights following Afterglow do while they're paused: from the tray or with a hotkey, while Afterglow is paused, or along with the screen. Lights turned off for a pause are turned back on afterwards.",
+            [nameof(HueCustomOption)] = "Set custom",
+            [nameof(HueLookTemperatureLabel)] = "Temperature",
+            [nameof(HueLookTemperatureTooltip)] =
+                "The color temperature of the lights themselves (lights that show colors go a little warmer than white lights can). Hold the mouse button down on the slider to see it on the lights; they go back as soon as you let go.",
+            [nameof(HueLookBrightnessLabel)] = "Brightness",
+            [nameof(HueLookBrightnessTooltip)] =
+                "How bright the lights are. Hold the mouse button down on the slider to see it on the lights; they go back as soon as you let go.",
+            [nameof(HueTurnOnAtStartLabel)] = "Turn on lights when Afterglow starts",
+            [nameof(HueTurnOnAtStartTooltip)] =
+                "Turns on all the lights in the chosen rooms (except those left out) when Afterglow starts, as when the PC starts or you sign in, and when the PC wakes up from sleep",
+            [nameof(HueReclaimLabel)] = "When lights are changed elsewhere",
+            [nameof(HueReclaimTooltip)] =
+                "When a light is changed outside of Afterglow (in the Hue app, with a switch, a scene, or a voice assistant), it's left alone; this is how long, counted from when it was last changed. \"Follow again\" in the list of lights follows it again right away.",
+            [nameof(HueReclaimNeverOption)] = "Leave alone until turned off and on",
+            [nameof(HueLightLeftAloneUntilText)] = "Changed elsewhere, followed again at {0}",
+            [nameof(SmartLightsTabName)] = "Smart Lights",
+            [nameof(HueReclaimAfterOption)] = "Follow again after a set time",
+            [nameof(HueReclaimAfterLabel)] = "After",
+            [nameof(MinutesValueText)] = "{0} min",
+            [nameof(HoursValueText)] = "{0} h",
+            [nameof(HoursMinutesValueText)] = "{0} h {1} min",
+            [nameof(HueFollowingCardTitle)] = "Following",
+            [nameof(HueFollowingCardSubtitle)] =
+                "What the lights take on from the screen, and how warm and dim they get next to it.",
+            [nameof(HueReclaimCardTitle)] = "Changes made elsewhere",
+            [nameof(HueReclaimCardSubtitle)] =
+                "Lights changed in the Hue app, with a switch, a scene, or a voice assistant are left alone for a while.",
+            [nameof(HuePausingCardTitle)] = "Pausing",
+            [nameof(HuePausingCardSubtitle)] = "What the lights do while they're paused.",
+            [nameof(HueStartupCardTitle)] = "Starting up and shutting down",
+            [nameof(HueStartupCardSubtitle)] =
+                "What the lights do when Afterglow starts, and when the PC shuts down or goes to sleep.",
+            [nameof(HueUnreachableText)] = "Couldn't reach the Hue bridge. Trying again shortly.",
+            [nameof(HueUnauthorizedText)] =
+                "The Hue bridge no longer accepts Afterglow. Click Reconnect, then press the bridge's button.",
+            [nameof(HueCertificateChangedText)] =
+                "Something other than your Hue bridge answered at this address. If you replaced the bridge, click Reconnect.",
             [nameof(NeverCheckedText)] = "Not checked yet",
             [nameof(UpdateCheckingText)] = "Checking for updates…",
             [nameof(UpToDateText)] = "{0} {1} is the latest version.",
@@ -365,6 +488,9 @@ public partial class LocalizationManager
             [nameof(TrayGrayscaleMenuItem)] = "Grayscale",
             [nameof(ToggleGrayscaleHotkeyLabel)] = "Toggle grayscale",
             [nameof(ToggleGrayscaleHotkeyTooltip)] = "Global hotkey to turn grayscale mode on/off",
+            [nameof(ToggleLightsPauseHotkeyLabel)] = "Pause/resume Hue lights",
+            [nameof(ToggleLightsPauseHotkeyTooltip)] =
+                "Global hotkey to pause the Hue lights (back to how they were), or to resume them",
             [nameof(GrayscaleCardTitle)] = "Grayscale",
             [nameof(GrayscaleCardSubtitle)] =
                 "Remove colors from the screen, manually or on a schedule.",

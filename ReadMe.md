@@ -15,11 +15,12 @@ It runs quietly in the system tray and has minimal impact on performance.
 - **Multi-monitor support.** Exclude individual displays, or give each one its own temperature offset (up to ±2000 K) and brightness offset. By default, offsets scale perceptually (in mireds), so that panels matched during the day stay matched at night. The primary display is the reference, and **Identify** shows each display's number on its screen. Saved display settings survive reconnecting the display and graphics driver updates.
 - **Grayscale mode.** Remove color from the screen manually, or on a schedule: at night, in the evening and at night, or always. The color temperature can keep tinting it for a warm monochrome look, or it can use a neutral white point.
 - **Smart auto-pause.** Restore normal colors only on the display that runs a fullscreen application, while the screen is locked, during remote streaming (Remote Desktop, or Sunshine and other streaming hosts by port), or while a whitelisted application, or a window whose title contains a whitelisted keyword, is in the foreground (optionally pausing only its display).
-- **Tray menu with snooze chips.** Pause Afterglow, or temporarily disable grayscale, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
+- **Tray menu with snooze chips.** Pause Afterglow, temporarily disable grayscale, or pause your Hue lights, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
 - **Dashboard.** A 24-hour color curve and a plain-language status line, with a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
-- **Global hotkeys.** Turn Afterglow on or off, show its window, nudge the temperature and brightness, or toggle grayscale from anywhere.
+- **Global hotkeys.** Turn Afterglow on or off, show its window, nudge the temperature and brightness, toggle grayscale, or pause your Hue lights from anywhere.
 - **Updates in one click.** Afterglow checks for a new version once a week (or as often as you choose), and installs it when you click **Update available**.
-- **Works offline.** Only searching for a location, and the optional check for updates, use the internet.
+- **Philips Hue.** Lights in the rooms you choose follow the color cycle while your PC is on, through the Hue bridge, without anything else to set up (see [Philips Hue](#philips-hue)).
+- **Works offline.** Only searching for a location, and the optional check for updates, use the internet (and, if you turn it on, Philips Hue, which stays on your own network).
 
 ## Download
 
@@ -54,6 +55,29 @@ dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained
 
 This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-windows/win-x64/publish/`.
 
+## Philips Hue
+
+Afterglow can make Philips Hue lights follow the color cycle directly, through the Hue bridge (the original square bridge or the Bridge Pro), while your PC is on. Nothing else needs setting up.
+
+1. In Afterglow, open the settings, then the **Smart Lights** tab, and turn on **Control Hue lights**.
+2. Click **Connect**, then press the button on top of the bridge within 30 seconds. Afterglow finds the bridge on its own; if it can't, enter the bridge's IP address (shown in the Hue app, under **Settings** › **Bridges**) first.
+3. Choose the rooms (or zones) whose lights follow Afterglow, and whether they follow its color temperature, its brightness, or both. Click the line that says how many lights are following to see each light, and to leave out any you don't want following.
+
+How the lights behave:
+
+- **Lights are only turned on when you ask.** Lights that are on follow the cycle, and a light that's turned on takes on the cycle within a few seconds. **Turn on lights** in the tray menu turns on the lights in your chosen rooms, straight to the cycle; Afterglow turns them off again when it lets go of them. To have them all turned on whenever Afterglow starts (and when the PC wakes up), turn on **Turn on lights when Afterglow starts**.
+- **Your changes win.** When you change a light yourself (in the Hue app, with a switch, a scene, or a voice assistant), Afterglow leaves it alone, by default for an hour after its last change. Under **When lights are changed elsewhere**, you can choose another time (from 5 minutes to 6 hours), or leave such lights alone until they're turned off and on again. **Follow again** next to a light in the list of lights follows it again right away.
+- **Lights go back to how they were** when Afterglow lets go of them: when you turn this off, disconnect, deselect their room or leave them out, or close Afterglow. Lights that were turned off stay off, lights you changed yourself keep your setting, and lights that Afterglow turned on are turned off again.
+- **Pausing** (from the tray or with a hotkey, while Afterglow is paused, or along with the screen) also puts lights back by default, though lights that Afterglow turned on stay on, in a neutral white. Under **When lights are paused**, you can choose to leave them as they are, turn them off (they come back on afterwards), or set them to a color temperature and brightness of your own (hold the mouse button down on a slider to see it on the lights). Either way, they follow the cycle again once the pause is over.
+- **When the PC shuts down, restarts, signs out, or goes to sleep,** lights are left as they are by default, so that the room stays as warm as it was at bedtime. You can choose to have them put back as they were, turned off, or set to a color temperature and brightness of your own, instead (**When the PC shuts down or sleeps**). Lights that Afterglow turned on are turned off, unless you choose your own look. After sleep, lights carry on following.
+- **Lights follow what the screen shows**, including the cycle preview and any adjustments from the slider or hotkeys. A tint on a screen looks much warmer than a light of the same color temperature, so lights are set warmer than the screen (by how much is up to you, with the **Warmth** slider): the screen's untinted white is a neutral 4000 K, and warmer tints are warmer still. Lights that show colors turn amber and orange once they run out of warm whites, and white-only lights stop at their warmest white. **Dimming** sets how strongly lights dim as the screen does (full brightness always stays full).
+- **Pausing for fullscreen apps and the like only concerns the screens**, unless you turn on **Pause with the screen**. To give the lights a break without touching the screens, use **Pause lights** in the tray menu, or set a hotkey for it under **Global hotkeys**.
+
+Afterglow checks the lights every few seconds while it's controlling them, and only sends a change when it's big enough to see (and exactly what you choose, when you move a slider). Lights that don't take a change, such as ones at the edge of the bridge's reach, are sent it again until they do, and the list of lights shows which ones aren't responding. The key the bridge gives Afterglow is stored encrypted for your Windows account, and Afterglow only talks to the bridge it first connected to.
+While **Control Hue lights** is turned off, none of this runs.
+
+To keep lights following a similar curve while your PC is off, [Adaptive Lighting](https://github.com/basnijholt/adaptive-lighting) for Home Assistant does that well. Give it rooms that Afterglow doesn't control, or turn on its `take_over_control` and `detect_non_ha_changes` options (Afterglow changes lights through the bridge rather than through Home Assistant), so that it stops adjusting a light once Afterglow does; otherwise the two keep overriding each other.
+
 ## Screenshots
 
 **Dashboard.** The 24-hour curve shows how the day (6500 K), evening (4200 K), and night (2400 K) stages blend into each other, here with 3-hour transitions around sunrise, sunset, and bedtime, mid-way through sunrise.
@@ -80,7 +104,7 @@ This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-win
 
 ![Rules & Whitelist settings](.assets/screenshot-settings-rules.png)
 
-**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, global hotkeys, and resetting all settings.
+**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, and global hotkeys. The **Smart Lights** tab has everything for Philips Hue. Each tab can reset its own settings with the button at its bottom.
 
 <img src=".assets/screenshot-settings-app.png" width="648" alt="App & Controls settings" />
 
@@ -101,6 +125,7 @@ Afterglow doesn't collect or send any personal information, and has no telemetry
 It only connects to these services:
 
 - **GitHub** (`api.github.com`), to check for a newer version once a week. In the settings (**App & Controls** › **Check for updates**), you can choose every day, every two weeks, or never, and check right away with **Check now**. When you click **Update available**, the new version is downloaded from `github.com`.
+- **Your Philips Hue bridge**, only if you turn on Hue control. It receives the colors to set your lights to. To find the bridge, Afterglow asks the Philips Hue discovery service (`discovery.meethue.com`) when you click **Connect** without an address (and if the bridge later moves to a new address), which sees your IP address.
 - **ip-api.com**, only when you ask Afterglow to detect your location. It sees your IP address.
 - **OpenStreetMap Nominatim** (`nominatim.openstreetmap.org`), only when you search for a place by name. It sees what you searched for.
 

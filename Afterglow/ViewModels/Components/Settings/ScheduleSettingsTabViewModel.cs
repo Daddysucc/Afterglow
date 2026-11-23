@@ -29,6 +29,14 @@ public partial class ScheduleSettingsTabViewModel : SettingsTabViewModelBase
 
     public override string DisplayName => LocalizationManager.ScheduleTabName;
 
+    protected override void ResetTabSettings(SettingsService defaults)
+    {
+        SettingsService.IsManualSunriseSunsetEnabled = defaults.IsManualSunriseSunsetEnabled;
+        SettingsService.Location = defaults.Location;
+        SettingsService.ManualSunrise = defaults.ManualSunrise;
+        SettingsService.ManualSunset = defaults.ManualSunset;
+    }
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(AutoResolveLocationCommand))]
     [NotifyCanExecuteChangedFor(nameof(ResolveLocationCommand))]

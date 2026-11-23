@@ -348,15 +348,29 @@
                         HotKey="{Binding ToggleGrayscaleHotKey}"
                     />
                 </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.ToggleLightsPauseHotkeyTooltip}"
+                >
+                    <TextBlock
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.ToggleLightsPauseHotkeyLabel}"
+                    />
+                    <controls:HotKeyTextBox
+                        Grid.Column="1"
+                        HotKey="{Binding ToggleLightsPauseHotKey}"
+                    />
+                </Grid>
             </StackPanel>
         </Border>
 
-        <!--  Reset all settings (at the very end, so that it isn't clicked by accident)  -->
+        <!--  Reset this tab's settings (at the very end, so that it isn't clicked by accident)  -->
         <Button
             Margin="0,4,0,0"
             Padding="10,6"
             HorizontalAlignment="Left"
-            Command="{Binding ResetSettingsCommand}"
+            Command="{Binding ResetTabCommand}"
             Foreground="{DynamicResource TextMutedBrush}"
             Theme="{DynamicResource MaterialFlatButton}"
             ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
@@ -366,7 +380,7 @@
                 <TextBlock
                     VerticalAlignment="Center"
                     FontSize="12"
-                    Text="{Binding LocalizationManager.ResetAllSettingsButton}"
+                    Text="{Binding ResetTabButtonText}"
                 />
             </StackPanel>
         </Button>

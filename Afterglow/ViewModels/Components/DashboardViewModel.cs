@@ -80,9 +80,11 @@ public partial class DashboardViewModel : ViewModelBase
         HotKeyService hotKeyService,
         ExternalApplicationService externalApplicationService,
         MonitorService monitorService,
-        UpdateService updateService
+        UpdateService updateService,
+        HueService hueService
     )
     {
+        Hue = hueService;
         _settingsService = settingsService;
         LocalizationManager = localizationManager;
         _gammaService = gammaService;
@@ -93,6 +95,11 @@ public partial class DashboardViewModel : ViewModelBase
         _updateService = updateService;
 
         _eventSubscription = Disposable.Merge(
+            // The tray says how many lights would be turned on
+            hueService.WatchProperty(
+                o => o.TurnOnLightCount,
+                _ => OnPropertyChanged(nameof(TurnOnLightsText))
+            ),
             // Invalidate the cached local time zone when the system clock or time zone changes
             // https://github.com/Tyrrrz/LightBulb/issues/465
             SystemEvent.Register(
@@ -179,6 +186,7 @@ public partial class DashboardViewModel : ViewModelBase
                     o => o.DecreaseBrightnessOffsetHotKey,
                     o => o.ResetConfigurationOffsetHotKey,
                     o => o.ToggleGrayscaleHotKey,
+                    o => o.ToggleLightsPauseHotKey,
                 ],
                 RegisterHotKeys
             )
@@ -543,6 +551,14 @@ public partial class DashboardViewModel : ViewModelBase
             )
             : PausedConfiguration;
 
+    // What room lights follow: the cycle as the screen shows it (including the preview and any
+    // adjustments), without grayscale, which only makes sense on a screen
+    public ColorConfiguration LightConfiguration => GetCycleConfiguration(SolarTimes, Instant);
+
+    // Whether the screen (or any display) is paused on its own, e.g. for a fullscreen application
+    public bool IsScreenPausedAutomatically =>
+        !IsCyclePreviewEnabled && (IsPaused || PausedMonitors is { Count: > 0 });
+
     // e.g. "Paused (Remote streaming)"
     private string PausedLabel =>
         PauseReason switch
@@ -897,6 +913,14 @@ public partial class DashboardViewModel : ViewModelBase
         {
             _hotKeyService.RegisterHotKey(_settingsService.ToggleGrayscaleHotKey, ToggleGrayscale);
         }
+
+        if (_settingsService.ToggleLightsPauseHotKey != HotKey.None)
+        {
+            _hotKeyService.RegisterHotKey(
+                _settingsService.ToggleLightsPauseHotKey,
+                ToggleLightsPause
+            );
+        }
     }
 
     private void UpdateInstant()
@@ -1230,6 +1254,43 @@ public partial class DashboardViewModel : ViewModelBase
 
     [RelayCommand]
     private void SnoozeGrayscaleUntilSunrise() => SnoozeGrayscale(GetTimeUntilSunrise());
+
+    // Hue lights, which can be paused from the tray (going back to how they were meanwhile),
+    // without affecting the screens
+    public HueService Hue { get; }
+
+    [RelayCommand]
+    private void PauseLights(TimeSpan duration) => Hue.Pause(duration);
+
+    [RelayCommand]
+    private void PauseLightsUntilSunrise() => Hue.Pause(GetTimeUntilSunrise());
+
+    // e.g. "Turn on lights (6)"
+    public string TurnOnLightsText =>
+        string.Format(
+            CultureInfo.CurrentCulture,
+            LocalizationManager.TrayTurnOnLightsMenuItem,
+            Hue.TurnOnLightCount
+        );
+
+    // Turns on the lights in the chosen rooms (from the tray)
+    [RelayCommand]
+    private void TurnOnLights() => Hue.TurnOnLights();
+
+    // The lights row in the tray menu resumes them while they're paused, and pauses them (until
+    // resumed) otherwise
+    [RelayCommand]
+    private void ToggleLightsPause()
+    {
+        // (also from a hotkey, which does nothing while Hue control is off or not connected)
+        if (!Hue.IsAvailable)
+            return;
+
+        if (Hue.IsPausedByUser)
+            Hue.Resume();
+        else
+            Hue.Pause();
+    }
 
     // The grayscale row in the tray menu resumes grayscale while it's temporarily disabled,
     // and toggles it otherwise (like the pause row does for Afterglow itself)

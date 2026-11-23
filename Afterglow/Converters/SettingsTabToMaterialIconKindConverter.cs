@@ -17,6 +17,7 @@ public class SettingsTabToMaterialIconKindConverter : IValueConverter
             ScheduleSettingsTabViewModel => MaterialIconKind.MapMarkerOutline,
             RulesSettingsTabViewModel => MaterialIconKind.PauseCircleOutline,
             ControlsSettingsTabViewModel => MaterialIconKind.Tune,
+            SmartLightsSettingsTabViewModel => MaterialIconKind.LightbulbGroupOutline,
             // Shouldn't happen
             _ => MaterialIconKind.QuestionMark,
         };
