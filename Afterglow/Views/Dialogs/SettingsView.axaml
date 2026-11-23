@@ -2,6 +2,7 @@
     x:Class="Afterglow.Views.Dialogs.SettingsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Afterglow.Views.Controls"
     xmlns:converters="clr-namespace:Afterglow.Converters"
     xmlns:dialogs="clr-namespace:Afterglow.ViewModels.Dialogs"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
@@ -46,10 +47,6 @@
                 <Setter Property="Foreground" Value="{DynamicResource AccentTextBrush}" />
             </Style>
         </Style>
-        <!--  When the labelled tabs don't fit (in some languages), only the active one is labelled  -->
-        <Style Selector="Border.compact Button.pill:not(.active) TextBlock.tab-label">
-            <Setter Property="IsVisible" Value="False" />
-        </Style>
     </UserControl.Styles>
 
     <Grid RowDefinitions="Auto,*">
@@ -63,69 +60,231 @@
             BorderThickness="0,0,0,1"
             PointerPressed="HeaderBorder_OnPointerPressed"
         >
-            <!--  The outer columns are equal, so that the tabs stay centered  -->
-            <Grid x:Name="HeaderGrid" ColumnDefinitions="*,Auto,*">
-                <!--  Back to the dashboard  -->
-                <Button
-                    x:Name="BackButton"
+            <!--  The outer columns are as wide as each other, so that the tabs stay centered  -->
+            <Grid Grid.IsSharedSizeScope="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="HeaderSide" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="HeaderSide" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel
                     Grid.Column="0"
-                    Padding="6"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
-                    Command="{Binding BackCommand}"
-                    Foreground="{DynamicResource TextPrimaryBrush}"
-                    Theme="{DynamicResource MaterialFlatButton}"
-                    ToolTip.Tip="{Binding LocalizationManager.BackTooltip}"
+                    Orientation="Horizontal"
+                    Spacing="2"
                 >
-                    <materialIcons:MaterialIcon Width="22" Height="22" Kind="ArrowLeft" />
-                </Button>
+                    <!--  Back to the dashboard  -->
+                    <Button
+                        Padding="6"
+                        VerticalAlignment="Center"
+                        Command="{Binding BackCommand}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.BackTooltip}"
+                    >
+                        <materialIcons:MaterialIcon Width="22" Height="22" Kind="ArrowLeft" />
+                    </Button>
 
-                <!--  Tabs (each labelled, unless they don't fit, when only the active one is: the
-                     others show their icon, and their name when pointed at)  -->
-                <Border
-                    x:Name="TabsBorder"
+                    <!--  Afterglow on GitHub  -->
+                    <Button
+                        Padding="3"
+                        VerticalAlignment="Center"
+                        Command="{Binding OpenProjectPageCommand}"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.ProjectPageTooltip}"
+                    >
+                        <materialIcons:MaterialIcon Width="28" Height="28" Kind="Github" />
+                    </Button>
+                </StackPanel>
+
+                <!--  Tabs: the first version that fits (icons and names, names only, or icons only, with
+                     the active one named)  -->
+                <controls:FirstFitPanel
                     Grid.Column="1"
-                    Padding="3"
+                    Margin="8,0"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Background="{DynamicResource CardBrush}"
-                    BorderBrush="{DynamicResource CardBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="16"
                 >
-                    <ItemsControl ItemsSource="{Binding Tabs}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal" Spacing="2" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
-                                <Button
-                                    Classes="pill"
-                                    Classes.active="{Binding IsActive}"
-                                    Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
-                                    CommandParameter="{Binding}"
-                                    ToolTip.Tip="{Binding DisplayName}"
-                                >
-                                    <StackPanel Orientation="Horizontal" Spacing="5">
-                                        <materialIcons:MaterialIcon
-                                            Width="15"
-                                            Height="15"
-                                            VerticalAlignment="Center"
-                                            Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
-                                        />
-                                        <TextBlock
-                                            VerticalAlignment="Center"
-                                            Classes="tab-label"
-                                            Text="{Binding DisplayName}"
-                                        />
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </Border>
+                    <!--  Every tab with its icon and name  -->
+                    <Border
+                        Padding="3"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource CardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                    >
+                        <ItemsControl ItemsSource="{Binding Tabs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
+                                    <Button
+                                        Classes="pill"
+                                        Classes.active="{Binding IsActive}"
+                                        Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{Binding DisplayName}"
+                                    >
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <materialIcons:MaterialIcon
+                                                Width="15"
+                                                Height="15"
+                                                VerticalAlignment="Center"
+                                                Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
+                                            />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                Text="{Binding DisplayName}"
+                                            />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                    <!--  Every tab named (smaller, without icons, when there isn't room for both)  -->
+                    <Border
+                        Padding="3"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource CardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                    >
+                        <ItemsControl ItemsSource="{Binding Tabs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
+                                    <Button
+                                        Classes="pill"
+                                        Classes.active="{Binding IsActive}"
+                                        Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{Binding DisplayName}"
+                                    >
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <materialIcons:MaterialIcon
+                                                Width="15"
+                                                Height="15"
+                                                IsVisible="False"
+                                                VerticalAlignment="Center"
+                                                Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
+                                            />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                FontSize="11"
+                                                Text="{Binding DisplayName}"
+                                            />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                    <!--  Only the active tab named (the others show their name when pointed at)  -->
+                    <Border
+                        Padding="3"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource CardBrush}"
+                        BorderBrush="{DynamicResource CardBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                    >
+                        <ItemsControl ItemsSource="{Binding Tabs}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="2" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="settings:SettingsTabViewModelBase">
+                                    <Button
+                                        Classes="pill"
+                                        Classes.active="{Binding IsActive}"
+                                        Command="{Binding $parent[UserControl].((dialogs:SettingsViewModel)DataContext).ActivateTabCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{Binding DisplayName}"
+                                    >
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <materialIcons:MaterialIcon
+                                                Width="15"
+                                                Height="15"
+                                                VerticalAlignment="Center"
+                                                Kind="{Binding Converter={x:Static converters:SettingsTabToMaterialIconKindConverter.Instance}}"
+                                            />
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding IsActive}"
+                                                Text="{Binding DisplayName}"
+                                            />
+                                        </StackPanel>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </controls:FirstFitPanel>
+
+                <StackPanel
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6"
+                >
+                    <!--  On/off (as on the dashboard)  -->
+                    <ToggleButton
+                        Width="30"
+                        Height="30"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        Background="{DynamicResource WarmBrush}"
+                        Foreground="#22262A"
+                        IsChecked="{Binding Dashboard.IsEnabled}"
+                        Theme="{DynamicResource MaterialIconToggleButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.ToggleAfterglowTooltip}"
+                    >
+                        <ToggleButton.Content>
+                            <materialIcons:MaterialIcon Width="20" Height="20">
+                                <materialIcons:MaterialIcon.Styles>
+                                    <Style Selector="ToggleButton materialIcons|MaterialIcon">
+                                        <Setter Property="Kind" Value="LightbulbOutline" />
+                                    </Style>
+                                    <Style Selector="ToggleButton:unchecked materialIcons|MaterialIcon">
+                                        <Setter Property="Kind" Value="LightbulbOffOutline" />
+                                        <Setter Property="Opacity" Value="0.5" />
+                                    </Style>
+                                </materialIcons:MaterialIcon.Styles>
+                            </materialIcons:MaterialIcon>
+                        </ToggleButton.Content>
+                    </ToggleButton>
+
+                    <!--  Hide to tray (as on the dashboard)  -->
+                    <Button
+                        Padding="4"
+                        VerticalAlignment="Center"
+                        Click="HideButton_OnClick"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.HideToTrayTooltip}"
+                    >
+                        <materialIcons:MaterialIcon Width="22" Height="22" Kind="WindowMinimize" />
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
 

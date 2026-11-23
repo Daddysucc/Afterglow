@@ -1444,6 +1444,138 @@ public sealed class HueLightController
     }
 
     /// <summary>
+    /// Works out what sets the lights paused to a custom look (that are still on) to the given look,
+    /// e.g. as it's changed while they're paused.
+    /// </summary>
+    public IReadOnlyList<HueCommand> GetPausedLookCommands(
+        IReadOnlyList<HueLight> lights,
+        ColorConfiguration look
+    ) =>
+        lights
+            .Where(l =>
+                l.IsOn && _pausedLights.TryGetValue(l.Id, out var paused) && !paused.IsTurnedOff
+            )
+            .Select(l => GetFixedCommand(l, look, PreviewTransitionMilliseconds))
+            .ToArray();
+
+    /// <summary>
+    /// Works out what the PC shutting down (or going to sleep) does to the lights Afterglow is still
+    /// responsible for while they're paused: those left as they are for the pause, and those set to
+    /// a look of the user's choosing (lights put back for the pause are no longer its own).
+    /// </summary>
+    public IReadOnlyList<HueCommand> ShutDownWhilePaused(
+        IReadOnlyList<HueLight> lights,
+        DateTimeOffset now,
+        HueShutdownAction action,
+        ColorConfiguration? look
+    )
+    {
+        // Left as they are for the pause (still followed, as far as this goes)
+        var commands = (
+            action switch
+            {
+                HueShutdownAction.Restore => Restore(lights, now),
+                HueShutdownAction.TurnOff => TurnOff(lights, now, false),
+                HueShutdownAction.Custom when look is { } shutdownLook => Restore(
+                    lights,
+                    now,
+                    null,
+                    true,
+                    shutdownLook
+                ),
+                _ => TurnOff(lights, now, true),
+            }
+        ).ToList();
+
+        // Set to a look of the user's choosing for the pause (or turned off, which stay off)
+        foreach (var light in lights)
+        {
+            if (
+                !light.IsOn
+                || !_pausedLights.TryGetValue(light.Id, out var paused)
+                || paused.IsTurnedOff
+            )
+            {
+                continue;
+            }
+
+            switch (action)
+            {
+                case HueShutdownAction.Restore:
+                    _pausedLights.Remove(light.Id);
+                    commands.Add(
+                        paused.IsTurnedOn
+                            ? new HueCommand(
+                                light.Id,
+                                null,
+                                null,
+                                null,
+                                null,
+                                RestoreTransitionMilliseconds,
+                                false
+                            )
+                            : new HueCommand(
+                                light.Id,
+                                paused.Mirek,
+                                light.SupportsBrightness ? paused.Brightness : null,
+                                paused.Mirek is null ? paused.X : null,
+                                paused.Mirek is null ? paused.Y : null,
+                                RestoreTransitionMilliseconds
+                            )
+                    );
+                    break;
+
+                case HueShutdownAction.TurnOff:
+                    _pausedLights.Remove(light.Id);
+                    commands.Add(
+                        new HueCommand(
+                            light.Id,
+                            null,
+                            null,
+                            null,
+                            null,
+                            RestoreTransitionMilliseconds,
+                            false
+                        )
+                    );
+                    break;
+
+                // (still remembered how it was before, for after waking up)
+                case HueShutdownAction.Custom when look is { } shutdownLook:
+                    commands.Add(
+                        GetFixedCommand(light, shutdownLook, RestoreTransitionMilliseconds)
+                    );
+                    break;
+
+                // Left as it is, other than a light Afterglow turned on, which is turned off
+                default:
+                    if (paused.IsTurnedOn)
+                    {
+                        _pausedLights.Remove(light.Id);
+                        commands.Add(
+                            new HueCommand(
+                                light.Id,
+                                null,
+                                null,
+                                null,
+                                null,
+                                RestoreTransitionMilliseconds,
+                                false
+                            )
+                        );
+                    }
+
+                    break;
+            }
+        }
+
+        return commands;
+    }
+
+    // Whether anything is still Afterglow's to look after while lights are paused
+    public bool HasPausedLights => _pausedLights.Count > 0 || _states.Count > 0;
+
+    /// <summary>
     /// Forgets how lights paused to a custom look were before (e.g. once Hue control is turned
     /// off, as they're then left as they are).
     /// </summary>

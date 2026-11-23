@@ -50,7 +50,7 @@ Only one copy of Afterglow runs at a time, so if an older version is running, Af
 With the [.NET 10 SDK](https://dotnet.microsoft.com/download) installed, run:
 
 ```
-dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.4.0
+dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.5.0
 ```
 
 This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-windows/win-x64/publish/`.
@@ -88,25 +88,29 @@ To keep lights following a similar curve while your PC is off, [Adaptive Lightin
 
 ![Tray menu](.assets/screenshot-tray.png)
 
-**Settings.** Everything is on one full-page screen, split into four tabs.
+**Settings.** Everything is on one full-page screen, split into five tabs. The header also has a link to this page, and the same on/off and hide-to-tray buttons as the dashboard.
 
-<img src=".assets/screenshot-settings.png" width="680" alt="Settings" />
+<img src=".assets/screenshot-settings-overview.png" width="680" alt="Settings" />
 
 **Cycle & Colors.** The temperature and brightness of each stage, the bedtime that starts the night, how long transitions take, and when grayscale turns on.
 
-![Cycle & Colors settings](.assets/screenshot-settings-cycle.png)
+<img src=".assets/screenshot-tab-cycle.png" width="648" alt="Cycle & Colors settings" />
 
 **Schedule & Location.** Sunrise and sunset from a searched place, coordinates, or automatic detection, or set by hand.
 
-![Schedule & Location settings](.assets/screenshot-settings-schedule.png)
+<img src=".assets/screenshot-tab-schedule.png" width="648" alt="Schedule & Location settings" />
 
 **Rules & Whitelist.** When to pause automatically, per-display offsets for multi-monitor setups, and the applications and window titles that pause Afterglow.
 
-![Rules & Whitelist settings](.assets/screenshot-settings-rules.png)
+<img src=".assets/screenshot-tab-rules.png" width="648" alt="Rules & Whitelist settings" />
 
-**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, and global hotkeys. The **Smart Lights** tab has everything for Philips Hue. Each tab can reset its own settings with the button at its bottom.
+**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, and global hotkeys.
 
-<img src=".assets/screenshot-settings-app.png" width="648" alt="App & Controls settings" />
+<img src=".assets/screenshot-tab-app.png" width="648" alt="App & Controls settings" />
+
+**Smart Lights.** Connecting to a Philips Hue bridge, and how your lights follow the cycle, react to changes made elsewhere, pause, and behave at startup and shutdown. Once connected, it also lists your rooms and their lights. Each tab can reset its own settings with the button at its bottom.
+
+<img src=".assets/screenshot-tab-lights.png" width="648" alt="Smart Lights settings" />
 
 ## Code signing policy
 

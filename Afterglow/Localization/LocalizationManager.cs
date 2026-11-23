@@ -258,6 +258,7 @@ public partial class LocalizationManager
     // ---- Settings page ----
 
     public string BackTooltip => Get();
+    public string ProjectPageTooltip => Get();
     public string CycleTabName => Get();
     public string ScheduleTabName => Get();
     public string RulesTabName => Get();

@@ -1129,6 +1129,48 @@ public class HueServiceSpecs : IDisposable
     }
 
     [Fact]
+    public async Task I_can_change_the_look_of_hue_lights_while_they_are_paused_to_it()
+    {
+        // Arrange
+        var settings = CreateSettings();
+        settings.HuePauseAction = HuePauseAction.Custom;
+        settings.HuePauseTemperature = 2500;
+        settings.HuePauseBrightness = 0.4;
+        var (service, bridge) = CreateService(settings);
+        using var _ = service;
+        await service.PollAsync();
+        service.Pause();
+        await WaitForAsync(() => bridge.Lights["lamp"].Mirek == 400);
+
+        // Act
+        settings.HuePauseTemperature = 2000;
+
+        // Assert (straight away, rather than on the next pause)
+        await WaitForAsync(() => bridge.Lights["lamp"].Mirek == 454);
+        bridge.Lights["lamp"].Brightness.Should().Be(40);
+    }
+
+    [Fact]
+    public async Task I_get_hue_lights_paused_to_a_look_turned_off_when_the_pc_shuts_down()
+    {
+        // Arrange
+        var settings = CreateSettings();
+        settings.HuePauseAction = HuePauseAction.Custom;
+        settings.HueShutdownAction = HueShutdownAction.TurnOff;
+        var (service, bridge) = CreateService(settings);
+        using var _ = service;
+        await service.PollAsync();
+        service.Pause();
+        await WaitForAsync(() => bridge.Lights["lamp"].Mirek != 387);
+
+        // Act
+        service.SimulateSessionEnding();
+
+        // Assert
+        bridge.Lights["lamp"].IsOn.Should().BeFalse();
+    }
+
+    [Fact]
     public void I_only_get_afterglow_talking_to_the_hue_bridge_it_first_connected_to()
     {
         // Act & assert

@@ -219,6 +219,7 @@ public partial class LocalizationManager
                 """,
             // Settings page
             [nameof(BackTooltip)] = "Назад до панелі (зміни збережено)",
+            [nameof(ProjectPageTooltip)] = "Afterglow на GitHub",
             [nameof(CycleTabName)] = "Цикл і кольори",
             [nameof(ScheduleTabName)] = "Розклад і місце",
             [nameof(RulesTabName)] = "Правила і білий список",

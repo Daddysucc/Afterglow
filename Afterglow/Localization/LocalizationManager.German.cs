@@ -214,6 +214,7 @@ public partial class LocalizationManager
             """,
         // Settings page
         [nameof(BackTooltip)] = "Zurück zum Dashboard (Änderungen werden gespeichert)",
+        [nameof(ProjectPageTooltip)] = "Afterglow auf GitHub",
         [nameof(CycleTabName)] = "Zyklus & Farben",
         [nameof(ScheduleTabName)] = "Zeitplan & Standort",
         [nameof(RulesTabName)] = "Regeln & Whitelist",

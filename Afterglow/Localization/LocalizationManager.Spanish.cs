@@ -221,6 +221,7 @@ public partial class LocalizationManager
                 """,
             // Settings page
             [nameof(BackTooltip)] = "Volver al panel (los cambios se guardan)",
+            [nameof(ProjectPageTooltip)] = "Afterglow en GitHub",
             [nameof(CycleTabName)] = "Ciclo y colores",
             [nameof(ScheduleTabName)] = "Horario y ubicación",
             [nameof(RulesTabName)] = "Reglas y lista blanca",

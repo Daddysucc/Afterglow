@@ -202,6 +202,7 @@ public partial class LocalizationManager
                 """,
             // Settings page
             [nameof(BackTooltip)] = "返回儀表板（變更已儲存）",
+            [nameof(ProjectPageTooltip)] = "GitHub 上的 Afterglow",
             [nameof(CycleTabName)] = "週期與色彩",
             [nameof(ScheduleTabName)] = "排程與位置",
             [nameof(RulesTabName)] = "規則與白名單",

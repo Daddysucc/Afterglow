@@ -228,6 +228,7 @@ public partial class LocalizationManager
                 "{0} is running from a temporary folder (such as Downloads), so it won't start with Windows from there. To keep it, use the installer, or move {1} to a permanent folder and run it from there.",
             // Settings page
             [nameof(BackTooltip)] = "Back to the dashboard (changes are saved)",
+            [nameof(ProjectPageTooltip)] = "Afterglow on GitHub",
             [nameof(CycleTabName)] = "Cycle & Colors",
             [nameof(ScheduleTabName)] = "Schedule & Location",
             [nameof(RulesTabName)] = "Rules & Whitelist",

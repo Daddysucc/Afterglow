@@ -597,6 +597,13 @@ public partial class HueService : ObservableObject, IDisposable
                 QueuePoll(TargetChangeDelay);
                 break;
 
+            // Shown on the lights that are paused to it right now, as it's changed
+            case nameof(SettingsService.HuePauseTemperature)
+            or nameof(SettingsService.HuePauseBrightness):
+                if (!_isFollowing && _settingsService.HuePauseAction == HuePauseAction.Custom)
+                    QueuePausedLookUpdate();
+                break;
+
             // Settings that were reset or reloaded as a whole report every property at once
             case null
             or "":
@@ -806,6 +813,94 @@ public partial class HueService : ObservableObject, IDisposable
             ? _settingsService.HueShutdownAction
             : HueShutdownAction.Leave;
 
+    // The look of lights paused to a custom look is being changed (and set on them, one change
+    // after another, skipping to the latest)
+    private bool _isUpdatingPausedLook;
+    private bool _hasPendingPausedLook;
+
+    private void QueuePausedLookUpdate()
+    {
+        if (!_isActive || _followedBridge is null || !_controller.HasPausedLights)
+            return;
+
+        _hasPendingPausedLook = true;
+        if (!_isUpdatingPausedLook)
+            _ = UpdatePausedLookAsync();
+    }
+
+    private async Task UpdatePausedLookAsync()
+    {
+        _isUpdatingPausedLook = true;
+        try
+        {
+            while (_hasPendingPausedLook && !_isFollowing && _followedBridge is { } bridge)
+            {
+                _hasPendingPausedLook = false;
+
+                var lights = await GetLightsAsync();
+                if (_isFollowing)
+                    break;
+
+                var commands = _controller.GetPausedLookCommands(
+                    lights,
+                    GetLook(
+                        _settingsService.HuePauseTemperature,
+                        _settingsService.HuePauseBrightness
+                    )
+                );
+
+                if (commands.Count > 0)
+                    await SendCommandsAsync(bridge, commands, false, () => !_isFollowing);
+            }
+        }
+        catch (Exception ex) when (ex is HueRequestException or JsonException)
+        {
+            Debug.WriteLine($"Failed to change the paused Hue lights: {ex.Message}");
+        }
+        finally
+        {
+            _isUpdatingPausedLook = false;
+        }
+    }
+
+    // When the PC shuts down or goes to sleep while lights are paused, what's chosen for that
+    // applies to the lights Afterglow is still responsible for (right away, as it doesn't wait)
+    private void ShutDownWhilePaused()
+    {
+        if (!_isActive || _followedBridge is not { } bridge || !_controller.HasPausedLights)
+            return;
+
+        var action = GetShutdownAction();
+        var look =
+            action == HueShutdownAction.Custom
+                ? GetLook(
+                    _settingsService.HueShutdownTemperature,
+                    _settingsService.HueShutdownBrightness
+                )
+                : (ColorConfiguration?)null;
+
+        // (on the thread pool, as the UI thread waits for it)
+        var task = Task.Run(async () =>
+        {
+            var lights = await GetLightsAsync().ConfigureAwait(false);
+            var commands = _controller.ShutDownWhilePaused(lights, _getNow(), action, look);
+            if (commands.Count > 0)
+                await SendCommandsAsync(bridge, commands, true).ConfigureAwait(false);
+        });
+
+        try
+        {
+            task.Wait(RestoreTimeout);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to change the paused Hue lights: {ex.Message}");
+        }
+    }
+
+    // As if the PC were shutting down (e.g. in tests)
+    internal void SimulateSessionEnding() => OnSessionEnding(true);
+
     private void OnSessionEnding(bool isEnding)
     {
         if (isEnding)
@@ -813,6 +908,8 @@ public partial class HueService : ObservableObject, IDisposable
             _isSuspended = true;
             if (_isFollowing)
                 StopFollowing(true, shutdownAction: GetShutdownAction());
+            else
+                ShutDownWhilePaused();
         }
         else
         {
@@ -832,6 +929,8 @@ public partial class HueService : ObservableObject, IDisposable
             _isSuspended = true;
             if (_isFollowing)
                 StopFollowing(true, shutdownAction: GetShutdownAction());
+            else
+                ShutDownWhilePaused();
 
             Evaluate();
         }
