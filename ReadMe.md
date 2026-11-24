@@ -82,7 +82,7 @@ To keep lights following a similar curve while your PC is off, [Adaptive Lightin
 
 **Dashboard.** The 24-hour curve shows how the day (6500 K), evening (4200 K), and night (2400 K) stages blend into each other, here with 3-hour transitions around sunrise, sunset, and bedtime, mid-way through sunrise.
 
-<img src=".assets/screenshot-dashboard-day.png" width="680" alt="Dashboard" />
+<img src=".assets/screenshot-dashboard-icon.png" width="680" alt="Dashboard" />
 
 **Tray menu.** Pause or turn off grayscale for a while, right from the system tray.
 
@@ -90,7 +90,7 @@ To keep lights following a similar curve while your PC is off, [Adaptive Lightin
 
 **Settings.** Everything is on one full-page screen, split into five tabs. The header also has a link to this page, and the same on/off and hide-to-tray buttons as the dashboard.
 
-<img src=".assets/screenshot-settings-overview.png" width="680" alt="Settings" />
+<img src=".assets/screenshot-settings-icon.png" width="680" alt="Settings" />
 
 **Cycle & Colors.** The temperature and brightness of each stage, the bedtime that starts the night, how long transitions take, and when grayscale turns on.
 
