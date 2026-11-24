@@ -578,6 +578,17 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
             await _hueService.ConnectAsync();
     }
 
+    [RelayCommand]
+    private void ForgetHueBridge()
+    {
+        _hueService.ForgetBridge();
+
+        // (the address is shown from the settings, which don't announce this change themselves)
+        OnPropertyChanged(nameof(HueBridgeAddress));
+        UpdateHueRooms();
+        UpdateHueLights();
+    }
+
     protected override void Dispose(bool disposing)
     {
         if (disposing)

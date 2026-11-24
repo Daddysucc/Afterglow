@@ -670,24 +670,46 @@
             </StackPanel>
         </Border>
 
-        <!--  Reset this tab's settings (at the very end, so that it isn't clicked by accident)  -->
-        <Button
+        <!--  Reset this tab's settings, and forget the bridge (at the very end, so that they
+              aren't clicked by accident)  -->
+        <StackPanel
             Margin="0,4,0,0"
-            Padding="10,6"
             HorizontalAlignment="Left"
-            Command="{Binding ResetTabCommand}"
-            Foreground="{DynamicResource TextMutedBrush}"
-            Theme="{DynamicResource MaterialFlatButton}"
-            ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
+            Orientation="Horizontal"
+            Spacing="4"
         >
-            <StackPanel Orientation="Horizontal" Spacing="6">
-                <materialIcons:MaterialIcon Width="16" Height="16" Kind="Restore" />
-                <TextBlock
-                    VerticalAlignment="Center"
-                    FontSize="12"
-                    Text="{Binding ResetTabButtonText}"
-                />
-            </StackPanel>
-        </Button>
+            <Button
+                Padding="10,6"
+                Command="{Binding ResetTabCommand}"
+                Foreground="{DynamicResource TextMutedBrush}"
+                Theme="{DynamicResource MaterialFlatButton}"
+                ToolTip.Tip="{Binding LocalizationManager.ResetTooltip}"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon Width="16" Height="16" Kind="Restore" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Text="{Binding ResetTabButtonText}"
+                    />
+                </StackPanel>
+            </Button>
+            <Button
+                Padding="10,6"
+                Command="{Binding ForgetHueBridgeCommand}"
+                Foreground="{DynamicResource TextMutedBrush}"
+                Theme="{DynamicResource MaterialFlatButton}"
+                ToolTip.Tip="{Binding LocalizationManager.HueForgetBridgeTooltip}"
+            >
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <materialIcons:MaterialIcon Width="16" Height="16" Kind="LinkVariantOff" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Text="{Binding LocalizationManager.HueForgetBridgeButton}"
+                    />
+                </StackPanel>
+            </Button>
+        </StackPanel>
     </StackPanel>
 </UserControl>

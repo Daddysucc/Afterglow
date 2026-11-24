@@ -1374,6 +1374,21 @@ public partial class HueService : ObservableObject, IDisposable
         Evaluate();
     }
 
+    // Disconnects, and also forgets the bridge's address and the chosen rooms and lights, to start
+    // over (the next connection searches for a bridge again)
+    public void ForgetBridge()
+    {
+        Disconnect();
+
+        _settingsService.HueBridgeAddress = null;
+        _settingsService.HueRoomIds = null;
+        _settingsService.HueExcludedLightIds = null;
+        _settingsService.Save();
+
+        Status = HueStatus.NotConnected;
+        Evaluate();
+    }
+
     // Whether the bridge needs connecting to again (e.g. its key was revoked)
     public bool NeedsReconnecting => _blockingStatus is not null;
 

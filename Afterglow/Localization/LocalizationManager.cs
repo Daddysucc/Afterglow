@@ -327,6 +327,8 @@ public partial class LocalizationManager
     public string HueReconnectButton => Get();
     public string HueDisconnectButton => Get();
     public string HueDisconnectTooltip => Get();
+    public string HueForgetBridgeButton => Get();
+    public string HueForgetBridgeTooltip => Get();
     public string HueCancelButton => Get();
     public string HueConnectTooltip => Get();
     public string HueRoomsLabel => Get();

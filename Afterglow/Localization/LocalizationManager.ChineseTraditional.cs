@@ -262,6 +262,9 @@ public partial class LocalizationManager
             [nameof(HueDisconnectButton)] = "中斷連線",
             [nameof(HueDisconnectTooltip)] =
                 "將燈恢復原狀並忘記此橋接器（重新連線需要再次按下其按鈕）",
+            [nameof(HueForgetBridgeButton)] = "忘記橋接器",
+            [nameof(HueForgetBridgeTooltip)] =
+                "中斷連線，並忘記橋接器的位址以及所選的房間和燈，以便重新開始",
             [nameof(HueCancelButton)] = "取消",
             [nameof(HueConnectTooltip)] =
                 "連線到橋接器：按一下後，請在 30 秒內按下橋接器頂部的按鈕",

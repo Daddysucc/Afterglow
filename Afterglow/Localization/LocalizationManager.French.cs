@@ -284,6 +284,9 @@ public partial class LocalizationManager
         [nameof(HueDisconnectButton)] = "Déconnecter",
         [nameof(HueDisconnectTooltip)] =
             "Remettre les lampes comme avant et oublier ce pont (pour se reconnecter, il faudra appuyer à nouveau sur son bouton)",
+        [nameof(HueForgetBridgeButton)] = "Oublier le pont",
+        [nameof(HueForgetBridgeTooltip)] =
+            "Se déconnecter, et oublier aussi l'adresse du pont ainsi que les pièces et lampes choisies, pour repartir de zéro",
         [nameof(HueCancelButton)] = "Annuler",
         [nameof(HueConnectTooltip)] =
             "Se connecter au pont : après avoir cliqué, appuyez sur le bouton du pont dans les 30 secondes",

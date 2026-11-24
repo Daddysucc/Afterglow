@@ -278,6 +278,9 @@ public partial class LocalizationManager
         [nameof(HueDisconnectButton)] = "Trennen",
         [nameof(HueDisconnectTooltip)] =
             "Lampen zurücksetzen und diese Bridge vergessen (zum erneuten Verbinden muss ihre Taste wieder gedrückt werden)",
+        [nameof(HueForgetBridgeButton)] = "Bridge vergessen",
+        [nameof(HueForgetBridgeTooltip)] =
+            "Trennen und auch die Adresse der Bridge sowie die gewählten Räume und Lampen vergessen, um neu anzufangen",
         [nameof(HueCancelButton)] = "Abbrechen",
         [nameof(HueConnectTooltip)] =
             "Mit der Bridge verbinden: Drücken Sie nach dem Klicken innerhalb von 30 Sekunden die Taste oben auf der Bridge",

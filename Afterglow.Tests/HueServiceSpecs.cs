@@ -745,6 +745,33 @@ public class HueServiceSpecs : IDisposable
     }
 
     [Fact]
+    public async Task I_can_forget_my_hue_bridge_to_start_over()
+    {
+        // Arrange
+        var settings = CreateSettings();
+        settings.HueExcludedLightIds = ["other"];
+        var (service, bridge) = CreateService(settings);
+        using var _ = service;
+        await service.PollAsync();
+        bridge.Lights["lamp"].Mirek.Should().Be(387);
+
+        // Act
+        service.ForgetBridge();
+
+        // Assert
+        await WaitForAsync(() => bridge.Lights["lamp"].Mirek == 200);
+        service.IsPaired.Should().BeFalse();
+        service.Status.Should().Be(HueStatus.NotConnected);
+        settings.HueProtectedAppKey.Should().BeNull();
+        settings.HueCertificateHash.Should().BeNull();
+        settings.HueBridgeId.Should().BeNull();
+        settings.HueBridgeAddress.Should().BeNull();
+        settings.HueRoomIds.Should().BeNull();
+        settings.HueExcludedLightIds.Should().BeNull();
+        settings.IsHueEnabled.Should().BeTrue("only the bridge is forgotten");
+    }
+
+    [Fact]
     public async Task I_get_hue_lights_caught_up_after_i_change_a_setting_rather_than_left_alone()
     {
         // Arrange

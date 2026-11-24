@@ -294,6 +294,9 @@ public partial class LocalizationManager
             [nameof(HueDisconnectButton)] = "Disconnect",
             [nameof(HueDisconnectTooltip)] =
                 "Put the lights back and forget this bridge (connecting again takes another press of its button)",
+            [nameof(HueForgetBridgeButton)] = "Forget bridge",
+            [nameof(HueForgetBridgeTooltip)] =
+                "Disconnect, and also forget the bridge's address and the chosen rooms and lights, to start over",
             [nameof(HueCancelButton)] = "Cancel",
             [nameof(HueConnectTooltip)] =
                 "Connect to the bridge: after clicking, press the button on top of the bridge within 30 seconds",

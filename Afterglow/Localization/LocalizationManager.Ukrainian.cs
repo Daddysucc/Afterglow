@@ -283,6 +283,9 @@ public partial class LocalizationManager
             [nameof(HueDisconnectButton)] = "Від'єднати",
             [nameof(HueDisconnectTooltip)] =
                 "Повернути лампи як було й забути цей міст (щоб під'єднатися знову, потрібно ще раз натиснути його кнопку)",
+            [nameof(HueForgetBridgeButton)] = "Забути міст",
+            [nameof(HueForgetBridgeTooltip)] =
+                "Від'єднатися, а також забути адресу моста й вибрані кімнати та лампи, щоб почати спочатку",
             [nameof(HueCancelButton)] = "Скасувати",
             [nameof(HueConnectTooltip)] =
                 "Під’єднатися до мосту: після натискання натисніть кнопку зверху на мосту протягом 30 секунд",
