@@ -252,24 +252,19 @@
                         Height="30"
                         Padding="0"
                         VerticalAlignment="Center"
-                        Background="{DynamicResource WarmBrush}"
-                        Foreground="#22262A"
+                        Background="Transparent"
                         IsChecked="{Binding Dashboard.IsEnabled}"
                         Theme="{DynamicResource MaterialIconToggleButton}"
                         ToolTip.Tip="{Binding LocalizationManager.ToggleAfterglowTooltip}"
                     >
                         <ToggleButton.Content>
-                            <materialIcons:MaterialIcon Width="20" Height="20">
-                                <materialIcons:MaterialIcon.Styles>
-                                    <Style Selector="ToggleButton materialIcons|MaterialIcon">
-                                        <Setter Property="Kind" Value="LightbulbOutline" />
+                            <Image Width="26" Height="26" Source="/favicon.png">
+                                <Image.Styles>
+                                    <Style Selector="ToggleButton:unchecked Image">
+                                        <Setter Property="Opacity" Value="0.4" />
                                     </Style>
-                                    <Style Selector="ToggleButton:unchecked materialIcons|MaterialIcon">
-                                        <Setter Property="Kind" Value="LightbulbOffOutline" />
-                                        <Setter Property="Opacity" Value="0.5" />
-                                    </Style>
-                                </materialIcons:MaterialIcon.Styles>
-                            </materialIcons:MaterialIcon>
+                                </Image.Styles>
+                            </Image>
                         </ToggleButton.Content>
                     </ToggleButton>
 

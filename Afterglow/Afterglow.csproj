@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <AvaloniaResource Include="../favicon.ico" Link="favicon.ico" />
+    <AvaloniaResource Include="../favicon.png" Link="favicon.png" />
   </ItemGroup>
 
   <ItemGroup>

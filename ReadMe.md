@@ -1,7 +1,7 @@
 # Afterglow
 
 <p align="center">
-    <img src="favicon.png" alt="Icon" />
+    <img src="favicon.png" alt="Icon" width="256" />
 </p>
 
 **Afterglow** reduces eye strain from looking at screens late in the day.
