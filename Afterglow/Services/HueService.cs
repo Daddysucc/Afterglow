@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -1278,7 +1279,10 @@ public partial class HueService : ObservableObject, IDisposable
                 // talked to meanwhile, e.g. while putting lights back)
                 if (
                     key is not null
-                    && _seenCertificateHashes.TryGetValue(address, out var certificateHash)
+                    && _seenCertificateHashes.TryGetValue(
+                        new Uri($"https://{address}/").IdnHost,
+                        out var certificateHash
+                    )
                 )
                 {
                     var bridgeId = await TryGetBridgeIdAsync(address, cancellation.Token);
@@ -1729,7 +1733,14 @@ public partial class HueService : ObservableObject, IDisposable
                         certificate is not null
                         && CheckCertificate(
                             GetCertificateHash(certificate),
-                            (sender as HttpRequestMessage)?.RequestUri?.Authority
+                            // The handler passes the TLS stream here (not the request), which
+                            // knows the host it connects to, but not the port
+                            sender switch
+                            {
+                                SslStream stream => stream.TargetHostName,
+                                HttpRequestMessage message => message.RequestUri?.IdnHost,
+                                _ => null,
+                            }
                         ),
                 },
             }
@@ -1738,12 +1749,12 @@ public partial class HueService : ObservableObject, IDisposable
             Timeout = Timeout.InfiniteTimeSpan,
         };
 
-    // Notes the certificate a bridge presented (at the given address), and whether it's the one
-    // expected
-    internal bool CheckCertificate(string hash, string? address)
+    // Notes the certificate a bridge presented (at the given host, without a port), and whether
+    // it's the one expected
+    internal bool CheckCertificate(string hash, string? host)
     {
-        if (address is not null)
-            _seenCertificateHashes[address] = hash;
+        if (!string.IsNullOrEmpty(host))
+            _seenCertificateHashes[host] = hash;
 
         return IsCertificateAccepted(hash, _expectedCertificateHash);
     }

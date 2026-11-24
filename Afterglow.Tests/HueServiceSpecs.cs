@@ -91,10 +91,7 @@ public class HueServiceSpecs : IDisposable
                 throw new HttpRequestException("No route to host.");
 
             // The TLS handshake
-            if (
-                Service is not null
-                && !Service.CheckCertificate(PresentedCertificate, uri.Authority)
-            )
+            if (Service is not null && !Service.CheckCertificate(PresentedCertificate, uri.IdnHost))
                 throw new HttpRequestException("Rejected.", new AuthenticationException());
 
             switch (request.Method.Method, uri.AbsolutePath)
