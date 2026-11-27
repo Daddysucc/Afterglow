@@ -90,7 +90,7 @@ public class WallpaperService : IDisposable
     private const int NoticeableAccentDifference = 4;
 
     // Images drawn by an earlier version (e.g. with other skies) are told apart by this
-    private const string ImagePrefix = "Sky 3 ";
+    private const string ImagePrefix = "Sky 4 ";
 
     private const string OriginalWallpapersFileName = "Original wallpapers.txt";
     private const string OriginalAccentColorFileName = "Original accent color.txt";
