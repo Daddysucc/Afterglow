@@ -49,9 +49,11 @@ public readonly record struct WallpaperTarget(
 /// keeps its sky until it isn't. The other displays carry on.</item>
 /// <item>The accent color (which repaints the taskbars and title bars of every display) waits
 /// until there's been no input for a few seconds, and nothing is fullscreen.</item>
-/// <item>Nothing changes, and nothing is drawn in the background, while something keeps the
-/// display on (a video or a game playing, wherever it is: Windows doesn't say which display), or
-/// while the screen is locked.</item>
+/// <item>The accent color also waits while something keeps the display on (a video or a game
+/// playing, wherever it is: Windows doesn't say which display). Changing the wallpaper itself
+/// costs next to nothing, so it doesn't.</item>
+/// <item>Nothing changes while the screen is locked, and nothing is drawn in the background
+/// while an application is fullscreen.</item>
 /// </list>
 /// Changes made by the user (e.g. moving a slider, or stepping through the day) are shown right
 /// away.
@@ -253,16 +255,17 @@ public class WallpaperService : IDisposable
     // Only looked up when there's something to do, as it opens the foreground application
     private void UpdateActivity()
     {
-        // The cheapest first: while a video or a game plays, or the screen is locked, nothing
-        // changes anyway, so the foreground application isn't looked up
+        // The cheapest first: while the screen is locked, nothing changes anyway, so the
+        // foreground application isn't looked up
         _isLocked = InputDesktop.IsLocked();
-        _isDisplayKeptOn = UserActivity.IsDisplayKeptOn();
-        if (_isLocked || _isDisplayKeptOn)
+        if (_isLocked)
         {
             _isQuiet = false;
             _isDrawingPaused = true;
             return;
         }
+
+        _isDisplayKeptOn = UserActivity.IsDisplayKeptOn();
 
         // (a system window, like the taskbar, keeps what was found before)
         if (_externalApplicationService.TryGetForegroundFullScreenMonitor(out var deviceName))
@@ -297,7 +300,12 @@ public class WallpaperService : IDisposable
         }
 
         _busyBounds = busyBounds;
-        _isQuiet = isIdle && _fullScreenBounds is null;
+        // The accent color repaints the taskbars and title bars (which stalls the taskbar for a
+        // moment), so it also waits while a video or a game plays. Changing the wallpaper costs
+        // next to nothing (measured at 2 ms, without stalling anything or dropping a frame), so
+        // the displays that aren't busy carry on meanwhile. Drawing (at the lowest priority)
+        // only waits for a fullscreen application.
+        _isQuiet = isIdle && _fullScreenBounds is null && !_isDisplayKeptOn;
         _isDrawingPaused = _fullScreenBounds is not null;
     }
 
@@ -363,8 +371,7 @@ public class WallpaperService : IDisposable
         IReadOnlyList<Rect> skipped = [];
         if (!target.IsImmediate)
         {
-            // A video or a game is playing (wherever it is), or the screen is locked
-            if (_isLocked || _isDisplayKeptOn)
+            if (_isLocked)
                 return;
 
             // The cycle moving on waits for a quiet moment
@@ -506,12 +513,15 @@ public class WallpaperService : IDisposable
                 var filePath = GetImagePath(size, index);
                 if (!File.Exists(filePath))
                 {
+                    // (at the lowest priority as well, so that it never gets in the way, even
+                    // if it takes a moment longer)
+                    using var backgroundMode = BackgroundWork.EnterBackgroundMode();
                     Render(
                         DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[index]),
                         size.Item1,
                         size.Item2,
                         filePath,
-                        2
+                        1
                     );
                 }
 
