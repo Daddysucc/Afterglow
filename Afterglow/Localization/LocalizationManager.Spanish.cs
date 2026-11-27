@@ -315,10 +315,10 @@ public partial class LocalizationManager
                 "Reemplaza el fondo de pantalla en cada pantalla (las pantallas verticales reciben una imagen vertical). Tu propio fondo de pantalla vuelve cuando se desactiva.",
             [nameof(AccentColorMatchedLabel)] = "Ajustar el color de énfasis",
             [nameof(AccentColorMatchedTooltip)] =
-                "Ajusta el color de énfasis de Windows exactamente al color y brillo de la luz, para la iluminación dinámica (activa «Coincidir con mi color de énfasis de Windows» en Configuración › Personalización › Iluminación dinámica). Un color de énfasis automático tomado del fondo de pantalla dejaría fuera la atenuación. Tu propio color de énfasis vuelve cuando se desactiva.",
+                "Ajusta el color de énfasis de Windows exactamente al color y brillo de la luz, para la iluminación dinámica (activa «Coincidir con mi color de énfasis de Windows» en Configuración › Personalización › Iluminación dinámica). Un color de énfasis automático tomado del fondo de pantalla dejaría fuera la atenuación. Tu propio color de énfasis vuelve cuando se desactiva. Solo cambia mientras no estás (30 segundos sin actividad y sin nada reproduciéndose), porque Windows congela brevemente todas las aplicaciones, y el ratón, cada vez que cambia el color de énfasis.",
             [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
             [nameof(DynamicWallpaperStepTooltip)] =
-                "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces y el fondo de pantalla a esa hora del día",
+                "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces y el fondo de pantalla a esa hora del día (el color de énfasis lo sigue cuando no estás)",
             [nameof(DynamicWallpaperStopButton)] = "Detener",
             [nameof(DynamicWallpaperPreviewingText)] = "Vista previa de {0}",
             [nameof(HueNotConnectedText)] =

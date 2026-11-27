@@ -31,6 +31,41 @@ public readonly record struct WallpaperColor(byte Red, byte Green, byte Blue)
             Math.Abs(a.Red - b.Red),
             Math.Max(Math.Abs(a.Green - b.Green), Math.Abs(a.Blue - b.Blue))
         );
+
+    /// <summary>
+    /// How different the two colors look (the distance between them in OKLab, a color space laid
+    /// out the way the eye tells colors apart): from 0 (the same) to about 1 (black and white).
+    /// About 0.02 is the smallest difference that can just be seen side by side.
+    /// </summary>
+    public static double GetPerceptualDifference(WallpaperColor a, WallpaperColor b)
+    {
+        var (l1, a1, b1) = a.ToOklab();
+        var (l2, a2, b2) = b.ToOklab();
+
+        return Math.Sqrt((l1 - l2) * (l1 - l2) + (a1 - a2) * (a1 - a2) + (b1 - b2) * (b1 - b2));
+    }
+
+    // https://bottosson.github.io/posts/oklab
+    private (double L, double A, double B) ToOklab()
+    {
+        static double ToLinear(byte value)
+        {
+            var x = value / 255.0;
+            return x <= 0.04045 ? x / 12.92 : Math.Pow((x + 0.055) / 1.055, 2.4);
+        }
+
+        var (r, g, b) = (ToLinear(Red), ToLinear(Green), ToLinear(Blue));
+
+        var l = Math.Cbrt(0.4122214708 * r + 0.5363015264 * g + 0.0514459929 * b);
+        var m = Math.Cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+        var s = Math.Cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+
+        return (
+            0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+        );
+    }
 }
 
 /// <summary>

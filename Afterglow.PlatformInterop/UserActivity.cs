@@ -12,7 +12,8 @@ namespace Afterglow.PlatformInterop;
 public static partial class UserActivity
 {
     /// <summary>
-    /// How long it's been since the last mouse or keyboard input (game controllers don't count).
+    /// How long it's been since the last mouse or keyboard input (game controllers don't count:
+    /// see <see cref="TryGetControllerState" />).
     /// </summary>
     public static TimeSpan GetIdleTime()
     {
@@ -62,6 +63,49 @@ public static partial class UserActivity
 
         return bounds;
     }
+
+    /// <summary>
+    /// A value that changes whenever a game controller (any that Windows sees as an Xbox
+    /// controller) is used, connected or disconnected, or <c>null</c> if that can't be told.
+    /// Only meaningful compared with an earlier one.
+    /// </summary>
+    public static int? TryGetControllerState()
+    {
+        const uint maxControllers = 4;
+
+        try
+        {
+            var hash = new HashCode();
+            for (uint i = 0; i < maxControllers; i++)
+            {
+                // (the packet number goes up with every change, however short)
+                hash.Add(XInputGetState(i, out var state) == 0 ? (long)state.PacketNumber : -1);
+            }
+
+            return hash.ToHashCode();
+        }
+        // XInput may be missing on stripped-down editions of Windows
+        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
+        {
+            return null;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ControllerState
+    {
+        public uint PacketNumber;
+        public ushort Buttons;
+        public byte LeftTrigger;
+        public byte RightTrigger;
+        public short LeftThumbX;
+        public short LeftThumbY;
+        public short RightThumbX;
+        public short RightThumbY;
+    }
+
+    [LibraryImport("xinput1_4.dll")]
+    private static partial uint XInputGetState(uint userIndex, out ControllerState state);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct LastInputInfo

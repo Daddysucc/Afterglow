@@ -188,4 +188,57 @@ public class DynamicWallpaperSpecs
 
         (stops[^1] - stops[^2]).Should().BeGreaterThan(stops[24] - stops[23]);
     }
+
+    [Fact]
+    public void I_can_tell_how_different_two_colors_look()
+    {
+        // Arrange
+        var black = new WallpaperColor(0, 0, 0);
+        var white = new WallpaperColor(255, 255, 255);
+        var warm = new WallpaperColor(255, 180, 110);
+
+        // Act & assert
+        WallpaperColor.GetPerceptualDifference(warm, warm).Should().Be(0);
+        WallpaperColor.GetPerceptualDifference(black, white).Should().BeApproximately(1, 0.001);
+        WallpaperColor
+            .GetPerceptualDifference(warm, white)
+            .Should()
+            .Be(WallpaperColor.GetPerceptualDifference(white, warm));
+
+        // (a step of one level is far too small to see, while a dim and a bright warm light are
+        // clearly apart)
+        WallpaperColor
+            .GetPerceptualDifference(warm, new WallpaperColor(254, 180, 110))
+            .Should()
+            .BeLessThan(0.005);
+        WallpaperColor
+            .GetPerceptualDifference(warm, new WallpaperColor(128, 90, 55))
+            .Should()
+            .BeGreaterThan(0.2);
+    }
+
+    [Fact]
+    public void I_get_a_handful_of_clearly_visible_accent_steps_from_day_to_night()
+    {
+        // Arrange (the default day and night, with the lights following the screen as is)
+        static WallpaperColor At(double t) =>
+            DynamicWallpaper.GetAccentColor(6600 + (3900 - 6600) * t, 1 + (0.85 - 1) * t, 2, 1);
+
+        // Act (following it closely, but only changing once it looks clearly different)
+        var applied = At(0);
+        var steps = 0;
+        for (var i = 1; i <= 1000; i++)
+        {
+            var color = At(i / 1000.0);
+            if (WallpaperColor.GetPerceptualDifference(applied, color) >= 0.04)
+            {
+                applied = color;
+                steps++;
+            }
+        }
+
+        // Assert
+        steps.Should().BeInRange(3, 12);
+        WallpaperColor.GetPerceptualDifference(applied, At(1)).Should().BeLessThan(0.04);
+    }
 }

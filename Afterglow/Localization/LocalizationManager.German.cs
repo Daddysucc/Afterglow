@@ -308,10 +308,10 @@ public partial class LocalizationManager
             "Ersetzt das Hintergrundbild auf jedem Bildschirm (Hochformat-Bildschirme erhalten ein Bild im Hochformat). Ihr eigenes Hintergrundbild kehrt zurück, wenn dies ausgeschaltet wird.",
         [nameof(AccentColorMatchedLabel)] = "Akzentfarbe passend setzen",
         [nameof(AccentColorMatchedTooltip)] =
-            "Setzt die Windows-Akzentfarbe genau auf die Farbe und Helligkeit des Lichts, für Dynamic Lighting (\"Meiner Windows-Akzentfarbe entsprechen\" unter Einstellungen › Personalisierung › Dynamische Beleuchtung einschalten). Eine automatisch aus dem Hintergrundbild gewählte Akzentfarbe würde die Dimmung auslassen. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird.",
+            "Setzt die Windows-Akzentfarbe genau auf die Farbe und Helligkeit des Lichts, für Dynamic Lighting (\"Meiner Windows-Akzentfarbe entsprechen\" unter Einstellungen › Personalisierung › Dynamische Beleuchtung einschalten). Eine automatisch aus dem Hintergrundbild gewählte Akzentfarbe würde die Dimmung auslassen. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird. Sie ändert sich nur, während Sie weg sind (30 Sekunden keine Eingabe, und nichts wird abgespielt), da Windows bei jeder Änderung der Akzentfarbe kurz alle Apps und die Maus einfriert.",
         [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
         [nameof(DynamicWallpaperStepTooltip)] =
-            "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen und Hintergrundbild auf diese Tageszeit",
+            "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen und Hintergrundbild auf diese Tageszeit (die Akzentfarbe folgt, sobald Sie weg sind)",
         [nameof(DynamicWallpaperStopButton)] = "Stopp",
         [nameof(DynamicWallpaperPreviewingText)] = "Vorschau {0}",
         [nameof(HueNotConnectedText)] =
