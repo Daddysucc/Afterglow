@@ -119,7 +119,7 @@ public class EfficiencySpecs
         DashboardViewModel
             .CanUpdateSlowly(true, true, false, false, false, false)
             .Should()
-            .BeFalse("a transition is in progress");
+            .BeFalse("a transition is moving faster than slow updates keep up with");
         DashboardViewModel
             .CanUpdateSlowly(true, false, true, false, false, false)
             .Should()
@@ -131,11 +131,56 @@ public class EfficiencySpecs
         DashboardViewModel
             .CanUpdateSlowly(true, false, false, false, true, false)
             .Should()
-            .BeFalse("gamma polling is enabled");
+            .BeFalse("gamma is polled more often than slow updates come");
         DashboardViewModel
             .CanUpdateSlowly(true, false, false, false, false, true)
             .Should()
             .BeFalse("gamma was just invalidated, or a write is being retried");
+    }
+
+    [Fact]
+    public void I_get_slow_updates_during_a_long_transition_but_fast_ones_during_a_short_one()
+    {
+        // Arrange (a transition from 6600 K at full brightness to 3900 K at 85%)
+        static ColorConfiguration At(double t) => new(6600 + (3900 - 6600) * t, 1 + (0.85 - 1) * t);
+
+        // Act & assert (one second into a 3-hour transition, and into a 1-minute one)
+        DashboardViewModel
+            .IsChangingFasterThanSlowUpdates(At(0.5), At(0.5 + 1.0 / (3 * 60 * 60)))
+            .Should()
+            .BeFalse("each second moves the colors by far less than a gamma step");
+        DashboardViewModel
+            .IsChangingFasterThanSlowUpdates(At(0.5), At(0.5 + 1.0 / 60))
+            .Should()
+            .BeTrue("each second moves the colors by more than a gamma step");
+
+        // (brightness alone counts too)
+        DashboardViewModel
+            .IsChangingFasterThanSlowUpdates(new(5000, 1), new(5000, 0.98))
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void I_get_slow_updates_while_gamma_is_polled_no_more_than_once_a_second()
+    {
+        // Act & assert
+        DashboardViewModel
+            .IsPolledFasterThanSlowUpdates(true, TimeSpan.FromSeconds(1))
+            .Should()
+            .BeFalse();
+        DashboardViewModel
+            .IsPolledFasterThanSlowUpdates(true, TimeSpan.FromSeconds(5))
+            .Should()
+            .BeFalse();
+        DashboardViewModel
+            .IsPolledFasterThanSlowUpdates(true, TimeSpan.FromSeconds(0.5))
+            .Should()
+            .BeTrue();
+        DashboardViewModel
+            .IsPolledFasterThanSlowUpdates(false, TimeSpan.FromSeconds(0.5))
+            .Should()
+            .BeFalse();
     }
 
     [Fact]

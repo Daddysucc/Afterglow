@@ -106,6 +106,9 @@ public partial class GammaService : IDisposable
     // https://github.com/Tyrrrz/LightBulb/issues/448
     private static readonly TimeSpan StaleAfterInvalidationDuration = TimeSpan.FromSeconds(2);
 
+    // How early a polling update may come (updates don't arrive at exactly the same interval)
+    private static readonly TimeSpan PollingTolerance = TimeSpan.FromMilliseconds(100);
+
     /// <summary>
     /// Occurs when gamma may have been changed from the outside, so it needs to be re-applied.
     /// </summary>
@@ -133,10 +136,12 @@ public partial class GammaService : IDisposable
             return (instant - _lastUpdateTimestamp).Duration() >= TimeSpan.FromMilliseconds(200);
         }
 
-        // If polling is enabled, assume gamma is stale after some time has passed since the last update
+        // If polling is enabled, assume gamma is stale after some time has passed since the last
+        // update (give or take the updates' own timing, which may come a moment early)
         if (
             _settingsService.IsGammaPollingEnabled
-            && (instant - _lastUpdateTimestamp).Duration() > _settingsService.GammaPollingInterval
+            && (instant - _lastUpdateTimestamp).Duration()
+                >= _settingsService.GammaPollingInterval - PollingTolerance
         )
         {
             return true;

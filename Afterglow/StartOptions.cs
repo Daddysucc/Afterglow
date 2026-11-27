@@ -23,6 +23,10 @@ public partial class StartOptions
     // The process of the version that this one has just replaced (when a portable copy updates
     // itself), which has to close before this one starts
     public int? PreviousVersionProcessId { get; private set; }
+
+    // Whether to only put back the user's own wallpaper and accent color, and exit (run by the
+    // uninstaller, before it deletes the files that say what they were)
+    public bool IsRestoringDesktop { get; private set; }
 }
 
 public partial class StartOptions
@@ -32,12 +36,18 @@ public partial class StartOptions
     // Followed by the process ID of the version that has just been replaced
     public static string PreviousVersionArgument { get; } = "--replacing";
 
+    public static string RestoreDesktopArgument { get; } = "--restore-desktop";
+
     public static StartOptions Current { get; } =
         Parse(Environment.GetCommandLineArgs().Skip(1).ToArray());
 
     public static StartOptions Parse(IReadOnlyList<string> commandLineArgs)
     {
         var options = ParseLocation(commandLineArgs);
+        options.IsRestoringDesktop = commandLineArgs.Contains(
+            RestoreDesktopArgument,
+            StringComparer.OrdinalIgnoreCase
+        );
 
         for (var i = 0; i < commandLineArgs.Count - 1; i++)
         {

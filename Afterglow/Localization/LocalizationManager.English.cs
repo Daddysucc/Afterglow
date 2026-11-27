@@ -321,13 +321,13 @@ public partial class LocalizationManager
                 "A sky in the screen's color temperature and brightness, through sunrise and sunset. With Windows Dynamic Lighting matching the accent color, a monitor's backlight follows it too.",
             [nameof(DynamicWallpaperEnabledLabel)] = "Draw the wallpaper",
             [nameof(DynamicWallpaperEnabledTooltip)] =
-                "Replaces the desktop wallpaper on every display (portrait displays get a portrait image). Your own wallpaper comes back when this is turned off.",
+                "Replaces the desktop wallpaper on every display (portrait displays get a portrait image). Your own wallpaper comes back when this is turned off (a slideshow or Windows Spotlight comes back as its current picture, so turn it back on in Settings › Personalization › Background).",
             [nameof(AccentColorMatchedLabel)] = "Set the accent color to match",
             [nameof(AccentColorMatchedTooltip)] =
                 "Sets the Windows accent color to the light's exact color and brightness, for Dynamic Lighting (turn on \"Match my Windows accent color\" in Settings › Personalization › Dynamic Lighting). An automatic accent color picked from the wallpaper would leave out the dimming. Your own accent color comes back when this is turned off. It only changes while you're away (no input for 30 seconds, and nothing playing), as Windows briefly freezes every app, and the mouse, whenever the accent color changes.",
             [nameof(DynamicWallpaperStepButton)] = "Next time of day",
             [nameof(DynamicWallpaperStepTooltip)] =
-                "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights and the wallpaper to that time of day (the accent color follows once you're away)",
+                "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights, the wallpaper and the accent color to that time of day",
             [nameof(DynamicWallpaperStopButton)] = "Stop",
             [nameof(DynamicWallpaperPreviewingText)] = "Previewing {0}",
             [nameof(HueNotConnectedText)] =

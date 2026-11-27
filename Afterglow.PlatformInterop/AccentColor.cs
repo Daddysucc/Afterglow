@@ -38,15 +38,35 @@ public static partial class AccentColor
         (DesktopKey, "AutoColorization"),
     ];
 
+    private static uint ToAbgr(byte r, byte g, byte b) =>
+        0xFF000000u | ((uint)b << 16) | ((uint)g << 8) | r;
+
+    /// <summary>
+    /// The accent color as it's set now (as 0xAABBGGRR), or <c>null</c> if it can't be read.
+    /// </summary>
+    public static uint? TryGetCurrent()
+    {
+        using var accent = Registry.CurrentUser.OpenSubKey(AccentKey);
+        return accent?.GetValue("AccentColorMenu") is int value ? unchecked((uint)value) : null;
+    }
+
+    /// <summary>
+    /// Gets the given color as <see cref="TryGetCurrent" /> would read it back once it's set.
+    /// </summary>
+    public static uint ToValue(byte red, byte green, byte blue) => ToAbgr(red, green, blue);
+
     /// <summary>
     /// Sets the accent color (with "Automatic" turned off, as Windows would otherwise pick it from
-    /// the wallpaper again).
+    /// the wallpaper again). Returns whether it took (Windows may ignore it, e.g. if it's busy).
     /// </summary>
-    public static void Set(byte red, byte green, byte blue)
+    public static bool Set(byte red, byte green, byte blue)
     {
-        static uint ToAbgr(byte r, byte g, byte b) =>
-            0xFF000000u | ((uint)b << 16) | ((uint)g << 8) | r;
+        SetCore(red, green, blue);
+        return TryGetCurrent() == ToAbgr(red, green, blue);
+    }
 
+    private static void SetCore(byte red, byte green, byte blue)
+    {
         using (var desktop = Registry.CurrentUser.CreateSubKey(DesktopKey))
         {
             if (desktop.GetValue("AutoColorization") is not 0)

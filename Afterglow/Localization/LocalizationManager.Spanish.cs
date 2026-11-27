@@ -312,13 +312,13 @@ public partial class LocalizationManager
                 "Un cielo con la temperatura de color y el brillo de la pantalla, a lo largo del amanecer y el atardecer. Si la iluminación dinámica de Windows sigue el color de énfasis, la retroiluminación de un monitor también lo sigue.",
             [nameof(DynamicWallpaperEnabledLabel)] = "Dibujar el fondo de pantalla",
             [nameof(DynamicWallpaperEnabledTooltip)] =
-                "Reemplaza el fondo de pantalla en cada pantalla (las pantallas verticales reciben una imagen vertical). Tu propio fondo de pantalla vuelve cuando se desactiva.",
+                "Reemplaza el fondo de pantalla en cada pantalla (las pantallas verticales reciben una imagen vertical). Tu propio fondo de pantalla vuelve cuando se desactiva (una presentación o Contenido destacado de Windows vuelve como su imagen actual: vuelve a activarlo en Configuración › Personalización › Fondo).",
             [nameof(AccentColorMatchedLabel)] = "Ajustar el color de énfasis",
             [nameof(AccentColorMatchedTooltip)] =
                 "Ajusta el color de énfasis de Windows exactamente al color y brillo de la luz, para la iluminación dinámica (activa «Coincidir con mi color de énfasis de Windows» en Configuración › Personalización › Iluminación dinámica). Un color de énfasis automático tomado del fondo de pantalla dejaría fuera la atenuación. Tu propio color de énfasis vuelve cuando se desactiva. Solo cambia mientras no estás (30 segundos sin actividad y sin nada reproduciéndose), porque Windows congela brevemente todas las aplicaciones, y el ratón, cada vez que cambia el color de énfasis.",
             [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
             [nameof(DynamicWallpaperStepTooltip)] =
-                "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces y el fondo de pantalla a esa hora del día (el color de énfasis lo sigue cuando no estás)",
+                "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces, el fondo de pantalla y el color de énfasis a esa hora del día",
             [nameof(DynamicWallpaperStopButton)] = "Detener",
             [nameof(DynamicWallpaperPreviewingText)] = "Vista previa de {0}",
             [nameof(HueNotConnectedText)] =

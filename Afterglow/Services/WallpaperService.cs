@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -55,15 +56,15 @@ public readonly record struct WallpaperTarget(
 /// (and, through the applications that watch the mouse, the mouse too) for up to a couple of
 /// seconds, so it's never done while someone might notice. It also only changes once it looks
 /// clearly different (about a handful of times over a transition, and not at all in between),
-/// rather than following every small step. The only exception is turning it on, which shows it
-/// right away.</item>
+/// rather than following every small step. The only exceptions are turning it on and stepping
+/// through the day, which show it right away.</item>
 /// <item>Changing the wallpaper itself costs next to nothing (measured at 2 to 6 ms, without
 /// stalling anything), so it doesn't wait for any of that.</item>
 /// <item>The wallpaper doesn't change while the screen is locked, and nothing is drawn in the
 /// background while an application is fullscreen.</item>
 /// </list>
-/// Stepping through the day shows the sky right away (but not the accent color, which follows
-/// once the user is away).
+/// Stepping through the day (by hand, to see how it all looks) shows the sky and the accent color
+/// right away, whatever it costs, and stopping it puts the accent color back right away.
 /// </para>
 /// <para>
 /// Images are drawn at each display's own resolution (so Windows doesn't scale them), dithered
@@ -113,6 +114,9 @@ public class WallpaperService : IDisposable
     private const string OriginalWallpapersFileName = "Original wallpapers.txt";
     private const string OriginalAccentColorFileName = "Original accent color.txt";
 
+    // The accent color this set last (to tell whether the user has chosen another one since)
+    private const string AppliedAccentColorFileName = "Applied accent color.txt";
+
     private readonly SettingsService _settingsService;
     private readonly ExternalApplicationService _externalApplicationService;
     private readonly string _dirPath;
@@ -153,6 +157,7 @@ public class WallpaperService : IDisposable
     // Whether the accent color was just turned on (so it's shown right away, once), and whether it
     // was on before (settings are re-announced on every save, so a change is told apart this way)
     private bool _isAccentRequested;
+    private bool _wasImmediate;
     private bool _wasAccentColorMatched;
 
     // The display sizes that images are drawn for, and the drawing of the rest in the background
@@ -167,10 +172,7 @@ public class WallpaperService : IDisposable
     {
         _settingsService = settingsService;
         _externalApplicationService = externalApplicationService;
-        _dirPath = Path.Combine(
-            Path.GetDirectoryName(StartOptions.Current.SettingsPath) ?? AppContext.BaseDirectory,
-            "Wallpapers"
-        );
+        _dirPath = GetDirPath();
 
         _settingsSubscription = PowerKit.Disposable.Merge(
             settingsService.WatchProperties(
@@ -184,6 +186,13 @@ public class WallpaperService : IDisposable
             )
         );
     }
+
+    // Next to the settings
+    private static string GetDirPath() =>
+        Path.Combine(
+            Path.GetDirectoryName(StartOptions.Current.SettingsPath) ?? AppContext.BaseDirectory,
+            "Wallpapers"
+        );
 
     public void SetTargetSource(Func<WallpaperTarget?> getTarget) => _getTarget = getTarget;
 
@@ -221,7 +230,7 @@ public class WallpaperService : IDisposable
             if (!IsAccentColorMatched && _appliedAccentColor is not null)
             {
                 _appliedAccentColor = null;
-                _ = RunLockedAsync(RestoreAccentColor);
+                _ = RunLockedAsync(() => RestoreAccentColor(_dirPath));
             }
 
             // Turned on just now (by the user): shown right away, so that it can be seen working
@@ -252,8 +261,8 @@ public class WallpaperService : IDisposable
             // Also puts back what was left over from an earlier run (e.g. after a crash)
             _ = RunLockedAsync(() =>
             {
-                RestoreAccentColor();
-                RestoreWallpapers();
+                RestoreAccentColor(_dirPath);
+                RestoreWallpapers(_dirPath);
             });
         }
     }
@@ -299,12 +308,13 @@ public class WallpaperService : IDisposable
     private void UpdateActivity()
     {
         // The cheapest first: while the screen is locked, the user is away and the wallpaper
-        // doesn't change, so the foreground application isn't looked up
+        // doesn't change, so the foreground application isn't looked up (and it's the best time
+        // to draw)
         _isLocked = InputDesktop.IsLocked();
         if (_isLocked)
         {
             _isAway = true;
-            _isDrawingPaused = true;
+            _isDrawingPaused = false;
             return;
         }
 
@@ -420,16 +430,26 @@ public class WallpaperService : IDisposable
 
         var isSkyNeeded = _shownStop != stop;
 
+        // Stepping through the day is for seeing how it all looks, so the accent color is shown
+        // right away along with everything else (in the same steps as it would be otherwise),
+        // whatever it costs, and it goes back to the time of day right away once that stops
+        if (_wasImmediate && !target.IsImmediate)
+            _isAccentRequested = true;
+        _wasImmediate = target.IsImmediate;
+        var isAccentForced = _isAccentRequested || target.IsImmediate;
+
         var accentDifference = _appliedAccentColor is { } applied
             ? WallpaperColor.GetPerceptualDifference(applied, accent)
             : double.MaxValue;
         var isAccentNeeded =
             IsAccentColorMatched
             && accentDifference >= NoticeableAccentDifference
-            && (_isAccentRequested || (isAccentSettled && !target.IsImmediate))
             && (
-                _isAccentRequested
-                || DateTimeOffset.Now - _lastAccentAppliedAt >= AccentDriftInterval
+                isAccentForced
+                || (
+                    isAccentSettled
+                    && DateTimeOffset.Now - _lastAccentAppliedAt >= AccentDriftInterval
+                )
             );
 
         // Checked often while anything is waiting, or still moving. An accent color waiting for
@@ -444,8 +464,8 @@ public class WallpaperService : IDisposable
 
         UpdateActivity();
 
-        // The accent color waits for the user to be away (unless it was just turned on)
-        if (isAccentNeeded && !_isAccentRequested && !_isAway)
+        // The accent color waits for the user to be away (unless it's forced, see above)
+        if (isAccentNeeded && !isAccentForced && !_isAway)
             isAccentNeeded = false;
 
         IReadOnlyList<Rect> skipped = [];
@@ -478,15 +498,14 @@ public class WallpaperService : IDisposable
     )
     {
         _isBusy = true;
-        var isApplied = false;
-        var isSkipped = false;
+        var (isSkyApplied, isSkipped, isAccentApplied) = (false, false, false);
 
         try
         {
             await _lock.WaitAsync();
             try
             {
-                (isApplied, isSkipped) = await Task.Run(() =>
+                (isSkyApplied, isSkipped, isAccentApplied) = await Task.Run(() =>
                     ApplyCore(stop, accent, skippedBounds)
                 );
             }
@@ -512,10 +531,7 @@ public class WallpaperService : IDisposable
             return;
         }
 
-        if (!isApplied)
-            return;
-
-        if (stop is not null)
+        if (stop is not null && isSkyApplied)
         {
             if (isSkipped)
             {
@@ -532,7 +548,9 @@ public class WallpaperService : IDisposable
 
         if (accent is not null)
         {
-            _appliedAccentColor = accent;
+            // (if it didn't take, it's tried again at the cycle's pace, rather than right away)
+            if (isAccentApplied)
+                _appliedAccentColor = accent;
             _lastAccentAppliedAt = DateTimeOffset.Now;
             _isAccentRequested = false;
         }
@@ -541,96 +559,102 @@ public class WallpaperService : IDisposable
     private string GetImagePath((int Width, int Height) size, int stop) =>
         Path.Combine(_dirPath, $"{ImagePrefix}{size.Width}x{size.Height} {stop:00}.png");
 
-    // Returns whether it's done, and whether a display was left as it was (as it's busy)
-    private (bool IsApplied, bool IsSkipped) ApplyCore(
+    // Returns whether the sky was shown (and whether a display was left as it was, as it's
+    // busy), and whether the accent color took
+    private (bool IsSkyApplied, bool IsSkipped, bool IsAccentApplied) ApplyCore(
         int? stop,
         WallpaperColor? accent,
         IReadOnlyList<Rect> skippedBounds
     )
     {
+        var isSkyApplied = false;
         var isSkipped = false;
 
-        if (stop is { } index)
+        if (stop is { } index && DesktopWallpaper.TryCreate() is { } desktop)
         {
-            using var desktop = DesktopWallpaper.TryCreate();
-            if (desktop is null)
-                return (false, false);
-
+            using var _ = desktop;
             var monitors = desktop.GetMonitors();
-            if (monitors.Count <= 0)
-                return (false, false);
-
-            Directory.CreateDirectory(_dirPath);
-            RememberOriginalWallpapers(desktop, monitors);
-            DeleteOutdatedImages();
-
-            var sizes = new List<(int, int)>();
-            foreach (var (id, bounds) in monitors)
+            if (monitors.Count > 0)
             {
-                // Drawn at the display's own size, so that Windows doesn't scale it
-                var size = (bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
-                if (!sizes.Contains(size))
-                    sizes.Add(size);
+                isSkyApplied = ApplySky(desktop, monitors, index, skippedBounds, out isSkipped);
+            }
+        }
 
-                // Covered by a fullscreen application, or being worked on: changed later (unless
-                // it shows this sky already)
-                if (skippedBounds.Contains(bounds))
-                {
-                    if (
-                        !string.Equals(
-                            desktop.TryGetWallpaper(id),
-                            GetImagePath(size, index),
-                            StringComparison.OrdinalIgnoreCase
-                        )
-                    )
-                        isSkipped = true;
+        // (also when the sky couldn't be shown)
+        var isAccentApplied = accent is { } color && SetAccentColor(color);
 
-                    continue;
-                }
+        return (isSkyApplied, isSkipped, isAccentApplied);
+    }
 
-                var filePath = GetImagePath(size, index);
-                if (!File.Exists(filePath))
-                {
-                    // (at the lowest priority as well, so that it never gets in the way, even
-                    // if it takes a moment longer)
-                    using var backgroundMode = BackgroundWork.EnterBackgroundMode();
-                    Render(
-                        DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[index]),
-                        size.Item1,
-                        size.Item2,
-                        filePath,
-                        1
-                    );
-                }
+    private bool ApplySky(
+        DesktopWallpaper desktop,
+        IReadOnlyList<(string Id, Rect Bounds)> monitors,
+        int index,
+        IReadOnlyList<Rect> skippedBounds,
+        out bool isSkipped
+    )
+    {
+        isSkipped = false;
 
+        Directory.CreateDirectory(_dirPath);
+        RememberOriginalWallpapers(desktop, monitors);
+        DeleteOutdatedImages();
+
+        var sizes = new List<(int, int)>();
+        foreach (var (id, bounds) in monitors)
+        {
+            // Drawn at the display's own size, so that Windows doesn't scale it
+            var size = (bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
+            if (!sizes.Contains(size))
+                sizes.Add(size);
+
+            // Covered by a fullscreen application, or being worked on: changed later (unless
+            // it shows this sky already)
+            if (skippedBounds.Contains(bounds))
+            {
                 if (
                     !string.Equals(
                         desktop.TryGetWallpaper(id),
-                        filePath,
+                        GetImagePath(size, index),
                         StringComparison.OrdinalIgnoreCase
                     )
                 )
-                    desktop.SetWallpaper(id, filePath);
+                    isSkipped = true;
+
+                continue;
             }
 
-            if (desktop.Position != DesktopWallpaper.FillPosition)
-                desktop.Position = DesktopWallpaper.FillPosition;
+            var filePath = GetImagePath(size, index);
+            if (!File.Exists(filePath))
+            {
+                // (at the lowest priority as well, so that it never gets in the way, even
+                // if it takes a moment longer)
+                using var backgroundMode = BackgroundWork.EnterBackgroundMode();
+                Render(
+                    DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[index]),
+                    size.Item1,
+                    size.Item2,
+                    filePath,
+                    1
+                );
+            }
 
-            _sizes = sizes;
+            if (
+                !string.Equals(
+                    desktop.TryGetWallpaper(id),
+                    filePath,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+                desktop.SetWallpaper(id, filePath);
         }
 
-        if (accent is { } color)
-        {
-            Directory.CreateDirectory(_dirPath);
+        if (desktop.Position != DesktopWallpaper.FillPosition)
+            desktop.Position = DesktopWallpaper.FillPosition;
 
-            var accentFilePath = Path.Combine(_dirPath, OriginalAccentColorFileName);
-            if (!File.Exists(accentFilePath))
-                File.WriteAllText(accentFilePath, AccentColor.Save());
+        _sizes = sizes;
 
-            AccentColor.Set(color.Red, color.Green, color.Blue);
-        }
-
-        return (true, isSkipped);
+        return true;
     }
 
     // Draws the images that aren't there yet, one at a time, closest to the shown one first (as
@@ -673,19 +697,39 @@ public class WallpaperService : IDisposable
                             return;
                     }
 
-                    _lock.Wait(token);
+                    if (token.IsCancellationRequested)
+                        return;
+
+                    var filePath = GetImagePath(size, stop);
+                    if (File.Exists(filePath))
+                        continue;
+
+                    // Drawn without holding anything up (a change of the wallpaper or the accent
+                    // color doesn't wait for it), and only put in place while nothing else works
+                    // with the files, so that it isn't left behind once this is turned off
+                    string? tempFilePath = null;
                     try
                     {
-                        var filePath = GetImagePath(size, stop);
-                        if (!File.Exists(filePath))
+                        tempFilePath = RenderToTempFile(
+                            DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[stop]),
+                            size.Width,
+                            size.Height,
+                            filePath,
+                            1
+                        );
+
+                        _lock.Wait(token);
+                        try
                         {
-                            Render(
-                                DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[stop]),
-                                size.Width,
-                                size.Height,
-                                filePath,
-                                1
-                            );
+                            if (!File.Exists(filePath))
+                            {
+                                File.Move(tempFilePath, filePath);
+                                tempFilePath = null;
+                            }
+                        }
+                        finally
+                        {
+                            _lock.Release();
                         }
                     }
                     catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -694,7 +738,8 @@ public class WallpaperService : IDisposable
                     }
                     finally
                     {
-                        _lock.Release();
+                        if (tempFilePath is not null)
+                            TryDelete(tempFilePath);
                     }
                 }
             },
@@ -723,6 +768,14 @@ public class WallpaperService : IDisposable
 
             if (isImage && !fileName.StartsWith(ImagePrefix, StringComparison.Ordinal))
                 TryDelete(filePath);
+            // (left over from drawing that was cut short, e.g. by a crash: an image is only
+            // written out once it's drawn, and put in place right after, so a temporary file
+            // never stays for long otherwise)
+            else if (
+                fileName.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase)
+                && File.GetLastWriteTimeUtc(filePath) < DateTime.UtcNow - TimeSpan.FromMinutes(10)
+            )
+                TryDelete(filePath);
         }
     }
 
@@ -738,12 +791,12 @@ public class WallpaperService : IDisposable
 
     // Also any sky drawn by another copy of Afterglow (e.g. a portable one), so that it's never
     // remembered as the user's own wallpaper
-    private bool IsOwnFile(string? filePath) =>
+    private static bool IsOwnFile(string? filePath, string dirPath) =>
         !string.IsNullOrWhiteSpace(filePath)
         && (
             Path.GetFullPath(filePath)
                 .StartsWith(
-                    Path.TrimEndingDirectorySeparator(Path.GetFullPath(_dirPath))
+                    Path.TrimEndingDirectorySeparator(Path.GetFullPath(dirPath))
                         + Path.DirectorySeparatorChar,
                     StringComparison.OrdinalIgnoreCase
                 )
@@ -757,9 +810,11 @@ public class WallpaperService : IDisposable
             )
         );
 
-    // Remembers each display's own wallpaper (and how it was fitted), the first time it's
-    // replaced, so that it can be put back. Kept in a file, so that it's also put back if
-    // Afterglow is turned off after a restart.
+    // Remembers each display's own wallpaper (an image, or none for a solid color) and how it was
+    // fitted, so that it can be put back. Anything that isn't one of these skies was chosen by
+    // the user, also while this is on, so it's always the latest one that's remembered. Kept in a
+    // file, so that it's also put back if Afterglow is turned off after a restart (or
+    // uninstalled).
     private void RememberOriginalWallpapers(
         DesktopWallpaper desktop,
         IReadOnlyList<(string Id, Rect Bounds)> monitors
@@ -767,45 +822,82 @@ public class WallpaperService : IDisposable
     {
         var filePath = Path.Combine(_dirPath, OriginalWallpapersFileName);
         var lines = File.Exists(filePath) ? File.ReadAllLines(filePath).ToList() : [];
+        var isChanged = !File.Exists(filePath);
 
         if (!lines.Any(l => l.StartsWith("position\t", StringComparison.Ordinal)))
-            lines.Add($"position\t{desktop.Position}");
-
-        var isChanged = false;
-        foreach (var (id, _) in monitors)
         {
-            if (lines.Any(l => l.StartsWith(id + "\t", StringComparison.OrdinalIgnoreCase)))
-                continue;
-
-            var wallpaper = desktop.TryGetWallpaper(id);
-            if (wallpaper is null || IsOwnFile(wallpaper))
-                continue;
-
-            lines.Add($"{id}\t{wallpaper}");
+            lines.Add($"position\t{desktop.Position}");
             isChanged = true;
         }
 
-        if (isChanged || !File.Exists(filePath))
+        foreach (var (id, _) in monitors)
+        {
+            // (unknown, or one of these skies)
+            var wallpaper = desktop.TryGetWallpaper(id);
+            if (wallpaper is null || IsOwnFile(wallpaper, _dirPath))
+                continue;
+
+            var line = $"{id}\t{wallpaper}";
+            var index = lines.FindIndex(l =>
+                l.StartsWith(id + "\t", StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (index < 0)
+            {
+                lines.Add(line);
+                isChanged = true;
+            }
+            else if (!string.Equals(lines[index], line, StringComparison.Ordinal))
+            {
+                lines[index] = line;
+                isChanged = true;
+            }
+        }
+
+        if (isChanged)
             File.WriteAllLines(filePath, lines);
     }
 
-    private void RestoreWallpapers()
+    /// <summary>
+    /// Puts back the user's own wallpaper and accent color (if they were replaced) and deletes the
+    /// images, e.g. before Afterglow is uninstalled. Doesn't need Afterglow to be running.
+    /// </summary>
+    public static void RestoreDesktop()
     {
-        if (!Directory.Exists(_dirPath))
+        var dirPath = GetDirPath();
+
+        try
+        {
+            RestoreAccentColor(dirPath);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Dynamic wallpaper: {ex}");
+        }
+
+        try
+        {
+            RestoreWallpapers(dirPath);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Dynamic wallpaper: {ex}");
+        }
+    }
+
+    private static void RestoreWallpapers(string dirPath)
+    {
+        if (!Directory.Exists(dirPath))
             return;
 
-        var filePath = Path.Combine(_dirPath, OriginalWallpapersFileName);
+        var filePath = Path.Combine(dirPath, OriginalWallpapersFileName);
         if (File.Exists(filePath))
         {
             using var desktop = DesktopWallpaper.TryCreate();
             if (desktop is null)
                 return;
 
-            var connectedIds = desktop
-                .GetMonitors()
-                .Select(m => m.Id)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
+            var originals = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var line in File.ReadAllLines(filePath))
             {
                 var parts = line.Split('\t', 2);
@@ -820,34 +912,126 @@ public class WallpaperService : IDisposable
                     continue;
                 }
 
-                // (displays that aren't connected right now keep what they had)
-                if (connectedIds.Contains(parts[0]) && File.Exists(parts[1]))
-                    desktop.SetWallpaper(parts[0], parts[1]);
+                originals[parts[0]] = parts[1];
+            }
+
+            // (displays that aren't connected right now keep what they had)
+            var connected = desktop.GetMonitors().Select(m => m.Id).ToArray();
+            var images = connected
+                .Select(id => (Id: id, Path: originals.GetValueOrDefault(id)))
+                .ToArray();
+
+            // A solid color (which Windows only has for every display at once), if that's what
+            // the displays had (the ones it's known for)
+            var known = images.Where(i => i.Path is not null).ToArray();
+            if (known.Length > 0 && known.All(i => i.Path == ""))
+            {
+                DesktopWallpaper.ShowSolidColor();
+            }
+            else
+            {
+                foreach (var (id, path) in images)
+                {
+                    // An image that's been deleted or moved meanwhile, or a display that was only
+                    // ever seen with a sky, gets Windows' own default wallpaper (rather than being
+                    // left pointing at a sky that's about to be deleted)
+                    var image =
+                        !string.IsNullOrEmpty(path) && File.Exists(path)
+                            ? path
+                            : DesktopWallpaper.TryGetDefaultWallpaper();
+
+                    if (image is not null)
+                        desktop.SetWallpaper(id, image);
+                }
             }
 
             File.Delete(filePath);
         }
 
-        // The images aren't kept while it's off (they're drawn again when it's turned on)
-        foreach (var imagePath in Directory.EnumerateFiles(_dirPath))
+        // The images aren't kept while it's off (they're drawn again when it's turned on), other
+        // than one that a display still shows (e.g. if there's nothing to put back instead), so
+        // that no display is left pointing at a file that's gone
+        var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var desktop = DesktopWallpaper.TryCreate())
+        {
+            foreach (var (id, _) in desktop?.GetMonitors() ?? [])
+            {
+                if (desktop?.TryGetWallpaper(id) is { Length: > 0 } wallpaper)
+                    shown.Add(Path.GetFullPath(wallpaper));
+            }
+        }
+
+        foreach (var imagePath in Directory.EnumerateFiles(dirPath))
         {
             if (
-                imagePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
-                || imagePath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
-                || imagePath.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase)
+                (
+                    imagePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                    || imagePath.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                    || imagePath.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase)
+                ) && !shown.Contains(Path.GetFullPath(imagePath))
             )
                 TryDelete(imagePath);
         }
     }
 
-    private void RestoreAccentColor()
+    private static void RestoreAccentColor(string dirPath)
     {
-        var filePath = Path.Combine(_dirPath, OriginalAccentColorFileName);
+        TryDelete(Path.Combine(dirPath, AppliedAccentColorFileName));
+
+        var filePath = Path.Combine(dirPath, OriginalAccentColorFileName);
         if (!File.Exists(filePath))
             return;
 
         AccentColor.Restore(File.ReadAllText(filePath));
         File.Delete(filePath);
+    }
+
+    // Sets the accent color, after remembering the user's own (the first time, and again whenever
+    // it isn't the one this set last, i.e. the user chose another one meanwhile). Returns whether
+    // it took.
+    private bool SetAccentColor(WallpaperColor color)
+    {
+        Directory.CreateDirectory(_dirPath);
+
+        var originalPath = Path.Combine(_dirPath, OriginalAccentColorFileName);
+        var appliedPath = Path.Combine(_dirPath, AppliedAccentColorFileName);
+
+        // (only known to be the user's own if it's known what this set last, e.g. not right
+        // after updating from a version that didn't keep track of it)
+        var lastApplied =
+            File.Exists(appliedPath)
+            && uint.TryParse(
+                File.ReadAllText(appliedPath).Trim(),
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out var value
+            )
+                ? value
+                : (uint?)null;
+
+        if (
+            !File.Exists(originalPath)
+            || (
+                lastApplied is not null
+                && AccentColor.TryGetCurrent() is { } current
+                && current != lastApplied
+            )
+        )
+        {
+            File.WriteAllText(originalPath, AccentColor.Save());
+        }
+
+        if (!AccentColor.Set(color.Red, color.Green, color.Blue))
+            return false;
+
+        File.WriteAllText(
+            appliedPath,
+            AccentColor
+                .ToValue(color.Red, color.Green, color.Blue)
+                .ToString(CultureInfo.InvariantCulture)
+        );
+
+        return true;
     }
 
     /// <summary>
@@ -861,6 +1045,17 @@ public class WallpaperService : IDisposable
     /// noise would, but compresses far better (about 1 MB for a 4K image, rather than 7 MB).
     /// </remarks>
     internal static void Render(
+        WallpaperPalette palette,
+        int width,
+        int height,
+        string filePath,
+        int maxThreads
+    ) => File.Move(RenderToTempFile(palette, width, height, filePath, maxThreads), filePath, true);
+
+    // Draws it into a file of its own next to the given one (written in full before Windows is
+    // pointed at it, and never in the way of another one being drawn at the same time), and
+    // returns its path
+    private static string RenderToTempFile(
         WallpaperPalette palette,
         int width,
         int height,
@@ -963,12 +1158,11 @@ public class WallpaperService : IDisposable
             pixmap.Encode(new SKPngEncoderOptions(SKPngEncoderFilterFlags.Sub, 1))
             ?? throw new InvalidOperationException("Failed to encode the wallpaper.");
 
-        // Written in full before Windows is pointed at it
-        var tempFilePath = filePath + ".tmp";
+        var tempFilePath = $"{filePath}.{Guid.NewGuid():N}.tmp";
         using (var stream = File.Create(tempFilePath))
             data.SaveTo(stream);
 
-        File.Move(tempFilePath, filePath, true);
+        return tempFilePath;
     }
 
     // 8×8 ordered-dither thresholds (from 0 to 1)

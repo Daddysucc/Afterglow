@@ -82,20 +82,63 @@ public sealed partial class DesktopWallpaper : IDisposable
     }
 
     /// <summary>
-    /// The image file shown on the given display, or null if there isn't one.
+    /// The image file shown on the given display, an empty string if there isn't one (a solid
+    /// color), or null if it can't be told.
     /// </summary>
     public string? TryGetWallpaper(string monitorId)
     {
         try
         {
             var path = _wallpaper.GetWallpaper(monitorId);
-            return string.IsNullOrWhiteSpace(path) ? null : path;
+            return string.IsNullOrWhiteSpace(path) ? "" : path;
         }
         catch (COMException)
         {
             return null;
         }
     }
+
+    /// <summary>
+    /// Shows a solid color (the background color chosen in Windows' settings) instead of an
+    /// image, on every display (Windows doesn't have it per display).
+    /// </summary>
+    public static void ShowSolidColor()
+    {
+        // SPI_SETDESKWALLPAPER, with SPIF_UPDATEINIFILE | SPIF_SENDCHANGE
+        const uint setDesktopWallpaper = 0x0014;
+        const uint updateAndAnnounce = 0x1 | 0x2;
+
+        SystemParametersInfo(setDesktopWallpaper, 0, "", updateAndAnnounce);
+    }
+
+    /// <summary>
+    /// Windows' own default wallpaper, if it's there.
+    /// </summary>
+    public static string? TryGetDefaultWallpaper()
+    {
+        var path = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+            "Web",
+            "Wallpaper",
+            "Windows",
+            "img0.jpg"
+        );
+
+        return System.IO.File.Exists(path) ? path : null;
+    }
+
+    [LibraryImport(
+        "user32.dll",
+        EntryPoint = "SystemParametersInfoW",
+        StringMarshalling = StringMarshalling.Utf16
+    )]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SystemParametersInfo(
+        uint action,
+        uint param,
+        string value,
+        uint flags
+    );
 
     public void SetWallpaper(string monitorId, string filePath) =>
         _wallpaper.SetWallpaper(monitorId, filePath);

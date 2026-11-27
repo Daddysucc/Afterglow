@@ -266,22 +266,40 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     // Whether updates can slow down without anything behaving differently: nothing is changing
-    // (no smoothing in progress, and no transition, during which the colors change continuously),
+    // faster than slow updates keep up with (no smoothing in progress, and no transition that's
+    // quick enough for each slow update to make a bigger step than the gamma is written in),
     // nothing is shown that would update visibly, and gamma doesn't need frequent attention
     internal static bool CanUpdateSlowly(
         bool isSettled,
-        bool isTransitioning,
+        bool isChangingQuickly,
         bool isCyclePreviewEnabled,
         bool isAnythingShown,
-        bool isGammaPollingEnabled,
+        bool isGammaPolledQuickly,
         bool doesGammaNeedFrequentUpdates
     ) =>
         isSettled
-        && !isTransitioning
+        && !isChangingQuickly
         && !isCyclePreviewEnabled
         && !isAnythingShown
-        && !isGammaPollingEnabled
+        && !isGammaPolledQuickly
         && !doesGammaNeedFrequentUpdates;
+
+    // Whether the colors move on by more than half a gamma write's step from one slow update to
+    // the next (e.g. in a transition of a few minutes). Long transitions move so slowly that
+    // slow updates make the same steps as fast ones would (e.g. 2,600 K over 3 hours is a
+    // fifteenth of a step a second), so they don't need fast updates.
+    internal static bool IsChangingFasterThanSlowUpdates(
+        ColorConfiguration now,
+        ColorConfiguration oneSlowUpdateLater
+    ) =>
+        Math.Abs(oneSlowUpdateLater.Temperature - now.Temperature)
+            > GammaWriteTracker.TemperatureThreshold / 2
+        || Math.Abs(oneSlowUpdateLater.Brightness - now.Brightness)
+            > GammaWriteTracker.BrightnessThreshold / 2;
+
+    // Whether gamma is polled more often than slow updates come
+    internal static bool IsPolledFasterThanSlowUpdates(bool isEnabled, TimeSpan interval) =>
+        isEnabled && interval < SlowUpdateInterval;
 
     private void Update()
     {
@@ -303,10 +321,17 @@ public partial class DashboardViewModel : ViewModelBase
         if (
             CanUpdateSlowly(
                 isSettled,
-                Phase.IsTransitioning,
+                Phase.IsTransitioning
+                    && IsChangingFasterThanSlowUpdates(
+                        GetCycleConfiguration(SolarTimes, Instant),
+                        GetCycleConfiguration(SolarTimes, Instant + SlowUpdateInterval)
+                    ),
                 IsCyclePreviewEnabled,
                 IsDashboardVisible || IsTrayMenuOpen,
-                _settingsService.IsGammaPollingEnabled,
+                IsPolledFasterThanSlowUpdates(
+                    _settingsService.IsGammaPollingEnabled,
+                    _settingsService.GammaPollingInterval
+                ),
                 _gammaService.NeedsFrequentUpdates
             )
         )
@@ -375,6 +400,12 @@ public partial class DashboardViewModel : ViewModelBase
     // wallpaper, which also sets the screen and lights to it), rather than playing the preview
     private DateTimeOffset? _steppedInstant;
 
+    // When the last step was taken: stepping through the day stops on its own after a while
+    // without one, so that a forgotten preview doesn't hold the screen, the lights and the
+    // wallpaper at another time of day
+    private DateTimeOffset _lastSteppedAt = DateTimeOffset.MinValue;
+    private static readonly TimeSpan SteppingTimeout = TimeSpan.FromMinutes(10);
+
     // Whether a time of day is held by stepping through the day
     public bool IsSteppingThroughDay => IsCyclePreviewEnabled && _steppedInstant is not null;
 
@@ -402,6 +433,7 @@ public partial class DashboardViewModel : ViewModelBase
         var steps = Math.Floor((from - dayStart) / PreviewTimeStep) + 1;
 
         _steppedInstant = dayStart + PreviewTimeStep * steps;
+        _lastSteppedAt = DateTimeOffset.Now;
         IsCyclePreviewEnabled = true;
 
         OnPropertyChanged(nameof(IsSteppingThroughDay));
@@ -981,7 +1013,16 @@ public partial class DashboardViewModel : ViewModelBase
         // If in cycle preview mode, advance quickly until the full cycle has been reached
         if (IsCyclePreviewEnabled && _steppedInstant is { } steppedInstant)
         {
-            Instant = steppedInstant;
+            if ((DateTimeOffset.Now - _lastSteppedAt).Duration() >= SteppingTimeout)
+            {
+                // (and back to the time of day right away)
+                IsCyclePreviewEnabled = false;
+                Instant = DateTimeOffset.Now;
+            }
+            else
+            {
+                Instant = steppedInstant;
+            }
         }
         else if (IsCyclePreviewEnabled)
         {

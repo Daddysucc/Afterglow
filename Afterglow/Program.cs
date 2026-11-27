@@ -179,6 +179,13 @@ public static class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        // Run by the uninstaller (while no other copy is running): only puts the desktop back
+        if (StartOptions.Current.IsRestoringDesktop)
+        {
+            Services.WallpaperService.RestoreDesktop();
+            return 0;
+        }
+
         if (StartOptions.Current.PreviousVersionProcessId is { } previousVersionProcessId)
             WaitForPreviousVersionToExit(previousVersionProcessId);
 

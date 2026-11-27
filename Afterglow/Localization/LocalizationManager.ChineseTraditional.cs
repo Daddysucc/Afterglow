@@ -289,13 +289,13 @@ public partial class LocalizationManager
                 "依螢幕色溫和亮度繪製的天空，隨日出和日落變化。當 Windows 動態光源配合輔色時，螢幕背光也會隨之變化。",
             [nameof(DynamicWallpaperEnabledLabel)] = "繪製桌布",
             [nameof(DynamicWallpaperEnabledTooltip)] =
-                "取代每個螢幕上的桌面桌布（直向螢幕使用直向圖像）。關閉後會恢復你自己的桌布。",
+                "取代每個螢幕上的桌面桌布（直向螢幕使用直向圖像）。關閉後會恢復你自己的桌布（投影片放映或 Windows 焦點會以其目前圖片恢復，請在「設定 › 個人化 › 背景」中重新開啟）。",
             [nameof(AccentColorMatchedLabel)] = "設定相符的輔色",
             [nameof(AccentColorMatchedTooltip)] =
                 "將 Windows 輔色設為燈光的準確顏色和亮度，供動態光源使用（在「設定 › 個人化 › 動態光源」中開啟「配合我的 Windows 輔色」）。從桌布自動選取的輔色會忽略調暗。關閉後會恢復你自己的輔色。僅在你離開時變更（30 秒無輸入，且沒有播放內容），因為每次變更輔色時 Windows 都會讓所有應用程式和滑鼠短暫停頓。",
             [nameof(DynamicWallpaperStepButton)] = "下一個時段",
             [nameof(DynamicWallpaperStepTooltip)] =
-                "用於試用：每次前進 90 分鐘，並將螢幕、燈光和桌布設為該時段（輔色會在你離開後跟上）",
+                "用於試用：每次前進 90 分鐘，並將螢幕、燈光、桌布和輔色設為該時段",
             [nameof(DynamicWallpaperStopButton)] = "停止",
             [nameof(DynamicWallpaperPreviewingText)] = "正在預覽 {0}",
             [nameof(HueNotConnectedText)] = "按一下「連線」，然後按下 Hue 橋接器上的按鈕。",

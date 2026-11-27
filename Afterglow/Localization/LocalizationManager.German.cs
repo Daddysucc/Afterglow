@@ -305,13 +305,13 @@ public partial class LocalizationManager
             "Ein Himmel in der Farbtemperatur und Helligkeit des Bildschirms, durch Sonnenaufgang und Sonnenuntergang. Wenn Windows Dynamic Lighting der Akzentfarbe folgt, folgt ihm auch die Hintergrundbeleuchtung eines Monitors.",
         [nameof(DynamicWallpaperEnabledLabel)] = "Hintergrundbild zeichnen",
         [nameof(DynamicWallpaperEnabledTooltip)] =
-            "Ersetzt das Hintergrundbild auf jedem Bildschirm (Hochformat-Bildschirme erhalten ein Bild im Hochformat). Ihr eigenes Hintergrundbild kehrt zurück, wenn dies ausgeschaltet wird.",
+            "Ersetzt das Hintergrundbild auf jedem Bildschirm (Hochformat-Bildschirme erhalten ein Bild im Hochformat). Ihr eigenes Hintergrundbild kehrt zurück, wenn dies ausgeschaltet wird (eine Diashow oder Windows-Blickpunkt kehrt als ihr aktuelles Bild zurück: schalten Sie sie unter Einstellungen › Personalisierung › Hintergrund wieder ein).",
         [nameof(AccentColorMatchedLabel)] = "Akzentfarbe passend setzen",
         [nameof(AccentColorMatchedTooltip)] =
             "Setzt die Windows-Akzentfarbe genau auf die Farbe und Helligkeit des Lichts, für Dynamic Lighting (\"Meiner Windows-Akzentfarbe entsprechen\" unter Einstellungen › Personalisierung › Dynamische Beleuchtung einschalten). Eine automatisch aus dem Hintergrundbild gewählte Akzentfarbe würde die Dimmung auslassen. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird. Sie ändert sich nur, während Sie weg sind (30 Sekunden keine Eingabe, und nichts wird abgespielt), da Windows bei jeder Änderung der Akzentfarbe kurz alle Apps und die Maus einfriert.",
         [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
         [nameof(DynamicWallpaperStepTooltip)] =
-            "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen und Hintergrundbild auf diese Tageszeit (die Akzentfarbe folgt, sobald Sie weg sind)",
+            "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen, Hintergrundbild und Akzentfarbe auf diese Tageszeit",
         [nameof(DynamicWallpaperStopButton)] = "Stopp",
         [nameof(DynamicWallpaperPreviewingText)] = "Vorschau {0}",
         [nameof(HueNotConnectedText)] =

@@ -295,13 +295,13 @@ public partial class LocalizationManager
                 "按屏幕色温和亮度绘制的天空，随日出和日落变化。当 Windows 动态光效匹配主题色时，显示器背光也会随之变化。",
             [nameof(DynamicWallpaperEnabledLabel)] = "绘制壁纸",
             [nameof(DynamicWallpaperEnabledTooltip)] =
-                "替换每个显示器上的桌面壁纸（竖屏显示器使用竖向图像）。关闭后会恢复你自己的壁纸。",
+                "替换每个显示器上的桌面壁纸（竖屏显示器使用竖向图像）。关闭后会恢复你自己的壁纸（幻灯片放映或 Windows 聚焦会以其当前图片恢复，请在“设置 › 个性化 › 背景”中重新打开）。",
             [nameof(AccentColorMatchedLabel)] = "设置匹配的主题色",
             [nameof(AccentColorMatchedTooltip)] =
                 "将 Windows 主题色设为灯光的准确颜色和亮度，供动态光效使用（在“设置 › 个性化 › 动态光效”中打开“匹配我的 Windows 主题色”）。从壁纸自动选取的主题色会忽略调暗。关闭后会恢复你自己的主题色。仅在你离开时更改（30 秒无输入，且没有播放内容），因为每次更改主题色时 Windows 都会让所有应用和鼠标短暂卡顿。",
             [nameof(DynamicWallpaperStepButton)] = "下一个时段",
             [nameof(DynamicWallpaperStepTooltip)] =
-                "用于试用：每次前进 90 分钟，并将屏幕、灯光和壁纸设为该时段（主题色会在你离开后跟上）",
+                "用于试用：每次前进 90 分钟，并将屏幕、灯光、壁纸和主题色设为该时段",
             [nameof(DynamicWallpaperStopButton)] = "停止",
             [nameof(DynamicWallpaperPreviewingText)] = "正在预览 {0}",
             [nameof(HueNotConnectedText)] = "点击“连接”，然后按下 Hue 桥接器上的按钮。",

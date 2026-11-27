@@ -85,6 +85,11 @@ Filename: "{app}\{#AppName}.exe"; Description: "{cm:LaunchProgram,{#StringChange
 ; administrator rights (as postinstall entries run as the user who started the installer)
 Filename: "{app}\{#AppName}.exe"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall; Check: IsUpdating
 
+[UninstallRun]
+; Puts back the user's own wallpaper and accent color, if the dynamic wallpaper replaced them,
+; before the files that say what they were are deleted (it doesn't run while the app does)
+Filename: "{app}\{#AppName}.exe"; Parameters: "--restore-desktop"; Flags: runhidden waituntilterminated skipifdoesntexist; RunOnceId: "RestoreDesktop"
+
 [UninstallDelete]
 Name: "{userappdata}\{#AppName}"; Type: filesandordirs
 ; Settings left from before the rename (they're copied over, not moved)

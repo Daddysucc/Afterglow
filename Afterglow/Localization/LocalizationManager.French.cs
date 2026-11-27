@@ -311,13 +311,13 @@ public partial class LocalizationManager
             "Un ciel à la température de couleur et à la luminosité de l'écran, au fil du lever et du coucher du soleil. Si l'éclairage dynamique de Windows suit la couleur d'accentuation, le rétroéclairage d'un moniteur le suit aussi.",
         [nameof(DynamicWallpaperEnabledLabel)] = "Dessiner le fond d'écran",
         [nameof(DynamicWallpaperEnabledTooltip)] =
-            "Remplace le fond d'écran sur chaque écran (les écrans en portrait reçoivent une image en portrait). Votre propre fond d'écran revient quand cette option est désactivée.",
+            "Remplace le fond d'écran sur chaque écran (les écrans en portrait reçoivent une image en portrait). Votre propre fond d'écran revient quand cette option est désactivée (un diaporama ou Windows à la une revient sous forme de son image actuelle : réactivez-le dans Paramètres › Personnalisation › Arrière-plan).",
         [nameof(AccentColorMatchedLabel)] = "Accorder la couleur d'accentuation",
         [nameof(AccentColorMatchedTooltip)] =
             "Règle la couleur d'accentuation de Windows exactement sur la couleur et la luminosité de la lumière, pour l'éclairage dynamique (activez « Faire correspondre à la couleur d'accentuation de Windows » dans Paramètres › Personnalisation › Éclairage dynamique). Une couleur d'accentuation automatique tirée du fond d'écran laisserait de côté la baisse de luminosité. Votre propre couleur d'accentuation revient quand cette option est désactivée. Elle ne change que pendant votre absence (aucune saisie pendant 30 secondes, et rien en lecture), car Windows fige brièvement toutes les applications, et la souris, à chaque changement de couleur d'accentuation.",
         [nameof(DynamicWallpaperStepButton)] = "Moment suivant",
         [nameof(DynamicWallpaperStepTooltip)] =
-            "Pour essayer : avance de 90 minutes à chaque fois, en réglant l'écran, les lumières et le fond d'écran sur ce moment de la journée (la couleur d'accentuation suit une fois que vous êtes absent)",
+            "Pour essayer : avance de 90 minutes à chaque fois, en réglant l'écran, les lumières, le fond d'écran et la couleur d'accentuation sur ce moment de la journée",
         [nameof(DynamicWallpaperStopButton)] = "Arrêter",
         [nameof(DynamicWallpaperPreviewingText)] = "Aperçu de {0}",
         [nameof(HueNotConnectedText)] =
