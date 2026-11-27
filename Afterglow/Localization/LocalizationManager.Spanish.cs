@@ -306,7 +306,21 @@ public partial class LocalizationManager
                 "Las luces también vuelven a su estado anterior mientras la pantalla está en pausa automáticamente (aplicaciones a pantalla completa, aplicaciones de la lista blanca, transmisión remota, pantalla bloqueada)",
             [nameof(LightDimmingLabel)] = "Atenuación",
             [nameof(LightDimmingTooltip)] =
-                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×1.0 siguen el brillo de la pantalla; los valores más altos las atenúan más, y el brillo máximo siempre se mantiene.",
+                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×2.2 emiten tanta luz como la pantalla (una pantalla atenuada y cálida emite mucha menos luz de lo que sugiere su brillo); los valores más bajos las mantienen más brillantes y los más altos las atenúan más. El brillo máximo de una pantalla sin tinte siempre se mantiene.",
+            [nameof(DynamicWallpaperCardTitle)] = "Fondo de pantalla dinámico",
+            [nameof(DynamicWallpaperCardSubtitle)] =
+                "Un cielo con la temperatura de color y el brillo de la pantalla, a lo largo del amanecer y el atardecer. Si la iluminación dinámica de Windows sigue el color de énfasis, la retroiluminación de un monitor también lo sigue.",
+            [nameof(DynamicWallpaperEnabledLabel)] = "Dibujar el fondo de pantalla",
+            [nameof(DynamicWallpaperEnabledTooltip)] =
+                "Reemplaza el fondo de pantalla en cada pantalla (las pantallas verticales reciben una imagen vertical). Tu propio fondo de pantalla vuelve cuando se desactiva.",
+            [nameof(AccentColorMatchedLabel)] = "Ajustar el color de énfasis",
+            [nameof(AccentColorMatchedTooltip)] =
+                "Ajusta el color de énfasis de Windows exactamente al color y brillo de la luz, para la iluminación dinámica (activa «Coincidir con mi color de énfasis de Windows» en Configuración › Personalización › Iluminación dinámica). Un color de énfasis automático tomado del fondo de pantalla dejaría fuera la atenuación. Tu propio color de énfasis vuelve cuando se desactiva.",
+            [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
+            [nameof(DynamicWallpaperStepTooltip)] =
+                "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces y el fondo de pantalla a esa hora del día",
+            [nameof(DynamicWallpaperStopButton)] = "Detener",
+            [nameof(DynamicWallpaperPreviewingText)] = "Vista previa de {0}",
             [nameof(HueNotConnectedText)] =
                 "Haz clic en Conectar y pulsa el botón de tu puente Hue.",
             [nameof(HueSearchingText)] = "Buscando tu puente Hue…",

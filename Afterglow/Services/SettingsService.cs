@@ -235,6 +235,16 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial double LightDimming { get; set; } = HueLightController.DefaultDimming;
 
+    // The desktop wallpaper is drawn as a sky in the screen's color temperature and brightness,
+    // through sunrise and sunset (and the user's own wallpaper comes back when it's turned off)
+    [ObservableProperty]
+    public partial bool IsDynamicWallpaperEnabled { get; set; }
+
+    // Along with the dynamic wallpaper, the Windows accent color is set to the light's color and
+    // brightness exactly (for Windows Dynamic Lighting), rather than picked from the wallpaper
+    [ObservableProperty]
+    public partial bool IsAccentColorMatched { get; set; } = true;
+
     [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 

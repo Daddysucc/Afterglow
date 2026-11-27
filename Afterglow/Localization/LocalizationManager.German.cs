@@ -299,7 +299,21 @@ public partial class LocalizationManager
             "Lampen kehren auch in ihren vorherigen Zustand zurück, solange der Bildschirm automatisch pausiert ist (Vollbildanwendungen, Anwendungen auf der Whitelist, Remote-Streaming, gesperrter Bildschirm)",
         [nameof(LightDimmingLabel)] = "Dimmen",
         [nameof(LightDimmingTooltip)] =
-            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×1.0 folgen sie der Helligkeit des Bildschirms; höhere Werte dimmen sie stärker, volle Helligkeit bleibt immer voll.",
+            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×2.2 geben sie so viel Licht ab wie der Bildschirm (ein gedimmter, warmer Bildschirm gibt viel weniger Licht ab, als seine Helligkeit vermuten lässt); niedrigere Werte lassen sie heller, höhere dimmen sie stärker. Volle Helligkeit eines ungetönten Bildschirms bleibt immer voll.",
+        [nameof(DynamicWallpaperCardTitle)] = "Dynamisches Hintergrundbild",
+        [nameof(DynamicWallpaperCardSubtitle)] =
+            "Ein Himmel in der Farbtemperatur und Helligkeit des Bildschirms, durch Sonnenaufgang und Sonnenuntergang. Wenn Windows Dynamic Lighting der Akzentfarbe folgt, folgt ihm auch die Hintergrundbeleuchtung eines Monitors.",
+        [nameof(DynamicWallpaperEnabledLabel)] = "Hintergrundbild zeichnen",
+        [nameof(DynamicWallpaperEnabledTooltip)] =
+            "Ersetzt das Hintergrundbild auf jedem Bildschirm (Hochformat-Bildschirme erhalten ein Bild im Hochformat). Ihr eigenes Hintergrundbild kehrt zurück, wenn dies ausgeschaltet wird.",
+        [nameof(AccentColorMatchedLabel)] = "Akzentfarbe passend setzen",
+        [nameof(AccentColorMatchedTooltip)] =
+            "Setzt die Windows-Akzentfarbe genau auf die Farbe und Helligkeit des Lichts, für Dynamic Lighting (\"Meiner Windows-Akzentfarbe entsprechen\" unter Einstellungen › Personalisierung › Dynamische Beleuchtung einschalten). Eine automatisch aus dem Hintergrundbild gewählte Akzentfarbe würde die Dimmung auslassen. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird.",
+        [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
+        [nameof(DynamicWallpaperStepTooltip)] =
+            "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen und Hintergrundbild auf diese Tageszeit",
+        [nameof(DynamicWallpaperStopButton)] = "Stopp",
+        [nameof(DynamicWallpaperPreviewingText)] = "Vorschau {0}",
         [nameof(HueNotConnectedText)] =
             "Klicken Sie auf Verbinden und drücken Sie dann die Taste auf Ihrer Hue Bridge.",
         [nameof(HueSearchingText)] = "Hue Bridge wird gesucht …",

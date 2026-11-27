@@ -283,7 +283,21 @@ public partial class LocalizationManager
                 "螢幕自動暫停時（全螢幕應用程式、白名單應用程式、遠端串流、鎖定畫面），燈也會恢復到先前的狀態",
             [nameof(LightDimmingLabel)] = "調暗",
             [nameof(LightDimmingTooltip)] =
-                "螢幕變暗時燈變暗的程度。×1.0 時與螢幕亮度一致；數值越高燈越暗，滿亮度始終保持滿亮度。",
+                "螢幕變暗時燈變暗的程度。×2.2 時燈發出的光與螢幕相同（變暗、偏暖的螢幕發出的光遠少於其亮度所示）；數值越低燈越亮，越高燈越暗。未著色螢幕的滿亮度始終保持滿亮度。",
+            [nameof(DynamicWallpaperCardTitle)] = "動態桌布",
+            [nameof(DynamicWallpaperCardSubtitle)] =
+                "依螢幕色溫和亮度繪製的天空，隨日出和日落變化。當 Windows 動態光源配合輔色時，螢幕背光也會隨之變化。",
+            [nameof(DynamicWallpaperEnabledLabel)] = "繪製桌布",
+            [nameof(DynamicWallpaperEnabledTooltip)] =
+                "取代每個螢幕上的桌面桌布（直向螢幕使用直向圖像）。關閉後會恢復你自己的桌布。",
+            [nameof(AccentColorMatchedLabel)] = "設定相符的輔色",
+            [nameof(AccentColorMatchedTooltip)] =
+                "將 Windows 輔色設為燈光的準確顏色和亮度，供動態光源使用（在「設定 › 個人化 › 動態光源」中開啟「配合我的 Windows 輔色」）。從桌布自動選取的輔色會忽略調暗。關閉後會恢復你自己的輔色。",
+            [nameof(DynamicWallpaperStepButton)] = "下一個時段",
+            [nameof(DynamicWallpaperStepTooltip)] =
+                "用於試用：每次前進 90 分鐘，並將螢幕、燈光和桌布設為該時段",
+            [nameof(DynamicWallpaperStopButton)] = "停止",
+            [nameof(DynamicWallpaperPreviewingText)] = "正在預覽 {0}",
             [nameof(HueNotConnectedText)] = "按一下「連線」，然後按下 Hue 橋接器上的按鈕。",
             [nameof(HueSearchingText)] = "正在尋找 Hue 橋接器…",
             [nameof(HueNoBridgeFoundText)] =

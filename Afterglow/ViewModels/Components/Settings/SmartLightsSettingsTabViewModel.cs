@@ -24,11 +24,14 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
     public SmartLightsSettingsTabViewModel(
         SettingsService settingsService,
         LocalizationManager localizationManager,
-        HueService hueService
+        HueService hueService,
+        // (left out in tests that don't need it)
+        DashboardViewModel? dashboard = null
     )
         : base(settingsService, localizationManager, 4)
     {
         _hueService = hueService;
+        Dashboard = dashboard;
 
         _hueSubscription = PowerKit.Disposable.Merge(
             hueService.WatchProperties(
@@ -101,6 +104,23 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
         SettingsService.HueShutdownTemperature = defaults.HueShutdownTemperature;
         SettingsService.HueShutdownBrightness = defaults.HueShutdownBrightness;
         SettingsService.IsHueTurnedOnAtStart = defaults.IsHueTurnedOnAtStart;
+        SettingsService.IsDynamicWallpaperEnabled = defaults.IsDynamicWallpaperEnabled;
+        SettingsService.IsAccentColorMatched = defaults.IsAccentColorMatched;
+    }
+
+    // For stepping through the day (trying out the dynamic wallpaper)
+    public DashboardViewModel? Dashboard { get; }
+
+    public bool IsDynamicWallpaperEnabled
+    {
+        get => SettingsService.IsDynamicWallpaperEnabled;
+        set => SettingsService.IsDynamicWallpaperEnabled = value;
+    }
+
+    public bool IsAccentColorMatched
+    {
+        get => SettingsService.IsAccentColorMatched;
+        set => SettingsService.IsAccentColorMatched = value;
     }
 
     public bool IsHueEnabled

@@ -139,7 +139,7 @@ public class HueSpecs
     public void I_get_lights_that_are_on_set_to_the_cycle()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
 
         // Act
         var commands = controller.Update([Light()], Warm, true, true, Start);
@@ -164,7 +164,7 @@ public class HueSpecs
     public void I_never_get_lights_turned_on()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
 
         // Act
         var commands = controller.Update([Light(isOn: false)], Warm, true, true, Start);
@@ -178,7 +178,7 @@ public class HueSpecs
     public void I_only_get_what_i_chose_to_follow_changed()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
 
         // Act
         var temperatureOnly = controller.Update([Light("a")], Warm, true, false, Start);
@@ -195,7 +195,7 @@ public class HueSpecs
     public void I_get_the_temperature_kept_within_what_each_light_supports()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
 
         // Act
         var commands = controller.Update(
@@ -214,7 +214,7 @@ public class HueSpecs
     public void I_get_lights_adjusted_gently_as_the_cycle_moves_on_but_not_for_tiny_changes()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
         var settled = Light(mirek: 387, brightness: 60);
 
@@ -254,7 +254,7 @@ public class HueSpecs
     public void I_get_a_light_left_alone_after_changing_it_myself_until_it_is_turned_off_and_on()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
 
         // Act: changed in the Hue app, once the light had time to settle
@@ -286,7 +286,7 @@ public class HueSpecs
     public void I_do_not_get_a_light_taken_for_changed_while_it_is_still_getting_there()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
 
         // Act: still at its old color, a moment after being set
@@ -301,7 +301,7 @@ public class HueSpecs
     public void I_get_a_light_set_again_when_setting_it_failed()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
 
         // Act
@@ -317,7 +317,7 @@ public class HueSpecs
     public void I_get_lights_put_back_as_they_were_when_following_stops()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update(
             [
                 Light("white"),
@@ -371,7 +371,7 @@ public class HueSpecs
     public void I_do_not_get_a_light_i_changed_myself_put_back()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
         controller.Update([Light(mirek: 300)], Warm, true, true, Start.AddSeconds(10));
 
@@ -386,7 +386,7 @@ public class HueSpecs
     public void I_get_only_the_brightness_put_back_when_i_stop_following_it()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, true, Start);
 
         // Act
@@ -420,7 +420,7 @@ public class HueSpecs
     public void I_get_lights_put_back_when_their_room_is_no_longer_chosen()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light("a"), Light("b")], Warm, true, false, Start);
 
         // Act
@@ -508,7 +508,7 @@ public class HueSpecs
     public void I_get_color_lights_followed_and_left_alone_once_i_change_them()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         var evening = new ColorConfiguration(3100, 0.9);
 
         // Act
@@ -532,7 +532,7 @@ public class HueSpecs
         controller.FollowedLightCount.Should().Be(0);
 
         // Put back to the white it had
-        var restored = new HueLightController();
+        var restored = new HueLightController { Warmth = 2, Dimming = 1 };
         restored.Update([ColorLight()], evening, true, false, Start);
         restored
             .Restore([shown], Start.AddSeconds(1))
@@ -546,7 +546,7 @@ public class HueSpecs
     public void I_get_a_light_set_again_when_it_did_not_take_what_it_was_set_to()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light("a"), Light("b")], Warm, true, false, Start);
 
         // Act (the bridge lost what was sent to "a", so it's still as it was once its quick
@@ -581,7 +581,7 @@ public class HueSpecs
     public void I_get_a_light_that_is_out_of_reach_set_again_less_and_less_often_until_it_gets_there()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
 
         // Act (checked every 10 seconds, while it stays as it was)
@@ -618,7 +618,7 @@ public class HueSpecs
     public void I_get_a_light_put_back_even_if_it_did_not_take_what_it_was_last_set_to()
     {
         // Arrange (it follows, then misses the latest change)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
         controller.Update(
             [Light(mirek: 387)],
@@ -639,7 +639,7 @@ public class HueSpecs
     public void I_get_a_light_left_alone_when_i_set_it_back_to_how_it_was_before_afterglow()
     {
         // Arrange (it was seen following)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
         controller.Update([Light(mirek: 387)], Warm, true, false, Start.AddSeconds(10));
 
@@ -692,20 +692,40 @@ public class HueSpecs
     public void I_get_lights_dimmed_more_strongly_when_i_choose_to()
     {
         // Arrange
-        var controller = new HueLightController { Dimming = 2 };
+        var controller = new HueLightController { Warmth = 2, Dimming = 2 };
 
         // Act
         var commands = controller.Update([Light()], Warm, false, true, Start);
 
-        // Assert
-        commands.Should().ContainSingle().Which.Brightness.Should().Be(36);
+        // Assert (0.6 squared, and less again for the light that a 4500 K tint holds back)
+        commands.Should().ContainSingle().Which.Brightness.Should().Be(28.4);
+    }
+
+    [Theory]
+    // An untinted screen: as much light as it gives off at that brightness level
+    [InlineData(0.6, 6600, 32.5)]
+    [InlineData(1, 6600, 100)]
+    // A warm tint holds back green and blue, so a warm screen gives off less light
+    [InlineData(1, 4500, 75.4)]
+    [InlineData(0.6, 4500, 24.5)]
+    public void I_get_lights_giving_off_as_much_light_as_the_screen_by_default(
+        double screenBrightness,
+        double screenKelvin,
+        double expected
+    )
+    {
+        // Act & assert
+        HueLightController
+            .ToLightBrightness(screenBrightness, HueLightController.DefaultDimming, screenKelvin)
+            .Should()
+            .BeApproximately(expected, 0.2);
     }
 
     [Fact]
     public void I_get_a_light_set_again_when_it_shows_something_it_was_set_to_earlier()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], new ColorConfiguration(6500, 0.6), true, false, Start);
         controller.Update(
             [Light(mirek: 250)],
@@ -753,7 +773,7 @@ public class HueSpecs
     public void I_get_a_light_checked_only_once_its_slow_transition_is_over()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
         controller.Update(
             [Light(mirek: 387)],
@@ -785,7 +805,7 @@ public class HueSpecs
     public void I_get_a_light_set_again_when_it_is_caught_between_what_it_was_set_to()
     {
         // Arrange (dimmed a lot, quickly)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update(
             [Light(brightness: 90)],
             new ColorConfiguration(4500, 0.9),
@@ -826,7 +846,7 @@ public class HueSpecs
     public void I_get_a_light_caught_up_rather_than_left_alone_after_moving_a_slider_quickly()
     {
         // Arrange (a slider moved quickly, so the light is set several times in a row)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         for (var i = 0; i < 4; i++)
         {
             controller.Update(
@@ -869,7 +889,7 @@ public class HueSpecs
     {
         // Arrange (a change made by the user, sent long after the one before, as there are many
         // lights)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], new ColorConfiguration(6500, 0.6), true, false, Start);
         controller.Update(
             [Light(mirek: 250)],
@@ -898,7 +918,7 @@ public class HueSpecs
     public void I_get_a_light_left_alone_when_i_change_it_while_the_cycle_moves_on_gently()
     {
         // Arrange (the cycle moves on in small steps, a while apart)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], new ColorConfiguration(4500, 0.6), true, false, Start);
         controller.Update(
             [Light(mirek: 387)],
@@ -925,7 +945,7 @@ public class HueSpecs
     public void I_can_get_a_light_left_alone_followed_again()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
         controller.Update([Light(mirek: 160)], Warm, true, false, Start.AddSeconds(10));
         controller.GetState("light-1").Should().Be(HueLightState.LeftAlone);
@@ -967,7 +987,7 @@ public class HueSpecs
     )
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update(
             [Light(brightness: 50)],
             new ColorConfiguration(4500, from),
@@ -998,7 +1018,7 @@ public class HueSpecs
     )
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], new ColorConfiguration(4500, 0.6), true, false, Start);
 
         // Act
@@ -1018,7 +1038,7 @@ public class HueSpecs
     public void I_get_lights_set_to_exactly_what_i_choose_however_small_the_change()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update(
             [Light(brightness: 50)],
             new ColorConfiguration(4500, 1),
@@ -1050,7 +1070,7 @@ public class HueSpecs
     {
         // Arrange (it already shows the cycle, so nothing is sent at first, and it's seen
         // following)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light(mirek: 387)], Warm, true, false, Start).Should().BeEmpty();
         controller.Update([Light(mirek: 387)], Warm, true, false, Start.AddSeconds(10));
         controller.Update(
@@ -1079,7 +1099,7 @@ public class HueSpecs
     public void I_only_get_lights_turned_on_when_i_ask_for_it()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
 
         // Act
         var notAsked = controller.Update([Light(isOn: false)], Warm, true, true, Start);
@@ -1109,7 +1129,7 @@ public class HueSpecs
     )
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light(isOn: false)], Warm, true, true, Start, isTurningOn: true);
 
         // Act (just after, while it still reads as off)
@@ -1138,7 +1158,7 @@ public class HueSpecs
     public void I_get_a_light_afterglow_turned_on_left_on_once_i_turned_it_off_and_on_myself()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light(isOn: false)], Warm, true, false, Start, isTurningOn: true);
         controller.Update([Light(isOn: false)], Warm, true, false, Start.AddSeconds(10));
         controller.Update([Light(mirek: 387)], Warm, true, false, Start.AddSeconds(20));
@@ -1154,7 +1174,7 @@ public class HueSpecs
     public void I_get_lights_left_as_they_are_when_the_pc_sleeps_and_followed_again_afterwards()
     {
         // Arrange (one light was on already, and one was turned on by Afterglow)
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update(
             [Light("a"), Light("b", isOn: false)],
             Warm,
@@ -1188,7 +1208,7 @@ public class HueSpecs
     public void I_can_get_lights_turned_off_when_the_pc_shuts_down()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light("a"), Light("b")], Warm, true, false, Start);
 
         // Act (one of them was changed by something else meanwhile)
@@ -1208,7 +1228,12 @@ public class HueSpecs
     public void I_get_a_light_changed_elsewhere_followed_again_after_a_while()
     {
         // Arrange
-        var controller = new HueLightController { ReclaimDelay = TimeSpan.FromHours(1) };
+        var controller = new HueLightController
+        {
+            Warmth = 2,
+            Dimming = 1,
+            ReclaimDelay = TimeSpan.FromHours(1),
+        };
         controller.Update([Light()], Warm, true, false, Start);
         controller.Update([Light(mirek: 160)], Warm, true, false, Start.AddMinutes(1));
         controller.GetState("light-1").Should().Be(HueLightState.LeftAlone);
@@ -1256,7 +1281,7 @@ public class HueSpecs
     public void I_get_lights_changed_quickly_when_asked_to()
     {
         // Arrange
-        var controller = new HueLightController();
+        var controller = new HueLightController { Warmth = 2, Dimming = 1 };
         controller.Update([Light()], Warm, true, false, Start);
 
         // Act

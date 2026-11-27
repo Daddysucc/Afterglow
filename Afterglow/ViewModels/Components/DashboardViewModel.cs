@@ -68,6 +68,7 @@ public partial class DashboardViewModel : ViewModelBase
     private readonly GrayscaleController _grayscaleController = new();
     private bool _isGrayscaleWanted;
     private DateTimeOffset? _grayscaleSnoozedUntil;
+    private GrayscaleSchedule? _lastGrayscaleSchedule;
 
     private CycleCurve? _cycleCurve;
     private CycleCurveKey? _cycleCurveKey;
@@ -136,9 +137,17 @@ public partial class DashboardViewModel : ViewModelBase
                 }
             ),
             // A new grayscale schedule replaces any temporary disable
+            // (only an actual change: saving the settings notifies of every property at once)
             settingsService.WatchProperty(
                 o => o.GrayscaleSchedule,
-                _ => _grayscaleSnoozedUntil = null
+                v =>
+                {
+                    if (v == _lastGrayscaleSchedule)
+                        return;
+
+                    _lastGrayscaleSchedule = v;
+                    _grayscaleSnoozedUntil = null;
+                }
             ),
             // Apply grayscale settings right away, rather than on the next update
             settingsService.WatchProperties(
@@ -358,6 +367,50 @@ public partial class DashboardViewModel : ViewModelBase
     public partial bool IsCyclePreviewEnabled { get; set; }
 
     public bool IsActive => IsEnabled && !IsPaused || IsCyclePreviewEnabled;
+
+    // How far apart the times of day are when stepping through them (16 a day)
+    private static readonly TimeSpan PreviewTimeStep = TimeSpan.FromMinutes(90);
+
+    // The time of day held by stepping through the day (a debugging aid for the dynamic
+    // wallpaper, which also sets the screen and lights to it), rather than playing the preview
+    private DateTimeOffset? _steppedInstant;
+
+    // Whether a time of day is held by stepping through the day
+    public bool IsSteppingThroughDay => IsCyclePreviewEnabled && _steppedInstant is not null;
+
+    // e.g. "Previewing 16:30"
+    public string SteppedTimeText =>
+        _steppedInstant is { } instant
+            ? string.Format(
+                LocalizationManager.DynamicWallpaperPreviewingText,
+                instant.ToString("t")
+            )
+            : "";
+
+    // How high the sun is (in degrees, negative below the horizon), following the sunrise and
+    // sunset (calculated or entered by hand) and the location's latitude if it's known
+    public double SunElevation =>
+        DynamicWallpaper.GetSunElevation(SolarTimes, Instant, _settingsService.Location?.Latitude);
+
+    // Moves on to the next time of day (starting from the next step after now), holding the
+    // screen, the lights and the dynamic wallpaper there until stopped
+    [RelayCommand]
+    private void StepThroughDay()
+    {
+        var from = _steppedInstant ?? DateTimeOffset.Now;
+        var dayStart = from.ResetTimeOfDay();
+        var steps = Math.Floor((from - dayStart) / PreviewTimeStep) + 1;
+
+        _steppedInstant = dayStart + PreviewTimeStep * steps;
+        IsCyclePreviewEnabled = true;
+
+        OnPropertyChanged(nameof(IsSteppingThroughDay));
+        OnPropertyChanged(nameof(SteppedTimeText));
+        RequestFastUpdates();
+    }
+
+    [RelayCommand]
+    private void StopSteppingThroughDay() => IsCyclePreviewEnabled = false;
 
     // Everything that depends on the time of day or on the settings is refreshed on every tick.
     // Dashboard-only visuals are refreshed separately, and only while the dashboard can be seen.
@@ -926,7 +979,11 @@ public partial class DashboardViewModel : ViewModelBase
     private void UpdateInstant()
     {
         // If in cycle preview mode, advance quickly until the full cycle has been reached
-        if (IsCyclePreviewEnabled)
+        if (IsCyclePreviewEnabled && _steppedInstant is { } steppedInstant)
+        {
+            Instant = steppedInstant;
+        }
+        else if (IsCyclePreviewEnabled)
         {
             // Cycle is supposed to end 1 full day past the current real time
             var targetInstant = DateTimeOffset.Now + TimeSpan.FromDays(1);
@@ -1340,7 +1397,17 @@ public partial class DashboardViewModel : ViewModelBase
         UpdateGrayscale();
     }
 
-    partial void OnIsCyclePreviewEnabledChanged(bool value) => UpdateGrayscale();
+    partial void OnIsCyclePreviewEnabledChanged(bool value)
+    {
+        if (!value && _steppedInstant is not null)
+        {
+            _steppedInstant = null;
+            OnPropertyChanged(nameof(IsSteppingThroughDay));
+            OnPropertyChanged(nameof(SteppedTimeText));
+        }
+
+        UpdateGrayscale();
+    }
 
     public override Task InitializeAsync()
     {

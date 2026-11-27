@@ -315,7 +315,21 @@ public partial class LocalizationManager
                 "Lights also go back to how they were while the screen is paused on its own (fullscreen applications, whitelisted applications, remote streaming, a locked screen)",
             [nameof(LightDimmingLabel)] = "Dimming",
             [nameof(LightDimmingTooltip)] =
-                "How strongly lights dim as the screen dims. At ×1.0 they match the screen's brightness; higher values dim them more, and full brightness always stays full.",
+                "How strongly lights dim as the screen dims. At ×2.2 they give off as much light as the screen does (a dimmed, warm screen gives off much less light than its brightness suggests); lower values keep them brighter, higher values dim them more. Full brightness of an untinted screen always stays full.",
+            [nameof(DynamicWallpaperCardTitle)] = "Dynamic wallpaper",
+            [nameof(DynamicWallpaperCardSubtitle)] =
+                "A sky in the screen's color temperature and brightness, through sunrise and sunset. With Windows Dynamic Lighting matching the accent color, a monitor's backlight follows it too.",
+            [nameof(DynamicWallpaperEnabledLabel)] = "Draw the wallpaper",
+            [nameof(DynamicWallpaperEnabledTooltip)] =
+                "Replaces the desktop wallpaper on every display (portrait displays get a portrait image). Your own wallpaper comes back when this is turned off.",
+            [nameof(AccentColorMatchedLabel)] = "Set the accent color to match",
+            [nameof(AccentColorMatchedTooltip)] =
+                "Sets the Windows accent color to the light's exact color and brightness, for Dynamic Lighting (turn on \"Match my Windows accent color\" in Settings › Personalization › Dynamic Lighting). An automatic accent color picked from the wallpaper would leave out the dimming. Your own accent color comes back when this is turned off.",
+            [nameof(DynamicWallpaperStepButton)] = "Next time of day",
+            [nameof(DynamicWallpaperStepTooltip)] =
+                "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights and the wallpaper to that time of day",
+            [nameof(DynamicWallpaperStopButton)] = "Stop",
+            [nameof(DynamicWallpaperPreviewingText)] = "Previewing {0}",
             [nameof(HueNotConnectedText)] =
                 "Click Connect, then press the button on your Hue bridge.",
             [nameof(HueSearchingText)] = "Looking for your Hue bridge…",

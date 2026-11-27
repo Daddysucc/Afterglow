@@ -56,6 +56,7 @@ public partial class App : Application, IDisposable
         services.AddSingleton<SettingsService>();
         services.AddSingleton<UpdateService>();
         services.AddSingleton<HueService>();
+        services.AddSingleton<WallpaperService>();
 
         // View models
         services.AddTransient<MainViewModel>();
@@ -133,6 +134,22 @@ public partial class App : Application, IDisposable
             )
         );
 
+        // Draw the desktop wallpaper as the sky, and set the accent color to the screen's colors
+        // (neutral while Afterglow is off or paused), if that's turned on, but not while the
+        // cycle preview plays through the day (other than when stepping through it)
+        var wallpaperService = _services.GetRequiredService<WallpaperService>();
+        wallpaperService.SetTargetSource(() =>
+            dashboard.IsCyclePreviewEnabled && !dashboard.IsSteppingThroughDay
+                ? null
+                : new WallpaperTarget(
+                    dashboard.IsActive
+                        ? dashboard.LightConfiguration
+                        : dashboard.TargetConfiguration,
+                    dashboard.SunElevation,
+                    dashboard.IsSteppingThroughDay
+                )
+        );
+
         void OnDashboardChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
         {
             switch (args.PropertyName)
@@ -142,6 +159,12 @@ public partial class App : Application, IDisposable
                     break;
 
                 // Adjusted by the user (with hotkeys), rather than by the cycle moving on
+                // Stepping through the day (to try out the dynamic wallpaper)
+                case nameof(DashboardViewModel.Instant) when dashboard.IsSteppingThroughDay:
+                    hueService.NotifyTargetChanged();
+                    wallpaperService.NotifyTargetChanged();
+                    break;
+
                 case nameof(DashboardViewModel.TemperatureOffset)
                 or nameof(DashboardViewModel.BrightnessOffset):
                     hueService.NotifyUserChange();
@@ -163,6 +186,7 @@ public partial class App : Application, IDisposable
             dashboard.PropertyChanged -= OnDashboardChanged
         );
         hueService.Start();
+        wallpaperService.Start();
 
         // Initialize the lifetime
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

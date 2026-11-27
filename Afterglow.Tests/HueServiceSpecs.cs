@@ -233,6 +233,10 @@ public class HueServiceSpecs : IDisposable
         settings.EveningConfiguration = warm;
         settings.NightConfiguration = warm;
 
+        // The values these specs were written for (the colors and brightnesses they expect)
+        settings.LightWarmth = 2;
+        settings.LightDimming = 1;
+
         if (isPaired)
         {
             settings.HueBridgeAddress = Address;

@@ -41,6 +41,24 @@ public static class WhitePoint
     }
 
     /// <summary>
+    /// Gets how much light (relative luminance, 0 to 1) a typical (sRGB) screen gives off for
+    /// white at the given color temperature, compared to its untinted white. Warm tints cut the
+    /// green and blue channels, so a warm screen is also a dimmer one.
+    /// </summary>
+    public static double GetLuminance(double kelvin)
+    {
+        var (red, green, blue) = GetRgb(kelvin);
+
+        return Math.Clamp(
+            0.2126 * Math.Pow(red, 2.2)
+                + 0.7152 * Math.Pow(green, 2.2)
+                + 0.0722 * Math.Pow(blue, 2.2),
+            0,
+            1
+        );
+    }
+
+    /// <summary>
     /// Gets the CIE 1931 chromaticity of white at the given color temperature, as a typical
     /// (sRGB) screen shows it.
     /// </summary>

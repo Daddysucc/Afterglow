@@ -272,7 +272,7 @@
                         Grid.Column="1"
                         IsSnapToTickEnabled="True"
                         LargeChange="0.5"
-                        Maximum="4"
+                        Maximum="8"
                         Minimum="1"
                         SmallChange="0.1"
                         TickFrequency="0.1"
@@ -319,7 +319,7 @@
                         Grid.Column="1"
                         IsSnapToTickEnabled="True"
                         LargeChange="0.5"
-                        Maximum="4"
+                        Maximum="6"
                         Minimum="0.5"
                         SmallChange="0.1"
                         TickFrequency="0.1"
@@ -666,6 +666,97 @@
                             TextAlignment="Right"
                         />
                     </Grid>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!--  Dynamic wallpaper (and accent color, for Windows Dynamic Lighting)  -->
+        <Border Classes="card">
+            <StackPanel Orientation="Vertical" Spacing="10">
+                <StackPanel Orientation="Vertical" Spacing="2">
+                    <TextBlock
+                        Classes="card-title"
+                        Text="{Binding LocalizationManager.DynamicWallpaperCardTitle}"
+                    />
+                    <TextBlock
+                        Classes="card-subtitle"
+                        Text="{Binding LocalizationManager.DynamicWallpaperCardSubtitle}"
+                        TextWrapping="Wrap"
+                    />
+                </StackPanel>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ToolTip.Tip="{Binding LocalizationManager.DynamicWallpaperEnabledTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.DynamicWallpaperEnabledLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsDynamicWallpaperEnabled}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    IsEnabled="{Binding IsDynamicWallpaperEnabled}"
+                    ToolTip.Tip="{Binding LocalizationManager.AccentColorMatchedTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.AccentColorMatchedLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsAccentColorMatched}"
+                    />
+                </Grid>
+
+                <!--  Stepping through the day, to try it out  -->
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button
+                        Padding="10,6"
+                        Command="{Binding Dashboard.StepThroughDayCommand}"
+                        Theme="{DynamicResource MaterialOutlineButton}"
+                        ToolTip.Tip="{Binding LocalizationManager.DynamicWallpaperStepTooltip}"
+                    >
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <materialIcons:MaterialIcon
+                                Width="16"
+                                Height="16"
+                                Kind="WeatherSunsetUp"
+                            />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Text="{Binding LocalizationManager.DynamicWallpaperStepButton}"
+                            />
+                        </StackPanel>
+                    </Button>
+                    <Button
+                        Padding="10,6"
+                        Command="{Binding Dashboard.StopSteppingThroughDayCommand}"
+                        IsVisible="{Binding Dashboard.IsSteppingThroughDay}"
+                        Theme="{DynamicResource MaterialFlatButton}"
+                    >
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Text="{Binding LocalizationManager.DynamicWallpaperStopButton}"
+                        />
+                    </Button>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-hint"
+                        IsVisible="{Binding Dashboard.IsSteppingThroughDay}"
+                        Text="{Binding Dashboard.SteppedTimeText}"
+                    />
                 </StackPanel>
             </StackPanel>
         </Border>

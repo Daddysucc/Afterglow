@@ -340,6 +340,16 @@ public partial class LocalizationManager
     public string HueFollowBrightnessTooltip => Get();
     public string LightDimmingLabel => Get();
     public string LightDimmingTooltip => Get();
+    public string DynamicWallpaperCardTitle => Get();
+    public string DynamicWallpaperCardSubtitle => Get();
+    public string DynamicWallpaperEnabledLabel => Get();
+    public string DynamicWallpaperEnabledTooltip => Get();
+    public string AccentColorMatchedLabel => Get();
+    public string AccentColorMatchedTooltip => Get();
+    public string DynamicWallpaperStepButton => Get();
+    public string DynamicWallpaperStepTooltip => Get();
+    public string DynamicWallpaperStopButton => Get();
+    public string DynamicWallpaperPreviewingText => Get();
     public string HuePauseWithScreenLabel => Get();
     public string HuePauseWithScreenTooltip => Get();
     public string HueShutdownLabel => Get();

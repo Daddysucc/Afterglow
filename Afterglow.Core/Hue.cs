@@ -358,9 +358,9 @@ public sealed class HueLightController
             : TimeSpan.FromSeconds(Math.Min(10 * Math.Pow(2, missedCount - 2), 120));
 
     // How much warmer than the screen's tint lights are set, by default and at most
-    public const double DefaultWarmth = 2;
+    public const double DefaultWarmth = 4;
     public const double MinimumWarmth = 1;
-    public const double MaximumWarmth = 4;
+    public const double MaximumWarmth = 8;
 
     /// <summary>
     /// How long a light changed by something else is left alone before it's followed again
@@ -383,15 +383,15 @@ public sealed class HueLightController
     /// </summary>
     public double Warmth { get; set; } = DefaultWarmth;
 
-    // How strongly lights dim as the screen dims (1 is as much as the screen), by default and at
-    // least and most
-    public const double DefaultDimming = 1;
+    // How strongly lights dim as the screen dims, by default and at least and most. At the
+    // default, a light gives off as much (relative to its full brightness) as the screen does
+    // (relative to its untinted white): see ToLightBrightness.
+    public const double DefaultDimming = ScreenGamma;
     public const double MinimumDimming = 0.5;
-    public const double MaximumDimming = 4;
+    public const double MaximumDimming = 6;
 
     /// <summary>
-    /// How strongly lights dim as the screen dims: their brightness is the screen's, raised to
-    /// this power (so full brightness stays full, and lower ones go lower than the screen's).
+    /// How strongly lights dim as the screen dims (see <see cref="ToLightBrightness" />).
     /// </summary>
     public double Dimming { get; set; } = DefaultDimming;
 
@@ -749,7 +749,7 @@ public sealed class HueLightController
 
             if (followsBrightness)
             {
-                var brightness = ToLightBrightness(target.Brightness, Dimming);
+                var brightness = ToLightBrightness(target.Brightness, Dimming, target.Temperature);
 
                 if (state.SentBrightness is not { } sentBrightness)
                 {
@@ -891,7 +891,7 @@ public sealed class HueLightController
             ? ToLightColor(target.Temperature, Warmth, light)
             : (null, null, null);
         double? brightness = followsBrightness
-            ? ToLightBrightness(target.Brightness, Dimming)
+            ? ToLightBrightness(target.Brightness, Dimming, target.Temperature)
             : null;
 
         var state = new LightState
@@ -1591,16 +1591,36 @@ public sealed class HueLightController
         _pausedLights.Clear();
     }
 
+    // Levels sent to a display are gamma-encoded, so the light it gives off goes with the level
+    // raised to this power
+    private const double ScreenGamma = 2.2;
+
     /// <summary>
     /// Gets the brightness (1 to 100) that a light is set to, for the given screen brightness (0
-    /// to 1) and dimming strength.
+    /// to 1) and color temperature, and dimming strength.
     /// </summary>
-    public static double ToLightBrightness(double screenBrightness, double dimming) =>
-        Math.Clamp(
-            Math.Round(Math.Pow(Math.Clamp(screenBrightness, 0, 1), dimming) * 100, 1),
-            1,
-            100
-        );
+    /// <remarks>
+    /// A screen gives off much less light than its brightness level suggests: the level is
+    /// gamma-encoded (half brightness is about a fifth of the light), and a warm tint cuts the
+    /// green and blue channels. At 1, a light follows the screen's brightness level as it is; at
+    /// the default (2.2) it gives off as much light (relative to its full brightness) as the
+    /// screen does (relative to its untinted white); in between, and beyond, it goes by the same
+    /// curve. Full brightness of an untinted screen always stays full.
+    /// </remarks>
+    public static double ToLightBrightness(
+        double screenBrightness,
+        double dimming,
+        double screenKelvin = 6600
+    )
+    {
+        var level = Math.Pow(Math.Clamp(screenBrightness, 0, 1), dimming);
+
+        // How much of the light that the tint holds back is held back from the light too
+        var tintShare = Math.Max(dimming - 1, 0) / (ScreenGamma - 1);
+        var tint = Math.Pow(WhitePoint.GetLuminance(screenKelvin), tintShare);
+
+        return Math.Clamp(Math.Round(level * tint * 100, 1), 1, 100);
+    }
 
     public static int ToMirek(double kelvin) => (int)Math.Round(1_000_000 / Math.Max(kelvin, 1));
 
