@@ -183,9 +183,9 @@ public class DynamicWallpaperSpecs
                     DynamicWallpaper.GetPalette(stops[i])
                 )
                 .Should()
-                .BeLessThanOrEqualTo(13);
+                .BeLessThanOrEqualTo(25);
         }
 
-        (stops[^1] - stops[^2]).Should().BeGreaterThan(stops[24] - stops[23]);
+        (stops[^1] - stops[^2]).Should().BeGreaterThan(stops[12] - stops[11]);
     }
 }

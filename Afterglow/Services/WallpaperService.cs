@@ -41,10 +41,20 @@ public readonly record struct WallpaperTarget(
 /// that, following the sun is just pointing Windows at another image.
 /// </para>
 /// <para>
-/// A display covered by a fullscreen application (e.g. a game) keeps its sky until it's
-/// uncovered (the others carry on), nothing is drawn in the background meanwhile, and the accent
-/// color follows less often (as every application, the game included, is told when it changes).
-/// Nothing changes while the screen is locked. It all catches up afterwards.
+/// Following the sun and the cycle waits for a quiet moment, so that nothing changes in the
+/// middle of something:
+/// <list type="bullet">
+/// <item>A display that's covered by a fullscreen application, or that the user is working on
+/// (where the mouse or the window in focus is, while there's been input in the last few seconds),
+/// keeps its sky until it isn't. The other displays carry on.</item>
+/// <item>The accent color (which repaints the taskbars and title bars of every display) waits
+/// until there's been no input for a few seconds, and nothing is fullscreen.</item>
+/// <item>Nothing changes, and nothing is drawn in the background, while something keeps the
+/// display on (a video or a game playing, wherever it is: Windows doesn't say which display), or
+/// while the screen is locked.</item>
+/// </list>
+/// Changes made by the user (e.g. moving a slider, or stepping through the day) are shown right
+/// away.
 /// </para>
 /// <para>
 /// Images are drawn at each display's own resolution (so Windows doesn't scale them), dithered
@@ -54,22 +64,33 @@ public readonly record struct WallpaperTarget(
 /// </remarks>
 public class WallpaperService : IDisposable
 {
-    private static readonly TimeSpan CheckInterval = TimeSpan.FromSeconds(3);
+    // Checked often while something is waiting (or the user just changed something), and
+    // rarely otherwise (the sun moves slowly), so that it wakes up as little as possible
+    private static readonly TimeSpan FastCheckInterval = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan SlowCheckInterval = TimeSpan.FromSeconds(15);
 
-    // How often the accent color follows the cycle's slow drift, at most
-    private static readonly TimeSpan AccentDriftInterval = TimeSpan.FromSeconds(30);
+    // How long checks stay frequent after the user changes something
+    private static readonly TimeSpan FastCheckTime = TimeSpan.FromSeconds(30);
 
-    // ...and while an application is fullscreen
-    private static readonly TimeSpan FullScreenAccentInterval = TimeSpan.FromMinutes(2);
+    // How often the accent color follows the cycle's slow drift, at most (Windows repaints the
+    // taskbar and title bars each time)
+    private static readonly TimeSpan AccentDriftInterval = TimeSpan.FromMinutes(2);
 
-    // How long the background drawing waits while an application is fullscreen
-    private static readonly TimeSpan FullScreenRetryDelay = TimeSpan.FromSeconds(30);
+    // How long after the accent color last moved quickly (e.g. a slider being dragged) the change
+    // counts as the user's own, and is shown right away
+    private static readonly TimeSpan DeliberateChangeTime = TimeSpan.FromSeconds(15);
 
-    // Smaller changes of the accent color (in any channel, out of 255) go by unnoticed
-    private const int NoticeableAccentDifference = 2;
+    // How long without mouse or keyboard input counts as a quiet moment
+    private static readonly TimeSpan QuietTime = TimeSpan.FromSeconds(10);
+
+    // How long the background drawing waits while a video or a game is playing
+    private static readonly TimeSpan BusyRetryDelay = TimeSpan.FromSeconds(30);
+
+    // Smaller changes of the accent color (in any channel, out of 255) aren't worth it
+    private const int NoticeableAccentDifference = 4;
 
     // Images drawn by an earlier version (e.g. with other skies) are told apart by this
-    private const string ImagePrefix = "Sky 2 ";
+    private const string ImagePrefix = "Sky 3 ";
 
     private const string OriginalWallpapersFileName = "Original wallpapers.txt";
     private const string OriginalAccentColorFileName = "Original accent color.txt";
@@ -87,17 +108,21 @@ public class WallpaperService : IDisposable
     private bool _isStarted;
     private bool _isBusy;
 
-    // The display covered by a fullscreen application, if any, and whether the screen is locked
+    // What the user is doing (see UpdateActivity)
     private Rect? _fullScreenBounds;
-    private volatile bool _isFullScreenOrLocked;
+    private IReadOnlyList<Rect> _busyBounds = [];
     private bool _isLocked;
+    private bool _isDisplayKeptOn;
+    private bool _isQuiet;
+    private volatile bool _isDrawingPaused;
 
     // What's shown now (null until shown on every display), and a sky only shown on the displays
-    // that weren't covered (along with the one that was)
+    // that weren't busy (along with which ones were)
     private int? _shownStop;
-    private (int Stop, Rect? Skipped)? _partialStop;
+    private (int Stop, string Skipped)? _partialStop;
     private WallpaperColor? _appliedAccentColor;
     private WallpaperColor? _lastAccentTarget;
+    private DateTimeOffset _lastAccentMovedAt = DateTimeOffset.MinValue;
     private DateTimeOffset _lastAccentAppliedAt = DateTimeOffset.MinValue;
 
     // The display sizes that images are drawn for, and the drawing of the rest in the background
@@ -117,9 +142,16 @@ public class WallpaperService : IDisposable
             "Wallpapers"
         );
 
-        _settingsSubscription = settingsService.WatchProperties(
-            [o => o.IsDynamicWallpaperEnabled, o => o.IsAccentColorMatched],
-            Evaluate
+        _settingsSubscription = PowerKit.Disposable.Merge(
+            settingsService.WatchProperties(
+                [o => o.IsDynamicWallpaperEnabled, o => o.IsAccentColorMatched],
+                Evaluate
+            ),
+            // The accent color follows these sliders right away
+            settingsService.WatchProperties(
+                [o => o.LightWarmth, o => o.LightDimming],
+                NotifyTargetChanged
+            )
         );
     }
 
@@ -146,7 +178,7 @@ public class WallpaperService : IDisposable
             {
                 _timer = new DispatcherTimer(DispatcherPriority.Background)
                 {
-                    Interval = CheckInterval,
+                    Interval = FastCheckInterval,
                 };
                 _timer.Tick += (_, _) => Check();
                 _timer.Start();
@@ -201,11 +233,37 @@ public class WallpaperService : IDisposable
     /// <summary>
     /// Checks whether the wallpaper needs to change, without waiting for the next regular check.
     /// </summary>
-    public void NotifyTargetChanged() => Check();
+    public void NotifyTargetChanged()
+    {
+        _fastCheckUntil = DateTimeOffset.Now + FastCheckTime;
+        Check();
+    }
+
+    private DateTimeOffset _fastCheckUntil = DateTimeOffset.MinValue;
+
+    private void SetCheckInterval(bool isFast)
+    {
+        var interval =
+            isFast || DateTimeOffset.Now < _fastCheckUntil ? FastCheckInterval : SlowCheckInterval;
+
+        if (_timer is not null && _timer.Interval != interval)
+            _timer.Interval = interval;
+    }
 
     // Only looked up when there's something to do, as it opens the foreground application
-    private void UpdateVisibility()
+    private void UpdateActivity()
     {
+        // The cheapest first: while a video or a game plays, or the screen is locked, nothing
+        // changes anyway, so the foreground application isn't looked up
+        _isLocked = InputDesktop.IsLocked();
+        _isDisplayKeptOn = UserActivity.IsDisplayKeptOn();
+        if (_isLocked || _isDisplayKeptOn)
+        {
+            _isQuiet = false;
+            _isDrawingPaused = true;
+            return;
+        }
+
         // (a system window, like the taskbar, keeps what was found before)
         if (_externalApplicationService.TryGetForegroundFullScreenMonitor(out var deviceName))
         {
@@ -223,9 +281,28 @@ public class WallpaperService : IDisposable
                     ?.TryGetBounds();
         }
 
-        _isLocked = InputDesktop.IsLocked();
-        _isFullScreenOrLocked = _isLocked || _fullScreenBounds is not null;
+        var isIdle = UserActivity.GetIdleTime() >= QuietTime;
+
+        // The displays to leave alone for now: one that's covered, and the ones being worked on
+        var busyBounds = new List<Rect>();
+        if (_fullScreenBounds is { } fullScreenBounds)
+            busyBounds.Add(fullScreenBounds);
+        if (!isIdle)
+        {
+            foreach (var bounds in UserActivity.GetActiveMonitorBounds())
+            {
+                if (!busyBounds.Contains(bounds))
+                    busyBounds.Add(bounds);
+            }
+        }
+
+        _busyBounds = busyBounds;
+        _isQuiet = isIdle && _fullScreenBounds is null;
+        _isDrawingPaused = _fullScreenBounds is not null;
     }
+
+    private static string GetKey(IReadOnlyList<Rect> bounds) =>
+        string.Join(';', bounds.Select(b => $"{b.Left},{b.Top},{b.Right},{b.Bottom}").Order());
 
     private void Check()
     {
@@ -246,70 +323,75 @@ public class WallpaperService : IDisposable
             _lastAccentTarget is not { } lastAccent
             || WallpaperColor.GetDifference(lastAccent, accent) <= 1;
         _lastAccentTarget = accent;
+        if (!isAccentSettled)
+            _lastAccentMovedAt = DateTimeOffset.Now;
 
-        // (a sky already shown on every display that isn't covered isn't shown again until the
-        // covered one is uncovered)
-        var isSkyNeeded =
-            _shownStop != stop
-            && !(
-                _partialStop is { } partial
-                && partial.Stop == stop
-                && partial.Skipped == _fullScreenBounds
-            );
+        var isSkyNeeded = _shownStop != stop;
 
         var accentDifference = _appliedAccentColor is { } applied
             ? WallpaperColor.GetDifference(applied, accent)
             : int.MaxValue;
+        // A deliberate change (e.g. a slider moved just now, or the first time), as opposed to
+        // the cycle moving on (however far it got while waiting for a quiet moment)
+        var isAccentDeliberate =
+            target.IsImmediate
+            || _appliedAccentColor is null
+            || DateTimeOffset.Now - _lastAccentMovedAt < DeliberateChangeTime;
         var isAccentNeeded =
             IsAccentColorMatched
             && accentDifference >= NoticeableAccentDifference
             && (isAccentSettled || target.IsImmediate)
             && (
-                target.IsImmediate
-                // A deliberate change (or the first time), right away
-                || accentDifference > 8
-                // The cycle moving on, now and then
+                isAccentDeliberate
                 || DateTimeOffset.Now - _lastAccentAppliedAt >= AccentDriftInterval
             );
 
-        // Also keeps the background drawing informed, and notices a covered display uncovered
-        var isWorking = !_drawing.IsCompleted || _partialStop is not null;
-        if (!isSkyNeeded && !isAccentNeeded && !isWorking)
+        // Checked often while anything is waiting, or still moving
+        var isWaiting =
+            isSkyNeeded
+            || !_drawing.IsCompleted
+            || !isAccentSettled
+            || (IsAccentColorMatched && accentDifference >= NoticeableAccentDifference);
+        SetCheckInterval(isWaiting);
+
+        // Also keeps the background drawing informed
+        if (!isSkyNeeded && !isAccentNeeded && _drawing.IsCompleted)
             return;
 
-        UpdateVisibility();
+        UpdateActivity();
 
+        IReadOnlyList<Rect> skipped = [];
         if (!target.IsImmediate)
         {
-            if (_isLocked)
+            // A video or a game is playing (wherever it is), or the screen is locked
+            if (_isLocked || _isDisplayKeptOn)
                 return;
 
-            if (
-                isAccentNeeded
-                && _fullScreenBounds is not null
-                && DateTimeOffset.Now - _lastAccentAppliedAt < FullScreenAccentInterval
-            )
+            // The cycle moving on waits for a quiet moment
+            if (isAccentNeeded && !isAccentDeliberate && !_isQuiet)
                 isAccentNeeded = false;
+
+            skipped = _busyBounds;
         }
 
-        // (the covered display is uncovered again)
-        if (_partialStop is { } shown && shown.Skipped != _fullScreenBounds)
-        {
-            _partialStop = null;
-            isSkyNeeded = _shownStop != stop || shown.Stop == stop;
-        }
+        // (a sky already shown on every display that isn't busy is only shown again on the rest
+        // once they aren't)
+        var skippedKey = GetKey(skipped);
+        if (isSkyNeeded && _partialStop is { } partial && partial.Stop == stop)
+            isSkyNeeded = partial.Skipped != skippedKey;
 
         if (isSkyNeeded || isAccentNeeded)
         {
-            Apply(
-                isSkyNeeded ? stop : null,
-                isAccentNeeded ? accent : null,
-                target.IsImmediate ? null : _fullScreenBounds
-            );
+            Apply(isSkyNeeded ? stop : null, isAccentNeeded ? accent : null, skipped, skippedKey);
         }
     }
 
-    private async void Apply(int? stop, WallpaperColor? accent, Rect? skippedBounds)
+    private async void Apply(
+        int? stop,
+        WallpaperColor? accent,
+        IReadOnlyList<Rect> skippedBounds,
+        string skippedKey
+    )
     {
         _isBusy = true;
         var isApplied = false;
@@ -353,7 +435,7 @@ public class WallpaperService : IDisposable
         {
             if (isSkipped)
             {
-                _partialStop = (stop.Value, skippedBounds);
+                _partialStop = (stop.Value, skippedKey);
             }
             else
             {
@@ -374,11 +456,11 @@ public class WallpaperService : IDisposable
     private string GetImagePath((int Width, int Height) size, int stop) =>
         Path.Combine(_dirPath, $"{ImagePrefix}{size.Width}x{size.Height} {stop:00}.png");
 
-    // Returns whether it's done, and whether a display was left as it was (as it's covered)
+    // Returns whether it's done, and whether a display was left as it was (as it's busy)
     private (bool IsApplied, bool IsSkipped) ApplyCore(
         int? stop,
         WallpaperColor? accent,
-        Rect? skippedBounds
+        IReadOnlyList<Rect> skippedBounds
     )
     {
         var isSkipped = false;
@@ -405,10 +487,19 @@ public class WallpaperService : IDisposable
                 if (!sizes.Contains(size))
                     sizes.Add(size);
 
-                // Covered by a fullscreen application: changed once it's uncovered
-                if (bounds == skippedBounds)
+                // Covered by a fullscreen application, or being worked on: changed later (unless
+                // it shows this sky already)
+                if (skippedBounds.Contains(bounds))
                 {
-                    isSkipped = true;
+                    if (
+                        !string.Equals(
+                            desktop.TryGetWallpaper(id),
+                            GetImagePath(size, index),
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    )
+                        isSkipped = true;
+
                     continue;
                 }
 
@@ -479,15 +570,22 @@ public class WallpaperService : IDisposable
         _drawingCancellation = cancellation;
         var token = cancellation.Token;
 
-        _drawing = Task.Run(
-            async () =>
+        // On a thread of its own, in Windows' background mode (the lowest priority for the
+        // processor, the disk and memory), so that it never gets in the way of anything
+        _drawing = Task.Factory.StartNew(
+            () =>
             {
+                using var backgroundMode = BackgroundWork.EnterBackgroundMode();
+
                 foreach (var (size, stop) in missing)
                 {
-                    while (_isFullScreenOrLocked)
-                        await Task.Delay(FullScreenRetryDelay, token);
+                    while (_isDrawingPaused)
+                    {
+                        if (token.WaitHandle.WaitOne(BusyRetryDelay))
+                            return;
+                    }
 
-                    await _lock.WaitAsync(token);
+                    _lock.Wait(token);
                     try
                     {
                         var filePath = GetImagePath(size, stop);
@@ -512,7 +610,9 @@ public class WallpaperService : IDisposable
                     }
                 }
             },
-            token
+            token,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default
         );
 
         // (a cancellation is expected)
@@ -548,14 +648,26 @@ public class WallpaperService : IDisposable
         catch (UnauthorizedAccessException) { }
     }
 
+    // Also any sky drawn by another copy of Afterglow (e.g. a portable one), so that it's never
+    // remembered as the user's own wallpaper
     private bool IsOwnFile(string? filePath) =>
         !string.IsNullOrWhiteSpace(filePath)
-        && Path.GetFullPath(filePath)
-            .StartsWith(
-                Path.TrimEndingDirectorySeparator(Path.GetFullPath(_dirPath))
-                    + Path.DirectorySeparatorChar,
-                StringComparison.OrdinalIgnoreCase
-            );
+        && (
+            Path.GetFullPath(filePath)
+                .StartsWith(
+                    Path.TrimEndingDirectorySeparator(Path.GetFullPath(_dirPath))
+                        + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            || (
+                Path.GetFileName(filePath).StartsWith("Sky ", StringComparison.OrdinalIgnoreCase)
+                && string.Equals(
+                    Path.GetFileName(Path.GetDirectoryName(filePath)),
+                    "Wallpapers",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+        );
 
     // Remembers each display's own wallpaper (and how it was fitted), the first time it's
     // replaced, so that it can be put back. Kept in a file, so that it's also put back if
@@ -687,61 +799,75 @@ public class WallpaperService : IDisposable
         var radiusX = Math.Max(width, height * 0.6f) * 0.75f;
         var radiusY = height * 0.5f;
 
-        Parallel.For(
-            0,
-            height,
-            new ParallelOptions { MaxDegreeOfParallelism = maxThreads },
-            () => new byte[width * 4],
-            (y, _, row) =>
+        void DrawRow(int y, byte[] row)
+        {
+            var v = height > 1 ? (float)y / (height - 1) : 0;
+
+            // The sky, from the top to the middle (a little over halfway) to the horizon
+            var (skyFrom, skyTo, skyAmount) =
+                v <= 0.55f ? (top, middle, v / 0.55f) : (middle, horizon, (v - 0.55f) / 0.45f);
+            var skyR = skyFrom.R + (skyTo.R - skyFrom.R) * skyAmount;
+            var skyG = skyFrom.G + (skyTo.G - skyFrom.G) * skyAmount;
+            var skyB = skyFrom.B + (skyTo.B - skyFrom.B) * skyAmount;
+
+            // The band along the horizon, over the lower 60%
+            var bandAlpha = 0f;
+            if (v > 0.4f)
             {
-                var v = height > 1 ? (float)y / (height - 1) : 0;
+                var u = (v - 0.4f) / 0.6f;
+                bandAlpha =
+                    u <= 0.6f
+                        ? strength * 0.4f * (u / 0.6f)
+                        : strength * (0.4f + 0.5f * (u - 0.6f) / 0.4f);
+            }
 
-                // The sky, from the top to the middle (a little over halfway) to the horizon
-                var (skyFrom, skyTo, skyAmount) =
-                    v <= 0.55f ? (top, middle, v / 0.55f) : (middle, horizon, (v - 0.55f) / 0.45f);
-                var skyR = skyFrom.R + (skyTo.R - skyFrom.R) * skyAmount;
-                var skyG = skyFrom.G + (skyTo.G - skyFrom.G) * skyAmount;
-                var skyB = skyFrom.B + (skyTo.B - skyFrom.B) * skyAmount;
+            skyR += (glow.R - skyR) * bandAlpha;
+            skyG += (glow.G - skyG) * bandAlpha;
+            skyB += (glow.B - skyB) * bandAlpha;
 
-                // The band along the horizon, over the lower 60%
-                var bandAlpha = 0f;
-                if (v > 0.4f)
+            var dy = (y - centerY) / radiusY;
+
+            for (var x = 0; x < width; x++)
+            {
+                var dx = (x - centerX) / radiusX;
+                var t = MathF.Sqrt(dx * dx + dy * dy);
+
+                var alpha =
+                    t >= 1 ? 0
+                    : t <= 0.45f ? strength * (1 - 0.55f * t / 0.45f)
+                    : strength * 0.45f * (1 - (t - 0.45f) / 0.55f);
+
+                var i = x * 4;
+                row[i] = Dither(skyR + (glow.R - skyR) * alpha, x, y, 0);
+                row[i + 1] = Dither(skyG + (glow.G - skyG) * alpha, x, y, 1);
+                row[i + 2] = Dither(skyB + (glow.B - skyB) * alpha, x, y, 2);
+                row[i + 3] = 255;
+            }
+
+            Marshal.Copy(row, 0, pixels + y * rowBytes, row.Length);
+        }
+
+        if (maxThreads <= 1)
+        {
+            var row = new byte[width * 4];
+            for (var y = 0; y < height; y++)
+                DrawRow(y, row);
+        }
+        else
+        {
+            Parallel.For(
+                0,
+                height,
+                new ParallelOptions { MaxDegreeOfParallelism = maxThreads },
+                () => new byte[width * 4],
+                (y, _, row) =>
                 {
-                    var u = (v - 0.4f) / 0.6f;
-                    bandAlpha =
-                        u <= 0.6f
-                            ? strength * 0.4f * (u / 0.6f)
-                            : strength * (0.4f + 0.5f * (u - 0.6f) / 0.4f);
-                }
-
-                skyR += (glow.R - skyR) * bandAlpha;
-                skyG += (glow.G - skyG) * bandAlpha;
-                skyB += (glow.B - skyB) * bandAlpha;
-
-                var dy = (y - centerY) / radiusY;
-
-                for (var x = 0; x < width; x++)
-                {
-                    var dx = (x - centerX) / radiusX;
-                    var t = MathF.Sqrt(dx * dx + dy * dy);
-
-                    var alpha =
-                        t >= 1 ? 0
-                        : t <= 0.45f ? strength * (1 - 0.55f * t / 0.45f)
-                        : strength * 0.45f * (1 - (t - 0.45f) / 0.55f);
-
-                    var i = x * 4;
-                    row[i] = Dither(skyR + (glow.R - skyR) * alpha, x, y, 0);
-                    row[i + 1] = Dither(skyG + (glow.G - skyG) * alpha, x, y, 1);
-                    row[i + 2] = Dither(skyB + (glow.B - skyB) * alpha, x, y, 2);
-                    row[i + 3] = 255;
-                }
-
-                Marshal.Copy(row, 0, pixels + y * rowBytes, row.Length);
-                return row;
-            },
-            _ => { }
-        );
+                    DrawRow(y, row);
+                    return row;
+                },
+                _ => { }
+            );
+        }
 
         // Fast compression (smaller files wouldn't be worth the time)
         using var pixmap = bitmap.PeekPixels();

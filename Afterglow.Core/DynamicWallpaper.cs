@@ -116,7 +116,7 @@ public static class DynamicWallpaper
     /// <summary>
     /// The number of skies drawn ahead of time (see <see cref="GetStops" />).
     /// </summary>
-    public const int StopCount = 48;
+    public const int StopCount = 24;
 
     private static readonly double[] Stops = CreateStops(StopCount);
 

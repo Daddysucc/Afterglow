@@ -169,6 +169,7 @@ public partial class App : Application, IDisposable
                 or nameof(DashboardViewModel.BrightnessOffset):
                     hueService.NotifyUserChange();
                     hueService.NotifyTargetChanged();
+                    wallpaperService.NotifyTargetChanged();
                     break;
 
                 // Whatever changes what the screen shows (the instant moves on every update)

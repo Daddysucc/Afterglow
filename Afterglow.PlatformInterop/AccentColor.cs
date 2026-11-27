@@ -12,8 +12,11 @@ namespace Afterglow.PlatformInterop;
 /// color"), set for the current user.
 /// </summary>
 /// <remarks>
-/// Windows has no API for setting it, so it's set the way the Settings app stores it, and then
-/// announced to running applications.
+/// Windows has no documented API for setting it. It's set through the one that the Settings app
+/// itself goes through (uxtheme's SetUserColorPreference), which applies it right away and works
+/// out its shades. Only if that isn't there, it's written the way Settings stores it and then
+/// announced to every window, which is much slower (every window handles it in turn) and which
+/// Windows may not pick up.
 /// </remarks>
 public static partial class AccentColor
 {
@@ -43,6 +46,21 @@ public static partial class AccentColor
     {
         static uint ToAbgr(byte r, byte g, byte b) =>
             0xFF000000u | ((uint)b << 16) | ((uint)g << 8) | r;
+
+        using (var desktop = Registry.CurrentUser.CreateSubKey(DesktopKey))
+        {
+            if (desktop.GetValue("AutoColorization") is not 0)
+                desktop.SetValue("AutoColorization", 0, RegistryValueKind.DWord);
+        }
+
+        // (the Start menu's color is a darker shade, as Windows picks it)
+        if (
+            TrySetPreference(
+                ToAbgr((byte)(red * 0.8), (byte)(green * 0.8), (byte)(blue * 0.8)),
+                ToAbgr(red, green, blue)
+            )
+        )
+            return;
 
         static (byte, byte, byte) Shade(byte r, byte g, byte b, double factor) =>
             factor >= 1
@@ -93,10 +111,39 @@ public static partial class AccentColor
             dwm.SetValue("ColorizationAfterglow", argb, RegistryValueKind.DWord);
         }
 
-        using (var desktop = Registry.CurrentUser.CreateSubKey(DesktopKey))
-            desktop.SetValue("AutoColorization", 0, RegistryValueKind.DWord);
-
         Announce();
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ImmersiveColorPreference
+    {
+        public uint StartColor;
+        public uint AccentColor;
+    }
+
+    [DllImport("uxtheme.dll", EntryPoint = "#122")]
+    private static extern int SetUserColorPreference(
+        ref ImmersiveColorPreference preference,
+        bool isCommitted
+    );
+
+    // Sets the accent (and Start menu) color as Settings does, if Windows has the way to
+    private static bool TrySetPreference(uint startColor, uint accentColor)
+    {
+        try
+        {
+            var preference = new ImmersiveColorPreference
+            {
+                StartColor = startColor,
+                AccentColor = accentColor,
+            };
+
+            return SetUserColorPreference(ref preference, true) >= 0;
+        }
+        catch (Exception ex) when (ex is EntryPointNotFoundException or DllNotFoundException)
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -165,6 +212,15 @@ public static partial class AccentColor
                     break;
             }
         }
+
+        // Applied as Settings would (or else announced)
+        using var accent = Registry.CurrentUser.OpenSubKey(AccentKey);
+        if (
+            accent?.GetValue("StartColorMenu") is int startColor
+            && accent.GetValue("AccentColorMenu") is int accentColor
+            && TrySetPreference(unchecked((uint)startColor), unchecked((uint)accentColor))
+        )
+            return;
 
         Announce();
     }
