@@ -327,6 +327,12 @@
                                             <Style Selector="Grid:disabled">
                                                 <Setter Property="Opacity" Value="0.4" />
                                             </Style>
+                                            <!--  Hidden rather than collapsed, so that the sliders don't resize mid-drag  -->
+                                            <Style Selector="Button.hidden">
+                                                <Setter Property="Opacity" Value="0" />
+                                                <Setter Property="IsHitTestVisible" Value="False" />
+                                                <Setter Property="Focusable" Value="False" />
+                                            </Style>
                                         </Grid.Styles>
 
                                         <StackPanel
@@ -398,7 +404,7 @@
                                             VerticalAlignment="Center"
                                             Command="{Binding ResetOffsetsCommand}"
                                             Foreground="{DynamicResource TextMutedBrush}"
-                                            IsVisible="{Binding HasOffsets}"
+                                            Classes.hidden="{Binding !HasOffsets}"
                                             Theme="{DynamicResource MaterialFlatButton}"
                                             ToolTip.Tip="{Binding LocalizationManager.ResetOffsetsTooltip}"
                                         >
