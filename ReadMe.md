@@ -80,7 +80,6 @@ Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly ov
 - **Turning lights on.** Lights that are already on follow the cycle automatically. Use **Turn on lights** in the tray menu (or enable **Turn on lights when Afterglow starts**) to turn selected rooms straight on to the current cycle; Afterglow turns those lights back off when it releases control.
 - **Pausing & shutdown.** Pausing lights (via the tray or a hotkey) restores their prior state by default, or keeps Afterglow-activated lights in neutral white—configurable to turn off or apply a custom color/brightness preset. Shutting down or sleeping leaves lights warm by default so the room stays ready for bedtime, and can also be customized.
 - **Fullscreen independence.** Fullscreen auto-pause only affects your displays unless **Pause with the screen** is checked. Use **Pause lights** in the tray or a hotkey to pause lights independently.
-- **Home Assistant Adaptive Lighting.** To keep lights on a similar schedule while your PC is off, assign [Adaptive Lighting](https://github.com/basnijholt/adaptive-lighting) to separate rooms, or enable its `take_over_control` and `detect_non_ha_changes` options so it yields automatically whenever Afterglow updates bulbs via the Hue bridge.
 - **Security & reliability.** Your bridge API key is encrypted for your Windows user account, Afterglow only talks to the paired bridge, and unreachable bulbs at the edge of Zigbee range are retried automatically and flagged in the light list.
 
 ## Building from Source
