@@ -10,7 +10,9 @@
 
 ---
 
-![Afterglow Dashboard](.assets/screenshot-dashboard-icon.png)
+<p align="center">
+    <img src=".assets/screenshot-dashboard-icon.png" width="680" alt="Afterglow Dashboard" />
+</p>
 
 ## Features
 
@@ -45,23 +47,23 @@ Everything lives in the tray menu and a single tabbed settings window where any 
 
 **Cycle & Colors** — Stage temperatures and brightness, transition durations, grayscale scheduling, and per-display offsets.
 
-![Cycle & Colors settings](.assets/screenshot-tab-cycle.png)
+<img src=".assets/screenshot-tab-cycle.png" width="648" alt="Cycle & Colors settings" />
 
 **Schedule & Location** — Sunrise/sunset from place search, coordinates, automatic detection, or manual times.
 
-![Schedule & Location settings](.assets/screenshot-tab-schedule.png)
+<img src=".assets/screenshot-tab-schedule.png" width="648" alt="Schedule & Location settings" />
 
 **Rules & Whitelist** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
 
-![Rules & Whitelist settings](.assets/screenshot-tab-rules.png)
+<img src=".assets/screenshot-tab-rules.png" width="648" alt="Rules & Whitelist settings" />
 
 **App & Controls** — Language, startup, update checks, advanced gamma options, and global hotkeys.
 
-![App & Controls settings](.assets/screenshot-tab-app.png)
+<img src=".assets/screenshot-tab-app.png" width="648" alt="App & Controls settings" />
 
 **Smart Lights** — Hue bridge connection, room/light selection, override rules, and dynamic sky wallpaper controls.
 
-![Smart Lights settings](.assets/screenshot-tab-lights.png)
+<img src=".assets/screenshot-tab-lights.png" width="648" alt="Smart Lights settings" />
 
 ## Philips Hue
 
