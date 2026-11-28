@@ -426,10 +426,13 @@ jobs:
           done
           ls -l packages/
 
-      # What's new in this version, as written in the changelog (the app shows it too)
+      # What's new in this version, as written in the changelog (the app shows it too). Checked
+      # out into a folder of its own, as checking out cleans the folder it's done in (which has
+      # the packages by now).
       - name: Checkout changelog
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          path: source
           sparse-checkout: Changelog.md
           sparse-checkout-cone-mode: false
 
@@ -440,7 +443,7 @@ jobs:
             $0 == heading { found = 1; next }
             found && /^## / { exit }
             found { print }
-          ' Changelog.md > notes.md
+          ' source/Changelog.md > notes.md
 
           if ! grep -q '[^[:space:]]' notes.md; then
             echo "::error::Changelog.md has no section for $version (headed \"## $version\")."
