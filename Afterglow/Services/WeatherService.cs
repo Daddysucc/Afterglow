@@ -51,6 +51,16 @@ public class WeatherService : IDisposable
 {
     // (as often as the fastest weather models are updated)
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromHours(1);
+
+    // (twice as often while rain, snow or a storm is about, as it changes quickly then, and the
+    // models catch up with it as it comes)
+    private static readonly TimeSpan UnsettledRefreshInterval = TimeSpan.FromMinutes(30);
+
+    private TimeSpan GetRefreshInterval() =>
+        _forecast?.IsUnsettled(DateTimeOffset.Now) == true
+            ? UnsettledRefreshInterval
+            : RefreshInterval;
+
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(20);
 
     // After a failure, tried again in a while, waiting twice as long after each one in a row (up
@@ -407,7 +417,7 @@ public class WeatherService : IDisposable
             DateTimeOffset.Now
             + (
                 _failureCount == 0
-                    ? RefreshInterval
+                    ? GetRefreshInterval()
                     : TimeSpan.FromTicks(
                         Math.Min(
                             RetryInterval.Ticks * (1L << Math.Min(_failureCount - 1, 4)),
@@ -442,7 +452,7 @@ public class WeatherService : IDisposable
 
             // (fetched again right away, unless it's fresh, and the sky waits a moment for that)
             var isFresh = DateTimeOffset.Now - fetchedAt < FreshTime;
-            _nextFetch = isFresh ? fetchedAt + RefreshInterval : DateTimeOffset.MinValue;
+            _nextFetch = isFresh ? fetchedAt + GetRefreshInterval() : DateTimeOffset.MinValue;
             if (!isFresh)
                 _waitUntil = DateTimeOffset.Now + WaitTime;
         }

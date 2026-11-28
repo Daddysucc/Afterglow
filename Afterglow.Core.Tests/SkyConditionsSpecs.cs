@@ -271,6 +271,24 @@ public class SkyConditionsSpecs
     }
 
     [Fact]
+    public void I_get_the_weather_counted_as_unsettled_only_while_rain_snow_or_a_storm_is_coming()
+    {
+        // Arrange
+        var start = DateTimeOffset.FromUnixTimeSeconds(T0);
+        var forecast = new WeatherForecast([
+            (start, new SkyConditions(Rain: 0.4)),
+            (start.AddMinutes(15), new SkyConditions(LowClouds: 1)),
+            (start.AddMinutes(30), new SkyConditions(LowClouds: 1)),
+        ]);
+        var cloudy = new WeatherForecast([(start, new SkyConditions(LowClouds: 1, Fog: 1))]);
+
+        // Act & Assert
+        forecast.IsUnsettled(start).Should().BeTrue();
+        forecast.IsUnsettled(start.AddMinutes(20)).Should().BeFalse();
+        cloudy.IsUnsettled(start).Should().BeFalse();
+    }
+
+    [Fact]
     public void I_get_the_forecast_back_as_it_was_written_down()
     {
         // Arrange

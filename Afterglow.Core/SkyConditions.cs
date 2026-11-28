@@ -352,6 +352,17 @@ public sealed class WeatherForecast
     }
 
     /// <summary>
+    /// Whether the weather is unsettled (rain, snow or a storm) at any time from the given one on,
+    /// when it's worth checking for a new forecast more often (a storm can come sooner, or bigger,
+    /// than the last one said).
+    /// </summary>
+    public bool IsUnsettled(DateTimeOffset from) =>
+        Slots.Any(s =>
+            s.Start + SlotDuration > from
+            && (s.Conditions.Rain > 0 || s.Conditions.Snow > 0 || s.Conditions.Storm > 0)
+        );
+
+    /// <summary>
     /// The same, but past the end of the forecast (e.g. while it can't be fetched again), the
     /// weather it ended with fades away to clear over the given time, rather than stopping (as
     /// the weather tends to stay as it was for a while).

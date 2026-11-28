@@ -2,6 +2,10 @@
 
 What's new in each version, newest first: a few short lines each (see `CLAUDE.md`).
 
+## 3.8.1
+
+- The weather is checked twice as often while it's rainy or stormy.
+
 ## 3.8.0
 
 - The sky can show the weather where you are (optional).
