@@ -102,7 +102,7 @@
                         </Button>
 
                         <!--  How often to check by itself (or never)  -->
-                        <ComboBox
+                        <controls:TextComboBox
                             Grid.Column="2"
                             MinWidth="150"
                             VerticalAlignment="Center"
@@ -112,7 +112,7 @@
                             <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckDailyOption}" />
                             <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckWeeklyOption}" />
                             <ComboBoxItem Content="{Binding LocalizationManager.UpdateCheckEveryTwoWeeksOption}" />
-                        </ComboBox>
+                        </controls:TextComboBox>
                     </Grid>
 
                     <!--  The version that's running, and when updates were last checked for  -->

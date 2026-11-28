@@ -30,6 +30,20 @@ public readonly record struct WallpaperTarget(
 );
 
 /// <summary>
+/// What the dynamic wallpaper shows (for the dashboard).
+/// </summary>
+/// <param name="To">The weather it shows, or is on its way to.</param>
+/// <param name="From">The weather it showed before, while it's on its way (null once it's there,
+/// or if that isn't known).</param>
+/// <param name="IsWaiting">Whether it's waiting for the weather (e.g. at startup, until the forecast
+/// is there).</param>
+public readonly record struct WallpaperStatus(
+    SkyKind To,
+    SkyKind? From = null,
+    bool IsWaiting = false
+);
+
+/// <summary>
 /// A sky that a display shows: one of the clear skies drawn ahead of time (by its stop, see
 /// <see cref="DynamicWallpaper.GetStops" />, and how high up the user is, see <see
 /// cref="AltitudeLevels" />), or one drawn when it's needed (for the weather, or on the way to or
@@ -214,6 +228,14 @@ public class WallpaperService : IDisposable
     private bool _wasImmediate;
     private bool _wasAccentColorMatched;
 
+    // The weather that every display last got to (to say where a change comes from)
+    private SkyKind? _reachedKind;
+
+    /// <summary>
+    /// What the wallpaper shows (null while it's off, or before it's started).
+    /// </summary>
+    public WallpaperStatus? Status { get; private set; }
+
     // Whether the sky goes straight to the right one once: when the app starts, the computer wakes
     // up, the user changes something about it (see ShowNow), or stops stepping through the day
     private bool _isJumpRequested = true;
@@ -348,6 +370,8 @@ public class WallpaperService : IDisposable
             _drawingCancellation = null;
             _displays.Clear();
             _isRefreshNeeded = true;
+            _reachedKind = null;
+            Status = null;
             _appliedAccentColor = null;
             _isAccentRequested = false;
             _isJumpRequested = false;
@@ -591,6 +615,12 @@ public class WallpaperService : IDisposable
         var isAccentForced = _isAccentRequested || target.IsImmediate;
 
         var pending = _displays.Where(d => IsStepNeeded(d.Value.Shown, targetSky)).ToArray();
+
+        // (a sky with so little weather that it's drawn clear is called clear)
+        var kind = targetSky.Stop is not null ? SkyKind.Clear : target.Weather.Kind;
+        if (pending.Length == 0)
+            _reachedKind = kind;
+        Status = new WallpaperStatus(kind, _reachedKind != kind ? _reachedKind : null);
         var isAccentNeeded = IsAccentColorMatched && _appliedAccentColor != accent;
 
         // Checked often only while something's being drawn (to stop for a fullscreen application)

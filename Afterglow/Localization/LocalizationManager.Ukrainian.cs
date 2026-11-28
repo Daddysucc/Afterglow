@@ -325,6 +325,22 @@ public partial class LocalizationManager
                 "Показує на небі погоду там, де ви є: хмари, дощ, грози, сніг, туман, серпанок, дим і пил, а також глибший синій колір високо в горах. Прогноз надходить з Open-Meteo щогодини, а ваше місце округлюється приблизно до 10 км. Без підключення до інтернету остання погода поступово переходить у ясне небо.",
             [nameof(SkyWeatherLocationMissingHint)] =
                 "Укажіть своє місце на вкладці «Розклад і місце», щоб показувати погоду.",
+            // What the dynamic wallpaper shows, on the dashboard
+            [nameof(WallpaperWaitingText)] = "Очікування погоди",
+            [nameof(SkyKindClear)] = "Ясне небо",
+            [nameof(SkyKindHighClouds)] = "Високі хмари",
+            [nameof(SkyKindPartlyCloudy)] = "Мінлива хмарність",
+            [nameof(SkyKindMostlyCloudy)] = "Хмарно",
+            [nameof(SkyKindOvercast)] = "Похмуро",
+            [nameof(SkyKindFog)] = "Туман",
+            [nameof(SkyKindHaze)] = "Серпанок",
+            [nameof(SkyKindDust)] = "Пил",
+            [nameof(SkyKindLightRain)] = "Невеликий дощ",
+            [nameof(SkyKindRain)] = "Дощ",
+            [nameof(SkyKindHeavyRain)] = "Сильний дощ",
+            [nameof(SkyKindSnow)] = "Сніг",
+            [nameof(SkyKindHeavySnow)] = "Сильний сніг",
+            [nameof(SkyKindThunderstorm)] = "Гроза",
             [nameof(DynamicWallpaperStepButton)] = "Наступний час доби",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "Для перевірки: щоразу переходить на 90 хвилин уперед і встановлює екран, освітлення, шпалери та колір акценту на цей час доби",

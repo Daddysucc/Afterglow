@@ -336,6 +336,22 @@ public partial class LocalizationManager
                 "Shows the weather where you are in the sky: clouds, rain, storms, snow, fog, haze, smoke and dust, and the deeper blue of high places. The forecast comes from Open-Meteo every hour, with your location rounded to about 10 km. Without an internet connection, the last weather fades slowly back to a clear sky.",
             [nameof(SkyWeatherLocationMissingHint)] =
                 "Set your location on the Schedule & Location tab to show the weather.",
+            // What the dynamic wallpaper shows, on the dashboard
+            [nameof(WallpaperWaitingText)] = "Waiting for the weather",
+            [nameof(SkyKindClear)] = "Clear sky",
+            [nameof(SkyKindHighClouds)] = "High clouds",
+            [nameof(SkyKindPartlyCloudy)] = "Partly cloudy",
+            [nameof(SkyKindMostlyCloudy)] = "Mostly cloudy",
+            [nameof(SkyKindOvercast)] = "Overcast",
+            [nameof(SkyKindFog)] = "Fog",
+            [nameof(SkyKindHaze)] = "Haze",
+            [nameof(SkyKindDust)] = "Dust",
+            [nameof(SkyKindLightRain)] = "Light rain",
+            [nameof(SkyKindRain)] = "Rain",
+            [nameof(SkyKindHeavyRain)] = "Heavy rain",
+            [nameof(SkyKindSnow)] = "Snow",
+            [nameof(SkyKindHeavySnow)] = "Heavy snow",
+            [nameof(SkyKindThunderstorm)] = "Thunderstorm",
             [nameof(DynamicWallpaperStepButton)] = "Next time of day",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights, the wallpaper and the accent color to that time of day",

@@ -288,6 +288,41 @@ public class SkyConditionsSpecs
         cloudy.IsUnsettled(start).Should().BeFalse();
     }
 
+    [Theory]
+    [InlineData(0, 0, 0, 0, 0, 0, 0, 0, 0, SkyKind.Clear)]
+    [InlineData(0, 0, 0.6, 0, 0, 0, 0, 0, 0, SkyKind.HighClouds)]
+    [InlineData(0.3, 0, 0, 0, 0, 0, 0, 0, 0, SkyKind.PartlyCloudy)]
+    [InlineData(0.5, 0.3, 0, 0, 0, 0, 0, 0, 0, SkyKind.MostlyCloudy)]
+    [InlineData(1, 0, 0, 0, 0, 0, 0, 0, 0, SkyKind.Overcast)]
+    [InlineData(1, 0, 0, 0.1, 0, 0, 0, 0, 0, SkyKind.LightRain)]
+    [InlineData(1, 0, 0, 0.5, 0, 0, 0, 0, 0, SkyKind.Rain)]
+    [InlineData(1, 0, 0, 0.9, 0, 0, 0, 0, 0, SkyKind.HeavyRain)]
+    [InlineData(1, 0, 0, 0, 0.3, 0, 0, 0, 0, SkyKind.Snow)]
+    [InlineData(1, 0, 0, 0, 0.8, 0, 0, 0, 0, SkyKind.HeavySnow)]
+    [InlineData(1, 0, 0, 1, 0, 0.7, 0, 0, 0, SkyKind.Thunderstorm)]
+    [InlineData(0.2, 0, 0, 0, 0, 0, 0.8, 0, 0, SkyKind.Fog)]
+    [InlineData(0, 0, 0, 0, 0, 0, 0, 0.6, 0, SkyKind.Haze)]
+    [InlineData(0, 0, 0, 0, 0, 0, 0, 0.6, 0.5, SkyKind.Dust)]
+    public void I_get_the_weather_named_by_what_stands_out_the_most(
+        double low,
+        double mid,
+        double high,
+        double rain,
+        double snow,
+        double storm,
+        double fog,
+        double haze,
+        double dust,
+        SkyKind expected
+    )
+    {
+        // Act
+        var kind = new SkyConditions(low, mid, high, rain, snow, storm, fog, haze, dust).Kind;
+
+        // Assert
+        kind.Should().Be(expected);
+    }
+
     [Fact]
     public void I_get_the_forecast_back_as_it_was_written_down()
     {

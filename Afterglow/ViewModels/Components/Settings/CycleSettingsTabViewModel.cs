@@ -261,7 +261,11 @@ public partial class CycleSettingsTabViewModel : SettingsTabViewModelBase
 
     private void RebuildMonitors()
     {
-        var monitors = _monitorService?.Monitors ?? [];
+        // The primary display first, as every other display's offsets are relative to it (and it's
+        // number 1 when identifying them), and then the rest from left to right
+        var monitors = (_monitorService?.Monitors ?? [])
+            .OrderByDescending(m => m.IsPrimary)
+            .ToArray();
 
         // Displays that share the same name get a number, e.g. "Display (1)" and "Display (2)"
         var duplicateNames = monitors

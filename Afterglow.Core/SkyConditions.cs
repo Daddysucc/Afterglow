@@ -47,6 +47,45 @@ public readonly record struct SkyConditions(
 
     public bool IsClear => ToArray().All(v => v <= 0);
 
+    /// <summary>
+    /// What this weather looks like, in a word or two: whatever stands out the most (a storm,
+    /// snow, rain, fog, dust or haze), or else how cloudy it is.
+    /// </summary>
+    public SkyKind Kind
+    {
+        get
+        {
+            if (Storm >= 0.3)
+                return SkyKind.Thunderstorm;
+            if (Snow >= 0.05)
+                return Snow >= 0.6 ? SkyKind.HeavySnow : SkyKind.Snow;
+            if (Rain >= 0.05)
+                return Rain switch
+                {
+                    < 0.3 => SkyKind.LightRain,
+                    < 0.7 => SkyKind.Rain,
+                    _ => SkyKind.HeavyRain,
+                };
+            if (Fog >= 0.4)
+                return SkyKind.Fog;
+            if (Dust >= 0.3)
+                return SkyKind.Dust;
+            if (Haze >= 0.3)
+                return SkyKind.Haze;
+
+            // (each layer covers what the ones below it leave)
+            var cover = 1 - (1 - LowClouds) * (1 - MidClouds) * (1 - HighClouds);
+            return cover switch
+            {
+                < 0.15 => SkyKind.Clear,
+                < 0.8 when HighClouds >= LowClouds + MidClouds => SkyKind.HighClouds,
+                < 0.45 => SkyKind.PartlyCloudy,
+                < 0.8 => SkyKind.MostlyCloudy,
+                _ => SkyKind.Overcast,
+            };
+        }
+    }
+
     internal static SkyConditions Lerp(SkyConditions a, SkyConditions b, double amount)
     {
         var (from, to) = (a.ToArray(), b.ToArray());
@@ -181,6 +220,27 @@ public readonly record struct SkyConditions(
 
         return new SkyConditions(low, mid, high, rain, snow, storm, fog, haze, dust);
     }
+}
+
+/// <summary>
+/// What the weather looks like, in a word or two (e.g. to say what the sky shows).
+/// </summary>
+public enum SkyKind
+{
+    Clear,
+    HighClouds,
+    PartlyCloudy,
+    MostlyCloudy,
+    Overcast,
+    Fog,
+    Haze,
+    Dust,
+    LightRain,
+    Rain,
+    HeavyRain,
+    Snow,
+    HeavySnow,
+    Thunderstorm,
 }
 
 /// <summary>

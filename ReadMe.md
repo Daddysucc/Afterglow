@@ -22,7 +22,7 @@
 - **Tray snooze & global hotkeys.** Pause Afterglow, temporarily disable grayscale, or pause Hue lights for **15 minutes**, **1 hour**, **3 hours**, or **until sunrise** directly from the system tray, or bind global hotkeys to toggle features and nudge temperature or brightness.
 - **Scheduled or manual grayscale.** Desaturate the screen on demand or automatically at night, in the evening and night, or always—either tinted by the current color temperature or with a neutral white point.
 - **Philips Hue sync (optional).** Syncs selected rooms or zones over your local network via the Hue bridge while your PC is on, automatically yielding whenever you adjust lights manually.
-- **Dynamic sky wallpaper (optional).** Draws a sun-tracking sky per display (restoring your own wallpaper when turned off) and optionally updates the Windows accent color when the desktop isn't visible. With a location set, it can also reflect local weather and air quality via [Open-Meteo](https://open-meteo.com).
+- **Dynamic sky wallpaper (optional).** Draws a sun-tracking sky per display (restoring your own wallpaper when turned off) and optionally updates the Windows accent color when the desktop isn't visible. With a location set, it can also reflect local weather and air quality via [Open-Meteo](https://open-meteo.com), and the dashboard shows what the sky is showing.
 - **Offline-first & self-updating.** Zero telemetry, full UI translations (English, Ukrainian, German, French, Spanish, and Simplified/Traditional Chinese), and built-in one-click updates.
 
 ## Download
@@ -53,23 +53,23 @@ Everything lives in the tray menu and a single tabbed settings window where any 
 
 <img src=".assets/screenshot-tab-schedule.png" width="648" alt="Schedule & Location settings" />
 
-**Rules & Whitelist** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
+**Pausing** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
 
-<img src=".assets/screenshot-tab-rules.png" width="648" alt="Rules & Whitelist settings" />
+<img src=".assets/screenshot-tab-rules.png" width="648" alt="Pausing settings" />
 
 **App & Controls** — Language, startup, update checks, advanced gamma options, and global hotkeys.
 
 <img src=".assets/screenshot-tab-app.png" width="648" alt="App & Controls settings" />
 
-**Smart Lights** — Hue bridge connection, room/light selection, override rules, and dynamic sky wallpaper controls.
+**Lights & Wallpaper** — Hue bridge connection, rooms to follow (with any of their lights left out), override rules, and the dynamic sky wallpaper.
 
-<img src=".assets/screenshot-tab-lights.png" width="648" alt="Smart Lights settings" />
+<img src=".assets/screenshot-tab-lights.png" width="648" alt="Lights & Wallpaper settings" />
 
 ## Philips Hue
 
 Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly over your local network while your PC is on, with no extra software or cloud setup.
 
-1. Open **Settings** → **Smart Lights** and enable **Control Hue lights**.
+1. Open **Settings** → **Lights & Wallpaper** and enable **Control Hue lights**.
 2. Click **Connect**, then press the button on top of your Hue bridge within 30 seconds (or enter the bridge's IP address first if auto-discovery doesn't find it).
 3. Select the rooms or zones to follow the cycle, choose whether they follow color temperature, brightness, or both, and optionally exclude individual bulbs.
 
@@ -87,7 +87,7 @@ Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly ov
 With the [.NET 10 SDK](https://dotnet.microsoft.com/download) installed:
 
 ```bash
-dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.5.0
+dotnet publish Afterglow/Afterglow.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Version=3.8.2
 ```
 
 This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-windows/win-x64/publish/`.
@@ -111,7 +111,7 @@ Afterglow collects no personal data and includes no telemetry. It only makes net
 - **Philips Hue** (your local bridge, plus `discovery.meethue.com` if connecting without a manual IP) — Only when **Control Hue lights** is enabled.
 - **ip-api.com** — Only when automatic location detection is triggered (receives your IP address).
 - **OpenStreetMap Nominatim** (`nominatim.openstreetmap.org`) — Only when searching for a location by name.
-- **Open-Meteo** (`api.open-meteo.com`) — Hourly weather and air-quality forecast for your location rounded to ~10 km, only when dynamic wallpaper weather is enabled.
+- **Open-Meteo** (`api.open-meteo.com`, `air-quality-api.open-meteo.com`) — Hourly weather and air-quality forecast (every 30 minutes while it's rainy or stormy) for your location rounded to ~10 km, only when dynamic wallpaper weather is enabled.
 
 ## License
 

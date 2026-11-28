@@ -27,7 +27,7 @@ public partial class MonitorItemViewModel(
 
     public DisplayMonitor Monitor { get; } = monitor;
 
-    // 1-based position, from left to right
+    // 1-based position: the primary display first, then the rest from left to right
     public int Number { get; } = number;
 
     // Friendly name, with a suffix when several connected displays share the same name

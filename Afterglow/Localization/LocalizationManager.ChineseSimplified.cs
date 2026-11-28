@@ -310,6 +310,22 @@ public partial class LocalizationManager
                 "在天空中显示你所在地的天气：云、雨、雷暴、雪、雾、霾、烟和沙尘，以及高海拔地区更深的蓝色。每小时从 Open-Meteo 获取一次预报，发送的位置会四舍五入到约 10 公里。没有网络连接时，最后的天气会慢慢恢复为晴朗的天空。",
             [nameof(SkyWeatherLocationMissingHint)] =
                 "请在“时间表与位置”选项卡中设置你的位置，以显示天气。",
+            // What the dynamic wallpaper shows, on the dashboard
+            [nameof(WallpaperWaitingText)] = "正在等待天气",
+            [nameof(SkyKindClear)] = "晴朗",
+            [nameof(SkyKindHighClouds)] = "高云",
+            [nameof(SkyKindPartlyCloudy)] = "局部多云",
+            [nameof(SkyKindMostlyCloudy)] = "大部多云",
+            [nameof(SkyKindOvercast)] = "阴天",
+            [nameof(SkyKindFog)] = "雾",
+            [nameof(SkyKindHaze)] = "霾",
+            [nameof(SkyKindDust)] = "沙尘",
+            [nameof(SkyKindLightRain)] = "小雨",
+            [nameof(SkyKindRain)] = "雨",
+            [nameof(SkyKindHeavyRain)] = "大雨",
+            [nameof(SkyKindSnow)] = "雪",
+            [nameof(SkyKindHeavySnow)] = "大雪",
+            [nameof(SkyKindThunderstorm)] = "雷暴",
             [nameof(DynamicWallpaperStepButton)] = "下一个时段",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "用于试用：每次前进 90 分钟，并将屏幕、灯光、壁纸和主题色设为该时段",

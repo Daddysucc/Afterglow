@@ -327,6 +327,22 @@ public partial class LocalizationManager
                 "Muestra en el cielo el tiempo donde estás: nubes, lluvia, tormentas, nieve, niebla, calima, humo y polvo, y el azul más intenso de los lugares altos. El pronóstico llega de Open-Meteo cada hora, con tu ubicación redondeada a unos 10 km. Sin conexión a Internet, el último tiempo se desvanece poco a poco hasta un cielo despejado.",
             [nameof(SkyWeatherLocationMissingHint)] =
                 "Establece tu ubicación en la pestaña «Horario y ubicación» para mostrar el tiempo.",
+            // What the dynamic wallpaper shows, on the dashboard
+            [nameof(WallpaperWaitingText)] = "Esperando el tiempo",
+            [nameof(SkyKindClear)] = "Cielo despejado",
+            [nameof(SkyKindHighClouds)] = "Nubes altas",
+            [nameof(SkyKindPartlyCloudy)] = "Algo nublado",
+            [nameof(SkyKindMostlyCloudy)] = "Muy nublado",
+            [nameof(SkyKindOvercast)] = "Cubierto",
+            [nameof(SkyKindFog)] = "Niebla",
+            [nameof(SkyKindHaze)] = "Calima",
+            [nameof(SkyKindDust)] = "Polvo",
+            [nameof(SkyKindLightRain)] = "Lluvia ligera",
+            [nameof(SkyKindRain)] = "Lluvia",
+            [nameof(SkyKindHeavyRain)] = "Lluvia intensa",
+            [nameof(SkyKindSnow)] = "Nieve",
+            [nameof(SkyKindHeavySnow)] = "Nieve intensa",
+            [nameof(SkyKindThunderstorm)] = "Tormenta",
             [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces, el fondo de pantalla y el color de énfasis a esa hora del día",

@@ -17,6 +17,7 @@ using Avalonia;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Material.Icons;
 using PowerKit;
 using PowerKit.Extensions;
 
@@ -168,9 +169,12 @@ public partial class DashboardViewModel : ViewModelBase
                     OnPropertyChanged(nameof(StatusSentence));
                     OnPropertyChanged(nameof(SolarTimingText));
                     OnPropertyChanged(nameof(ActivePhaseCaption));
+                    OnPropertyChanged(nameof(WallpaperStatusText));
                     OnPropertyChanged(nameof(ActiveStageTemperatureTooltip));
                     OnPropertyChanged(nameof(LocationText));
                     OnPropertyChanged(nameof(StatusText));
+                    OnPropertyChanged(nameof(TrayStatusText));
+                    OnPropertyChanged(nameof(TurnOnLightsText));
                     OnPropertyChanged(nameof(UpdateAvailableTooltip));
                     OnPropertyChanged(nameof(UpdateButtonText));
                 }
@@ -474,6 +478,8 @@ public partial class DashboardViewModel : ViewModelBase
         new(nameof(StatusSentence)),
         new(nameof(SolarTimingText)),
         new(nameof(ActivePhaseCaption)),
+        new(nameof(WallpaperStatusText)),
+        new(nameof(WallpaperStatusIcon)),
         new(nameof(LocationText)),
         new(nameof(CycleCurve)),
         new(nameof(DayProgress)),
@@ -816,6 +822,50 @@ public partial class DashboardViewModel : ViewModelBase
     }
 
     // e.g. "Active phase: Evening · 4500 K (95% brightness)"
+    /// <summary>
+    /// Where what the dynamic wallpaper shows comes from (set once the services are up).
+    /// </summary>
+    public Func<WallpaperStatus?>? WallpaperStatusSource { get; set; }
+
+    // e.g. "Partly cloudy → Light rain", next to an icon of where it's going (null while the
+    // wallpaper is off, so that nothing shows)
+    public string? WallpaperStatusText =>
+        WallpaperStatusSource?.Invoke() switch
+        {
+            null => null,
+            { IsWaiting: true } => LocalizationManager.WallpaperWaitingText,
+            { From: { } from } status =>
+                $"{LocalizationManager.GetSkyKindName(from)} → {LocalizationManager.GetSkyKindName(status.To)}",
+            { } status => LocalizationManager.GetSkyKindName(status.To),
+        };
+
+    // (the sun or the moon, for a clear or partly cloudy sky, as it's day or night)
+    public MaterialIconKind WallpaperStatusIcon =>
+        WallpaperStatusSource?.Invoke() switch
+        {
+            null or { IsWaiting: true } => MaterialIconKind.Wallpaper,
+            { } status => (status.To, SunElevation > 0) switch
+            {
+                (SkyKind.Clear, true) => MaterialIconKind.WeatherSunny,
+                (SkyKind.Clear, false) => MaterialIconKind.WeatherNight,
+                (SkyKind.HighClouds or SkyKind.PartlyCloudy, true) =>
+                    MaterialIconKind.WeatherPartlyCloudy,
+                (SkyKind.HighClouds or SkyKind.PartlyCloudy, false) =>
+                    MaterialIconKind.WeatherNightPartlyCloudy,
+                (SkyKind.MostlyCloudy or SkyKind.Overcast, _) => MaterialIconKind.WeatherCloudy,
+                (SkyKind.Fog, _) => MaterialIconKind.WeatherFog,
+                (SkyKind.Haze, _) => MaterialIconKind.WeatherHazy,
+                (SkyKind.Dust, _) => MaterialIconKind.WeatherDust,
+                (SkyKind.LightRain, _) => MaterialIconKind.WeatherPartlyRainy,
+                (SkyKind.Rain, _) => MaterialIconKind.WeatherRainy,
+                (SkyKind.HeavyRain, _) => MaterialIconKind.WeatherPouring,
+                (SkyKind.Snow, _) => MaterialIconKind.WeatherSnowy,
+                (SkyKind.HeavySnow, _) => MaterialIconKind.WeatherSnowyHeavy,
+                (SkyKind.Thunderstorm, _) => MaterialIconKind.WeatherLightningRainy,
+                _ => MaterialIconKind.Wallpaper,
+            },
+        };
+
     public string ActivePhaseCaption =>
         string.Format(
             IsPaused && !IsCyclePreviewEnabled

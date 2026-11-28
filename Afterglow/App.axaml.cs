@@ -158,6 +158,12 @@ public partial class App : Application, IDisposable
         );
         weatherService.ShowRequested += (_, _) => wallpaperService.ShowNow();
 
+        // The dashboard says what the wallpaper shows (and when it's waiting for the weather)
+        dashboard.WallpaperStatusSource = () =>
+            !_settingsService.IsDynamicWallpaperEnabled ? null
+            : weatherService.IsWaiting ? new WallpaperStatus(SkyKind.Clear, IsWaiting: true)
+            : wallpaperService.Status;
+
         void OnDashboardChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
         {
             switch (args.PropertyName)

@@ -70,6 +70,15 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
                 }
             ),
             hueService.WatchProperties([o => o.Lights, o => o.IsFollowingLights], UpdateHueLights),
+            // The rooms and lights are made with the text of the language at the time
+            localizationManager.WatchProperty(
+                o => o.Language,
+                _ =>
+                {
+                    UpdateHueRooms();
+                    UpdateHueLights();
+                }
+            ),
             settingsService.WatchProperty(o => o.HueExcludedLightIds, _ => UpdateHueLights()),
             // The rooms are loaded when they're about to be shown
             this.WatchProperty(

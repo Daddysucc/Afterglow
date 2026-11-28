@@ -2,6 +2,12 @@
 
 What's new in each version, newest first: a few short lines each (see `CLAUDE.md`).
 
+## 3.8.2
+
+- The dashboard shows what the wallpaper's sky is showing.
+- The primary display comes first in the display list.
+- Drop-downs switch language along with everything else.
+
 ## 3.8.1
 
 - The weather is checked twice as often while it's rainy or stormy.

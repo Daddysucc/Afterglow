@@ -365,7 +365,7 @@
                         Text="{Binding LocalizationManager.HueReclaimLabel}"
                         TextWrapping="Wrap"
                     />
-                    <ComboBox
+                    <controls:TextComboBox
                         Grid.Column="1"
                         MinWidth="180"
                         VerticalAlignment="Center"
@@ -373,7 +373,7 @@
                     >
                         <ComboBoxItem Content="{Binding LocalizationManager.HueReclaimNeverOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.HueReclaimAfterOption}" />
-                    </ComboBox>
+                    </controls:TextComboBox>
                 </Grid>
 
                 <!--  How long  -->
@@ -460,7 +460,7 @@
                         Text="{Binding LocalizationManager.HuePauseActionLabel}"
                         TextWrapping="Wrap"
                     />
-                    <ComboBox
+                    <controls:TextComboBox
                         Grid.Column="1"
                         MinWidth="180"
                         VerticalAlignment="Center"
@@ -470,7 +470,7 @@
                         <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownRestoreOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownTurnOffOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.HueCustomOption}" />
-                    </ComboBox>
+                    </controls:TextComboBox>
                 </Grid>
 
                 <!--  The custom look (shown on the lights while one of its sliders is held down)  -->
@@ -590,7 +590,7 @@
                         Text="{Binding LocalizationManager.HueShutdownLabel}"
                         TextWrapping="Wrap"
                     />
-                    <ComboBox
+                    <controls:TextComboBox
                         Grid.Column="1"
                         MinWidth="180"
                         VerticalAlignment="Center"
@@ -600,7 +600,7 @@
                         <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownRestoreOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.HueShutdownTurnOffOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.HueCustomOption}" />
-                    </ComboBox>
+                    </controls:TextComboBox>
                 </Grid>
 
                 <!--  The custom look (shown on the lights while one of its sliders is held down)  -->

@@ -321,6 +321,22 @@ public partial class LocalizationManager
             "Zeigt das Wetter an Ihrem Standort am Himmel: Wolken, Regen, Gewitter, Schnee, Nebel, Dunst, Rauch und Staub sowie das tiefere Blau in großer Höhe. Die Vorhersage kommt stündlich von Open-Meteo, mit Ihrem auf etwa 10 km gerundeten Standort. Ohne Internetverbindung geht das letzte Wetter langsam in einen klaren Himmel über.",
         [nameof(SkyWeatherLocationMissingHint)] =
             "Legen Sie Ihren Standort im Tab „Zeitplan & Standort“ fest, um das Wetter zu zeigen.",
+        // What the dynamic wallpaper shows, on the dashboard
+        [nameof(WallpaperWaitingText)] = "Warte auf das Wetter",
+        [nameof(SkyKindClear)] = "Klarer Himmel",
+        [nameof(SkyKindHighClouds)] = "Hohe Wolken",
+        [nameof(SkyKindPartlyCloudy)] = "Leicht bewölkt",
+        [nameof(SkyKindMostlyCloudy)] = "Stark bewölkt",
+        [nameof(SkyKindOvercast)] = "Bedeckt",
+        [nameof(SkyKindFog)] = "Nebel",
+        [nameof(SkyKindHaze)] = "Dunst",
+        [nameof(SkyKindDust)] = "Staub",
+        [nameof(SkyKindLightRain)] = "Leichter Regen",
+        [nameof(SkyKindRain)] = "Regen",
+        [nameof(SkyKindHeavyRain)] = "Starker Regen",
+        [nameof(SkyKindSnow)] = "Schnee",
+        [nameof(SkyKindHeavySnow)] = "Starker Schnee",
+        [nameof(SkyKindThunderstorm)] = "Gewitter",
         [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen, Hintergrundbild und Akzentfarbe auf diese Tageszeit",

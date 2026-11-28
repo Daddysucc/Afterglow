@@ -63,6 +63,44 @@
                     Text="{Binding ActivePhaseCaption}"
                 />
 
+                <!--  What the dynamic wallpaper shows (only while it's on, and out of the way of the
+                     offset), on a single line  -->
+                <StackPanel
+                    Margin="12,0,12,13"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    IsHitTestVisible="False"
+                    Orientation="Horizontal"
+                    Spacing="5"
+                >
+                    <materialIcons:MaterialIcon
+                        Width="15"
+                        Height="15"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Kind="{Binding WallpaperStatusIcon}"
+                    />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding WallpaperStatusText}"
+                        TextWrapping="NoWrap"
+                    />
+                    <StackPanel.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding
+                                Converter="{x:Static ObjectConverters.IsNotNull}"
+                                Path="WallpaperStatusText"
+                            />
+                            <Binding
+                                Converter="{x:Static BoolConverters.Not}"
+                                Path="IsOffsetEnabled"
+                            />
+                        </MultiBinding>
+                    </StackPanel.IsVisible>
+                </StackPanel>
+
                 <!--  Configuration offset (from hotkeys)  -->
                 <StackPanel
                     x:Name="ConfigurationOffsetStackPanel"

@@ -326,6 +326,22 @@ public partial class LocalizationManager
             "Affiche dans le ciel la météo là où vous êtes : nuages, pluie, orages, neige, brouillard, brume, fumée et poussière, ainsi que le bleu plus profond en altitude. Les prévisions viennent d'Open-Meteo toutes les heures, avec votre position arrondie à environ 10 km. Sans connexion Internet, la dernière météo s'efface lentement vers un ciel dégagé.",
         [nameof(SkyWeatherLocationMissingHint)] =
             "Définissez votre position dans l'onglet « Horaire et lieu » pour afficher la météo.",
+        // What the dynamic wallpaper shows, on the dashboard
+        [nameof(WallpaperWaitingText)] = "En attente de la météo",
+        [nameof(SkyKindClear)] = "Ciel dégagé",
+        [nameof(SkyKindHighClouds)] = "Voile nuageux",
+        [nameof(SkyKindPartlyCloudy)] = "Éclaircies",
+        [nameof(SkyKindMostlyCloudy)] = "Très nuageux",
+        [nameof(SkyKindOvercast)] = "Couvert",
+        [nameof(SkyKindFog)] = "Brouillard",
+        [nameof(SkyKindHaze)] = "Brume",
+        [nameof(SkyKindDust)] = "Poussière",
+        [nameof(SkyKindLightRain)] = "Pluie faible",
+        [nameof(SkyKindRain)] = "Pluie",
+        [nameof(SkyKindHeavyRain)] = "Forte pluie",
+        [nameof(SkyKindSnow)] = "Neige",
+        [nameof(SkyKindHeavySnow)] = "Forte neige",
+        [nameof(SkyKindThunderstorm)] = "Orage",
         [nameof(DynamicWallpaperStepButton)] = "Moment suivant",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Pour essayer : avance de 90 minutes à chaque fois, en réglant l'écran, les lumières, le fond d'écran et la couleur d'accentuation sur ce moment de la journée",

@@ -438,7 +438,7 @@
                         Classes="setting-label"
                         Text="{Binding LocalizationManager.GrayscaleScheduleLabel}"
                     />
-                    <ComboBox
+                    <controls:TextComboBox
                         Grid.Column="1"
                         MinWidth="170"
                         SelectedIndex="{Binding GrayscaleScheduleIndex}"
@@ -447,7 +447,7 @@
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleNightOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleEveningAndNightOption}" />
                         <ComboBoxItem Content="{Binding LocalizationManager.GrayscaleScheduleOnOption}" />
-                    </ComboBox>
+                    </controls:TextComboBox>
                 </Grid>
 
                 <!--  Color temperature in grayscale  -->
@@ -506,7 +506,7 @@
                             Classes="setting-hint"
                             Text="{Binding LocalizationManager.OffsetScalingLabel}"
                         />
-                        <ComboBox
+                        <controls:TextComboBox
                             MinWidth="170"
                             VerticalAlignment="Center"
                             SelectedIndex="{Binding MonitorOffsetScalingIndex}"
@@ -514,7 +514,7 @@
                         >
                             <ComboBoxItem Content="{Binding LocalizationManager.PerceptualOffsetScalingOption}" />
                             <ComboBoxItem Content="{Binding LocalizationManager.FixedOffsetScalingOption}" />
-                        </ComboBox>
+                        </controls:TextComboBox>
 
                         <!--  Identify  -->
                         <Button

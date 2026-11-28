@@ -361,6 +361,42 @@ public partial class LocalizationManager
     public string SkyWeatherEnabledLabel => Get();
     public string SkyWeatherEnabledTooltip => Get();
     public string SkyWeatherLocationMissingHint => Get();
+    public string WallpaperWaitingText => Get();
+    public string SkyKindClear => Get();
+    public string SkyKindHighClouds => Get();
+    public string SkyKindPartlyCloudy => Get();
+    public string SkyKindMostlyCloudy => Get();
+    public string SkyKindOvercast => Get();
+    public string SkyKindFog => Get();
+    public string SkyKindHaze => Get();
+    public string SkyKindDust => Get();
+    public string SkyKindLightRain => Get();
+    public string SkyKindRain => Get();
+    public string SkyKindHeavyRain => Get();
+    public string SkyKindSnow => Get();
+    public string SkyKindHeavySnow => Get();
+    public string SkyKindThunderstorm => Get();
+
+    public string GetSkyKindName(Afterglow.Core.SkyKind kind) =>
+        kind switch
+        {
+            Afterglow.Core.SkyKind.Clear => SkyKindClear,
+            Afterglow.Core.SkyKind.HighClouds => SkyKindHighClouds,
+            Afterglow.Core.SkyKind.PartlyCloudy => SkyKindPartlyCloudy,
+            Afterglow.Core.SkyKind.MostlyCloudy => SkyKindMostlyCloudy,
+            Afterglow.Core.SkyKind.Overcast => SkyKindOvercast,
+            Afterglow.Core.SkyKind.Fog => SkyKindFog,
+            Afterglow.Core.SkyKind.Haze => SkyKindHaze,
+            Afterglow.Core.SkyKind.Dust => SkyKindDust,
+            Afterglow.Core.SkyKind.LightRain => SkyKindLightRain,
+            Afterglow.Core.SkyKind.Rain => SkyKindRain,
+            Afterglow.Core.SkyKind.HeavyRain => SkyKindHeavyRain,
+            Afterglow.Core.SkyKind.Snow => SkyKindSnow,
+            Afterglow.Core.SkyKind.HeavySnow => SkyKindHeavySnow,
+            Afterglow.Core.SkyKind.Thunderstorm => SkyKindThunderstorm,
+            _ => SkyKindClear,
+        };
+
     public string DynamicWallpaperStepButton => Get();
     public string DynamicWallpaperStepTooltip => Get();
     public string DynamicWallpaperStopButton => Get();
