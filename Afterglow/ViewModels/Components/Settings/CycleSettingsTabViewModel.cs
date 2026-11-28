@@ -1,19 +1,62 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Afterglow.Core;
 using Afterglow.Localization;
 using Afterglow.Services;
 using Avalonia.Threading;
+using CommunityToolkit.Mvvm.ComponentModel;
+using PowerKit;
 using PowerKit.Extensions;
 
 namespace Afterglow.ViewModels.Components.Settings;
 
 // Day, evening, and night values are kept in order (day >= evening >= night) by the settings
 // service, so changing one of them may push the others along with it.
-public class CycleSettingsTabViewModel(
-    SettingsService settingsService,
-    LocalizationManager localizationManager
-) : SettingsTabViewModelBase(settingsService, localizationManager, 0)
+public partial class CycleSettingsTabViewModel : SettingsTabViewModelBase
 {
+    private readonly MonitorService? _monitorService;
+    private readonly DashboardViewModel? _dashboard;
+    private readonly IDisposable _eventSubscription;
+
+    // (the displays are only listed with the services that know them, e.g. not in tests)
+    public CycleSettingsTabViewModel(
+        SettingsService settingsService,
+        LocalizationManager localizationManager,
+        MonitorService? monitorService = null,
+        DashboardViewModel? dashboard = null
+    )
+        : base(settingsService, localizationManager, 0)
+    {
+        _monitorService = monitorService;
+        _dashboard = dashboard;
+
+        RebuildMonitors();
+        RebuildDisconnectedMonitors();
+
+        if (_monitorService is not null)
+            _monitorService.MonitorsChanged += MonitorService_OnMonitorsChanged;
+
+        _eventSubscription = Disposable.Merge(
+            // Display items are kept (not re-created) when settings change, so that
+            // sliders that are being dragged don't get replaced; they're refreshed instead
+            settingsService.WatchAllProperties(() =>
+            {
+                foreach (var monitor in Monitors)
+                    monitor.Refresh();
+
+                RebuildDisconnectedMonitors();
+            }),
+            dashboard?.WatchProperty(o => o.MonitorConfigurations, UpdateEffectiveConfigurations)
+                ?? Disposable.Null,
+            Disposable.Create(() =>
+            {
+                if (_monitorService is not null)
+                    _monitorService.MonitorsChanged -= MonitorService_OnMonitorsChanged;
+            })
+        );
+    }
+
     public override string DisplayName => LocalizationManager.CycleTabName;
 
     protected override void ResetTabSettings(SettingsService defaults)
@@ -29,6 +72,26 @@ public class CycleSettingsTabViewModel(
         SettingsService.GrayscaleOverride = defaults.GrayscaleOverride;
         SettingsService.IsGrayscaleTemperatureShiftEnabled =
             defaults.IsGrayscaleTemperatureShiftEnabled;
+        SettingsService.IsDefaultToDayConfigurationEnabled =
+            defaults.IsDefaultToDayConfigurationEnabled;
+        SettingsService.IsConfigurationSmoothingEnabled = defaults.IsConfigurationSmoothingEnabled;
+        SettingsService.IsPerceptualMonitorOffsetEnabled =
+            defaults.IsPerceptualMonitorOffsetEnabled;
+        SettingsService.MonitorProfiles = defaults.MonitorProfiles;
+    }
+
+    // What the screen shows while Afterglow is off or paused: the day's colors, or none
+    public bool IsDefaultToDayConfigurationEnabled
+    {
+        get => SettingsService.IsDefaultToDayConfigurationEnabled;
+        set => SettingsService.IsDefaultToDayConfigurationEnabled = value;
+    }
+
+    // Whether turning Afterglow on and off fades slowly
+    public bool IsConfigurationSmoothingEnabled
+    {
+        get => SettingsService.IsConfigurationSmoothingEnabled;
+        set => SettingsService.IsConfigurationSmoothingEnabled = value;
     }
 
     // This value is used for slider bounds, but it's not an actual restriction
@@ -152,5 +215,139 @@ public class CycleSettingsTabViewModel(
     {
         get => SettingsService.IsGrayscaleTemperatureShiftEnabled;
         set => SettingsService.IsGrayscaleTemperatureShiftEnabled = value;
+    }
+
+    // ---- Displays ----
+
+    [ObservableProperty]
+    public partial IReadOnlyList<MonitorItemViewModel> Monitors { get; set; } = [];
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDisconnectedMonitors))]
+    [NotifyPropertyChangedFor(nameof(DisconnectedMonitorsHeader))]
+    public partial IReadOnlyList<DisconnectedMonitorItemViewModel> DisconnectedMonitors { get; set; } =
+    [];
+
+    public bool HasMonitors => Monitors.Count > 0;
+
+    // Index into the offset scaling selector: Mireds (perceptual) first, then Kelvin (fixed)
+    public int MonitorOffsetScalingIndex
+    {
+        get => SettingsService.IsPerceptualMonitorOffsetEnabled ? 0 : 1;
+        set
+        {
+            if (value is not (0 or 1))
+                return;
+
+            SettingsService.IsPerceptualMonitorOffsetEnabled = value == 0;
+        }
+    }
+
+    public string MonitorOffsetScalingDescription =>
+        SettingsService.IsPerceptualMonitorOffsetEnabled
+            ? LocalizationManager.PerceptualOffsetScalingDescription
+            : LocalizationManager.FixedOffsetScalingDescription;
+
+    public bool HasDisconnectedMonitors => DisconnectedMonitors.Count > 0;
+
+    public string DisconnectedMonitorsHeader =>
+        string.Format(LocalizationManager.DisconnectedDisplaysLabel, DisconnectedMonitors.Count);
+
+    private void MonitorService_OnMonitorsChanged(object? sender, EventArgs args)
+    {
+        RebuildMonitors();
+        RebuildDisconnectedMonitors();
+    }
+
+    private void RebuildMonitors()
+    {
+        var monitors = _monitorService?.Monitors ?? [];
+
+        // Displays that share the same name get a number, e.g. "Display (1)" and "Display (2)"
+        var duplicateNames = monitors
+            .GroupBy(m => m.FriendlyName, StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var duplicateCounters = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        Monitors = monitors
+            .Select(
+                (monitor, i) =>
+                {
+                    var name = monitor.FriendlyName;
+                    if (duplicateNames.Contains(name))
+                    {
+                        var index = duplicateCounters.GetValueOrDefault(name) + 1;
+                        duplicateCounters[name] = index;
+                        name = $"{name} ({index})";
+                    }
+
+                    var item = new MonitorItemViewModel(
+                        SettingsService,
+                        LocalizationManager,
+                        monitor,
+                        i + 1,
+                        name
+                    );
+
+                    item.UpdateEffectiveConfiguration(
+                        _dashboard?.TryGetMonitorConfiguration(monitor.GdiDeviceName)
+                    );
+
+                    return item;
+                }
+            )
+            .ToArray();
+
+        OnPropertyChanged(nameof(HasMonitors));
+    }
+
+    private void RebuildDisconnectedMonitors()
+    {
+        var connectedPaths = (_monitorService?.Monitors ?? [])
+            .Select(m => m.DevicePath)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var disconnectedProfiles = (SettingsService.MonitorProfiles ?? [])
+            .Where(p => !connectedPaths.Contains(p.DevicePath))
+            .ToArray();
+
+        // Avoid re-creating the list (and collapsing its expander) when nothing has changed
+        if (
+            disconnectedProfiles
+                .Select(p => p.DevicePath)
+                .SequenceEqual(DisconnectedMonitors.Select(m => m.DevicePath))
+        )
+        {
+            return;
+        }
+
+        DisconnectedMonitors = disconnectedProfiles
+            .Select(p => new DisconnectedMonitorItemViewModel(SettingsService, p))
+            .ToArray();
+    }
+
+    private void UpdateEffectiveConfigurations(
+        IReadOnlyDictionary<string, Afterglow.Core.ColorConfiguration> configurations
+    )
+    {
+        foreach (var monitor in Monitors)
+        {
+            monitor.UpdateEffectiveConfiguration(
+                configurations.TryGetValue(monitor.Monitor.GdiDeviceName, out var configuration)
+                    ? configuration
+                    : null
+            );
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+            _eventSubscription.Dispose();
+
+        base.Dispose(disposing);
     }
 }

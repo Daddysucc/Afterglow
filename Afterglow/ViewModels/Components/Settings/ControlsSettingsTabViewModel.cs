@@ -48,7 +48,6 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
         SettingsService.IsUpdateCheckEnabled = defaults.IsUpdateCheckEnabled;
         SettingsService.UpdateCheckFrequency = defaults.UpdateCheckFrequency;
         SettingsService.Language = defaults.Language;
-        SettingsService.IsConfigurationSmoothingEnabled = defaults.IsConfigurationSmoothingEnabled;
         SettingsService.IsExtendedGammaRangeUnlocked = defaults.IsExtendedGammaRangeUnlocked;
         SettingsService.IsGammaPollingEnabled = defaults.IsGammaPollingEnabled;
         SettingsService.GammaPollingInterval = defaults.GammaPollingInterval;
@@ -178,12 +177,6 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
                 : LocalizationManager.NeverCheckedText
         );
 
-    public bool IsConfigurationSmoothingEnabled
-    {
-        get => SettingsService.IsConfigurationSmoothingEnabled;
-        set => SettingsService.IsConfigurationSmoothingEnabled = value;
-    }
-
     public bool IsExtendedGammaRangeUnlocked
     {
         get => SettingsService.IsExtendedGammaRangeUnlocked;
@@ -205,11 +198,21 @@ public partial class ControlsSettingsTabViewModel : SettingsTabViewModelBase
             );
     }
 
-    public string GammaPollingIntervalText =>
-        string.Format(
-            LocalizationManager.SecondsValueText,
-            GammaPollingIntervalSeconds.ToString("0.#", CultureInfo.CurrentCulture)
-        );
+    // (typed in: the number in it is applied, kept within bounds as the slider would; anything
+    // else is ignored)
+    public string GammaPollingIntervalText
+    {
+        get =>
+            string.Format(
+                LocalizationManager.SecondsValueText,
+                GammaPollingIntervalSeconds.ToString("0.#", CultureInfo.CurrentCulture)
+            );
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var seconds))
+                GammaPollingIntervalSeconds = seconds;
+        }
+    }
 
     // ---- Hotkeys ----
 

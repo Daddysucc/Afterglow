@@ -9,7 +9,7 @@ namespace Afterglow.PlatformInterop;
 /// Callbacks run on the thread that owns the app's message window (the UI thread), and the
 /// system waits for them to return (but only briefly).
 /// </summary>
-public static class SessionEvents
+public static partial class SessionEvents
 {
     private const int QueryEndSession = 0x0011;
     private const int EndSession = 0x0016;
@@ -43,6 +43,50 @@ public static class SessionEvents
             end.Dispose();
         });
     }
+
+    /// <summary>
+    /// The screen was locked (locked is true), or unlocked (locked is false).
+    /// </summary>
+    public static IDisposable RegisterLock(Action<bool> callback)
+    {
+        const int sessionChange = 0x02B1;
+        const nint sessionLock = 0x7;
+        const nint sessionUnlock = 0x8;
+        const uint thisSessionOnly = 0;
+
+        var handle = WndProcSponge.Default.Handle;
+        var isRegistered = WTSRegisterSessionNotification(handle, thisSessionOnly);
+
+        var listener = WndProcSponge.Default.Listen(
+            sessionChange,
+            m =>
+            {
+                if (m.WParam == sessionLock)
+                    callback(true);
+                else if (m.WParam == sessionUnlock)
+                    callback(false);
+            }
+        );
+
+        return Disposable.Create(() =>
+        {
+            listener.Dispose();
+            if (isRegistered)
+                WTSUnRegisterSessionNotification(handle);
+        });
+    }
+
+    [System.Runtime.InteropServices.LibraryImport("wtsapi32.dll")]
+    [return: System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.Bool
+    )]
+    private static partial bool WTSRegisterSessionNotification(nint window, uint flags);
+
+    [System.Runtime.InteropServices.LibraryImport("wtsapi32.dll")]
+    [return: System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.Bool
+    )]
+    private static partial bool WTSUnRegisterSessionNotification(nint window);
 
     /// <summary>
     /// The computer is going to sleep (suspending is true), or has woken up (suspending is false).

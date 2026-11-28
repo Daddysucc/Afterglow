@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using Afterglow.Utils;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 
 namespace Afterglow.Converters;
@@ -21,7 +23,9 @@ public class TimeSpanToDurationStringConverter : IValueConverter
         object? parameter,
         CultureInfo culture
     ) =>
-        value is string stringValue && TimeSpan.TryParse(stringValue, culture, out var result)
+        // (also a plain number of minutes, e.g. "90"; anything that isn't a duration leaves the
+        // value as it was)
+        NumberInput.TryParseDuration(value as string, culture, out var result)
             ? result
-            : default;
+            : BindingOperations.DoNothing;
 }

@@ -300,6 +300,18 @@ public partial class LocalizationManager
     public string PerMonitorWhitelistPauseTooltip => Get();
     public string UpdateAvailableButton => Get();
     public string UpdateAvailableTooltip => Get();
+
+    public string UpdateAvailableTitle => Get();
+
+    public string UpdateNotificationText => Get();
+
+    public string UpdateNoNotesText => Get();
+
+    public string UpdateChangesHeading => Get();
+
+    public string UpdateNowButton => Get();
+
+    public string LaterButton => Get();
     public string UpdateDownloadingText => Get();
     public string UpdateInstallingText => Get();
     public string UpdateFailedButton => Get();
@@ -455,7 +467,13 @@ public partial class LocalizationManager
     // Controls & app
     public string HotkeysCardTitle => Get();
     public string HotkeysCardSubtitle => Get();
-    public string SystemPreferencesCardTitle => Get();
+    public string AppCardTitle => Get();
+
+    public string AdvancedCardTitle => Get();
+
+    public string BedtimeSummaryTooltip => Get();
+
+    public string AccentUsesLightSettingsHint => Get();
     public string StartMinimizedLabel => Get();
     public string StartMinimizedTooltip => Get();
     public string ExtendedGammaRangeLabel => Get();

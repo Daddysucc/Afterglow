@@ -37,13 +37,5 @@ internal static class AvaloniaExtensions
             window.Activate();
             window.Focus();
         }
-
-        public void Toggle()
-        {
-            if (window.IsVisible)
-                window.Hide();
-            else
-                window.ShowActivateFocus();
-        }
     }
 }

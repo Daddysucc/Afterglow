@@ -100,7 +100,7 @@ public partial class LocalizationManager
             [nameof(LanguageTooltip)] = "Preferred user interface language",
             [nameof(StartWithWindowsLabel)] = "Start with Windows",
             [nameof(StartWithWindowsTooltip)] = "Launch Afterglow at Windows startup",
-            [nameof(DefaultToDayConfigLabel)] = "Default to day-time configuration",
+            [nameof(DefaultToDayConfigLabel)] = "Use day colors while off or paused",
             [nameof(DefaultToDayConfigTooltip)] =
                 "When Afterglow is disabled or paused, restore the configured day-time temperature and brightness instead of the default monitor gamma",
             [nameof(PauseWhenFullscreenLabel)] = "Pause when fullscreen",
@@ -231,7 +231,7 @@ public partial class LocalizationManager
             [nameof(ProjectPageTooltip)] = "Afterglow on GitHub",
             [nameof(CycleTabName)] = "Cycle & Colors",
             [nameof(ScheduleTabName)] = "Schedule & Location",
-            [nameof(RulesTabName)] = "Rules & Whitelist",
+            [nameof(RulesTabName)] = "Pausing",
             [nameof(ControlsTabName)] = "App & Controls",
             // Cycle & colors
             [nameof(DayCardSubtitle)] = "Sunrise to sunset",
@@ -263,6 +263,12 @@ public partial class LocalizationManager
                 "Pause Afterglow while a selected program or matching window is in the foreground.",
             [nameof(UpdateAvailableButton)] = "Update available",
             [nameof(UpdateAvailableTooltip)] = "{0} {1} is available. Click to update.",
+            [nameof(UpdateAvailableTitle)] = "{0} {1} is available",
+            [nameof(UpdateNotificationText)] = "Click to see what's new and update.",
+            [nameof(UpdateNoNotesText)] = "This version doesn't say what has changed.",
+            [nameof(UpdateChangesHeading)] = "New in {0}",
+            [nameof(UpdateNowButton)] = "Update",
+            [nameof(LaterButton)] = "Later",
             [nameof(UpdateDownloadingText)] = "Downloading update… {0}",
             [nameof(UpdateInstallingText)] = "Installing update…",
             [nameof(UpdateFailedButton)] = "Update manually",
@@ -306,7 +312,7 @@ public partial class LocalizationManager
                 "Lights take on the color temperature of the cycle (as far as they can, from about 2000 K to 6500 K)",
             [nameof(LightWarmthLabel)] = "Warmth",
             [nameof(LightWarmthTooltip)] =
-                "How much warmer lights are set than the screen, to look as warm as it does. Lights that show colors turn amber and orange once they run out of warm whites.",
+                "How much warmer lights are set than the screen, to look as warm as it does. Lights that show colors turn amber and orange once they run out of warm whites. This also applies to the accent color (for the monitor's backlight), with the dynamic wallpaper.",
             [nameof(HueFollowBrightnessLabel)] = "Follow brightness",
             [nameof(HueFollowBrightnessTooltip)] =
                 "Lights take on the brightness of the cycle (Afterglow's 100% is full brightness)",
@@ -315,7 +321,7 @@ public partial class LocalizationManager
                 "Lights also go back to how they were while the screen is paused on its own (fullscreen applications, whitelisted applications, remote streaming, a locked screen)",
             [nameof(LightDimmingLabel)] = "Dimming",
             [nameof(LightDimmingTooltip)] =
-                "How strongly lights dim as the screen dims. At ×2.2 they give off as much light as the screen does (a dimmed, warm screen gives off much less light than its brightness suggests); lower values keep them brighter, higher values dim them more. Full brightness of an untinted screen always stays full.",
+                "How strongly lights dim as the screen dims. At ×2.2 they give off as much light as the screen does (a dimmed, warm screen gives off much less light than its brightness suggests); lower values keep them brighter, higher values dim them more. Full brightness of an untinted screen always stays full. This also applies to the accent color (for the monitor's backlight), with the dynamic wallpaper.",
             [nameof(DynamicWallpaperCardTitle)] = "Dynamic wallpaper",
             [nameof(DynamicWallpaperCardSubtitle)] =
                 "A sky in the screen's color temperature and brightness, through sunrise and sunset. With Windows Dynamic Lighting matching the accent color, a monitor's backlight follows it too.",
@@ -396,7 +402,7 @@ public partial class LocalizationManager
                 "When a light is changed outside of Afterglow (in the Hue app, with a switch, a scene, or a voice assistant), it's left alone; this is how long, counted from when it was last changed. \"Follow again\" in the list of lights follows it again right away.",
             [nameof(HueReclaimNeverOption)] = "Leave alone until turned off and on",
             [nameof(HueLightLeftAloneUntilText)] = "Changed elsewhere, followed again at {0}",
-            [nameof(SmartLightsTabName)] = "Smart Lights",
+            [nameof(SmartLightsTabName)] = "Lights & Wallpaper",
             [nameof(HueReclaimAfterOption)] = "Follow again after a set time",
             [nameof(HueReclaimAfterLabel)] = "After",
             [nameof(MinutesValueText)] = "{0} min",
@@ -482,7 +488,12 @@ public partial class LocalizationManager
             [nameof(HotkeysCardTitle)] = "Global Hotkeys",
             [nameof(HotkeysCardSubtitle)] =
                 "Click a field and press a key combination to assign it.",
-            [nameof(SystemPreferencesCardTitle)] = "System Preferences",
+            [nameof(AppCardTitle)] = "App",
+            [nameof(AdvancedCardTitle)] = "Advanced",
+            [nameof(BedtimeSummaryTooltip)] =
+                "Bedtime is set along with the evening colors, on the Cycle & Colors tab.",
+            [nameof(AccentUsesLightSettingsHint)] =
+                "The accent color uses the lights' Warmth and Dimming above.",
             [nameof(StartMinimizedLabel)] = "Start minimized",
             [nameof(StartMinimizedTooltip)] =
                 "Hide Afterglow to the system tray when it starts, even when launched manually",

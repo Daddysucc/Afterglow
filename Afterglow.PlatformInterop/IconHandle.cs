@@ -9,9 +9,19 @@ internal static class IconHandle
 {
     private const int SmCxSmIcon = 49;
     private const int SmCySmIcon = 50;
+    private const int SmCxIcon = 11;
+    private const int SmCyIcon = 12;
 
     // Version of the icon format expected by CreateIconFromResourceEx
     private const uint IconResourceVersion = 0x00030000;
+
+    public static (int Width, int Height) GetLargeIconSize()
+    {
+        var width = NativeMethods.GetSystemMetrics(SmCxIcon);
+        var height = NativeMethods.GetSystemMetrics(SmCyIcon);
+
+        return (width > 0 ? width : 32, height > 0 ? height : 32);
+    }
 
     public static (int Width, int Height) GetSmallIconSize()
     {

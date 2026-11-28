@@ -4,6 +4,7 @@ using Afterglow.Core;
 using Afterglow.Localization;
 using Afterglow.PlatformInterop;
 using Afterglow.Services;
+using Afterglow.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -79,11 +80,27 @@ public partial class MonitorItemViewModel(
 
     public double MinBrightnessOffset => -MonitorProfile.MaxBrightnessOffset;
 
-    public string TemperatureOffsetText =>
-        TemperatureOffset.ToString("+0;-0;0", CultureInfo.CurrentCulture) + " K";
+    // (typed in: the number in it is applied, kept within bounds as the slider would; anything
+    // else is ignored)
+    public string TemperatureOffsetText
+    {
+        get => TemperatureOffset.ToString("+0;-0;0", CultureInfo.CurrentCulture) + " K";
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                TemperatureOffset = number;
+        }
+    }
 
-    public string BrightnessOffsetText =>
-        (BrightnessOffset * 100).ToString("+0;-0;0", CultureInfo.CurrentCulture) + "%";
+    public string BrightnessOffsetText
+    {
+        get => (BrightnessOffset * 100).ToString("+0;-0;0", CultureInfo.CurrentCulture) + "%";
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                BrightnessOffset = number / 100;
+        }
+    }
 
     public bool HasOffsets => Profile?.HasOffsets ?? false;
 

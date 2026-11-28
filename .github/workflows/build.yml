@@ -426,6 +426,29 @@ jobs:
           done
           ls -l packages/
 
+      # What's new in this version, as written in the changelog (the app shows it too)
+      - name: Checkout changelog
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: Changelog.md
+          sparse-checkout-cone-mode: false
+
+      - name: Get release notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v heading="## $version" '
+            $0 == heading { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' Changelog.md > notes.md
+
+          if ! grep -q '[^[:space:]]' notes.md; then
+            echo "::error::Changelog.md has no section for $version (headed \"## $version\")."
+            exit 1
+          fi
+
+          cat notes.md
+
       # Only signed releases say so
       - name: Create release
         env:
@@ -436,14 +459,17 @@ jobs:
             SignPath.io (see the [code signing
             policy](${{ github.server_url }}/${{ github.repository }}#code-signing-policy)).
         run: |
-          notes=()
+          # (what changed in earlier versions is in the changelog itself)
+          printf '\nWhat changed in earlier versions: [Changelog](%s/blob/%s/Changelog.md)\n' \
+            "${{ github.server_url }}/${{ github.repository }}" "${{ github.ref_name }}" >> notes.md
+
           if [ "$IS_SIGNED" = "true" ]; then
-            notes=(--notes "$SIGNING_NOTE")
+            printf '\n%s\n' "$SIGNING_NOTE" >> notes.md
           fi
 
           gh release create "${{ github.ref_name }}" packages/* \
             --repo "${{ github.repository }}" \
             --title "Afterglow ${{ github.ref_name }}" \
-            "${notes[@]}" \
+            --notes-file notes.md \
             --generate-notes \
             --verify-tag

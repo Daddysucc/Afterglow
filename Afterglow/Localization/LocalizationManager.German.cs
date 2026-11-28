@@ -30,7 +30,7 @@ public partial class LocalizationManager
         [nameof(LanguageTooltip)] = "Bevorzugte Sprache der Benutzeroberfläche",
         [nameof(StartWithWindowsLabel)] = "Mit Windows starten",
         [nameof(StartWithWindowsTooltip)] = "Afterglow beim Windows-Start automatisch starten",
-        [nameof(DefaultToDayConfigLabel)] = "Zur Tageskonfiguration zurückkehren",
+        [nameof(DefaultToDayConfigLabel)] = "Tagesfarben, wenn aus oder pausiert",
         [nameof(DefaultToDayConfigTooltip)] =
             "Wenn Afterglow deaktiviert oder pausiert ist, die konfigurierte Tagestemperatur und -helligkeit anstelle des Standard-Monitor-Gammas wiederherstellen",
         [nameof(PauseWhenFullscreenLabel)] = "Bei Vollbild pausieren",
@@ -217,7 +217,7 @@ public partial class LocalizationManager
         [nameof(ProjectPageTooltip)] = "Afterglow auf GitHub",
         [nameof(CycleTabName)] = "Zyklus & Farben",
         [nameof(ScheduleTabName)] = "Zeitplan & Standort",
-        [nameof(RulesTabName)] = "Regeln & Whitelist",
+        [nameof(RulesTabName)] = "Pausieren",
         [nameof(ControlsTabName)] = "App & Steuerung",
         [nameof(DayCardSubtitle)] = "Sonnenaufgang bis Sonnenuntergang",
         [nameof(EveningCardSubtitle)] = "Sonnenuntergang bis Schlafenszeit",
@@ -247,6 +247,13 @@ public partial class LocalizationManager
             "Afterglow pausieren, solange ein ausgewähltes Programm oder ein passendes Fenster im Vordergrund ist.",
         [nameof(UpdateAvailableButton)] = "Update verfügbar",
         [nameof(UpdateAvailableTooltip)] = "{0} {1} ist verfügbar. Klicken, um zu aktualisieren.",
+        [nameof(UpdateAvailableTitle)] = "{0} {1} ist verfügbar",
+        [nameof(UpdateNotificationText)] =
+            "Klicken, um die Neuerungen zu sehen und zu aktualisieren.",
+        [nameof(UpdateNoNotesText)] = "Diese Version gibt nicht an, was sich geändert hat.",
+        [nameof(UpdateChangesHeading)] = "Neu in {0}",
+        [nameof(UpdateNowButton)] = "Aktualisieren",
+        [nameof(LaterButton)] = "Später",
         [nameof(UpdateDownloadingText)] = "Update wird heruntergeladen … {0}",
         [nameof(UpdateInstallingText)] = "Update wird installiert …",
         [nameof(UpdateFailedButton)] = "Manuell aktualisieren",
@@ -290,7 +297,7 @@ public partial class LocalizationManager
             "Lampen übernehmen die Farbtemperatur des Zyklus (soweit möglich, etwa 2000 K bis 6500 K)",
         [nameof(LightWarmthLabel)] = "Wärme",
         [nameof(LightWarmthTooltip)] =
-            "Wie viel wärmer die Lampen als der Bildschirm eingestellt werden, damit sie so warm wirken wie er. Farbfähige Lampen wechseln zu Bernstein und Orange, wenn ihre warmen Weißtöne nicht mehr reichen.",
+            "Wie viel wärmer die Lampen als der Bildschirm eingestellt werden, damit sie so warm wirken wie er. Farbfähige Lampen wechseln zu Bernstein und Orange, wenn ihre warmen Weißtöne nicht mehr reichen. Diese Einstellung gilt auch für die Akzentfarbe (für die Hintergrundbeleuchtung des Monitors) beim dynamischen Hintergrundbild.",
         [nameof(HueFollowBrightnessLabel)] = "Helligkeit folgen",
         [nameof(HueFollowBrightnessTooltip)] =
             "Lampen übernehmen die Helligkeit des Zyklus (100 % in Afterglow ist volle Helligkeit)",
@@ -299,7 +306,7 @@ public partial class LocalizationManager
             "Lampen kehren auch in ihren vorherigen Zustand zurück, solange der Bildschirm automatisch pausiert ist (Vollbildanwendungen, Anwendungen auf der Whitelist, Remote-Streaming, gesperrter Bildschirm)",
         [nameof(LightDimmingLabel)] = "Dimmen",
         [nameof(LightDimmingTooltip)] =
-            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×2.2 geben sie so viel Licht ab wie der Bildschirm (ein gedimmter, warmer Bildschirm gibt viel weniger Licht ab, als seine Helligkeit vermuten lässt); niedrigere Werte lassen sie heller, höhere dimmen sie stärker. Volle Helligkeit eines ungetönten Bildschirms bleibt immer voll.",
+            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×2.2 geben sie so viel Licht ab wie der Bildschirm (ein gedimmter, warmer Bildschirm gibt viel weniger Licht ab, als seine Helligkeit vermuten lässt); niedrigere Werte lassen sie heller, höhere dimmen sie stärker. Volle Helligkeit eines ungetönten Bildschirms bleibt immer voll. Diese Einstellung gilt auch für die Akzentfarbe (für die Hintergrundbeleuchtung des Monitors) beim dynamischen Hintergrundbild.",
         [nameof(DynamicWallpaperCardTitle)] = "Dynamisches Hintergrundbild",
         [nameof(DynamicWallpaperCardSubtitle)] =
             "Ein Himmel in der Farbtemperatur und Helligkeit des Bildschirms, durch Sonnenaufgang und Sonnenuntergang. Wenn Windows Dynamic Lighting der Akzentfarbe folgt, folgt ihm auch die Hintergrundbeleuchtung eines Monitors.",
@@ -382,7 +389,7 @@ public partial class LocalizationManager
         [nameof(HueReclaimNeverOption)] =
             "Unverändert lassen, bis sie aus- und wieder eingeschaltet werden",
         [nameof(HueLightLeftAloneUntilText)] = "Anderswo geändert, folgt wieder um {0}",
-        [nameof(SmartLightsTabName)] = "Smarte Lampen",
+        [nameof(SmartLightsTabName)] = "Licht & Hintergrund",
         [nameof(HueReclaimAfterOption)] = "Nach einer festen Zeit wieder folgen",
         [nameof(HueReclaimAfterLabel)] = "Nach",
         [nameof(MinutesValueText)] = "{0} Min.",
@@ -471,7 +478,12 @@ public partial class LocalizationManager
         [nameof(HotkeysCardTitle)] = "Globale Tastenkombinationen",
         [nameof(HotkeysCardSubtitle)] =
             "Klicken Sie auf ein Feld und drücken Sie eine Tastenkombination, um sie zuzuweisen.",
-        [nameof(SystemPreferencesCardTitle)] = "Systemeinstellungen",
+        [nameof(AppCardTitle)] = "App",
+        [nameof(AdvancedCardTitle)] = "Erweitert",
+        [nameof(BedtimeSummaryTooltip)] =
+            "Die Schlafenszeit wird zusammen mit den Abendfarben im Tab Zyklus & Farben eingestellt.",
+        [nameof(AccentUsesLightSettingsHint)] =
+            "Die Akzentfarbe verwendet die Einstellungen Wärme und Dimmen der Lampen oben.",
         [nameof(StartMinimizedLabel)] = "Minimiert starten",
         [nameof(StartMinimizedTooltip)] =
             "Afterglow beim Start in den Infobereich minimieren, auch wenn es manuell gestartet wird",

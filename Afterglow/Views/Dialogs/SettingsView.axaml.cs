@@ -18,9 +18,5 @@ public partial class SettingsView : UserControl<SettingsViewModel>
     }
 
     // Hides the window to the tray, as the dashboard's button does (the settings stay open)
-    private void HideButton_OnClick(object? sender, RoutedEventArgs args)
-    {
-        if (TopLevel.GetTopLevel(this) is Window window)
-            window.Hide();
-    }
+    private void HideButton_OnClick(object? sender, RoutedEventArgs args) => App.HideMainWindow();
 }

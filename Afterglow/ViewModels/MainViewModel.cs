@@ -26,7 +26,8 @@ public partial class MainViewModel(
     ViewModelManager viewModelManager,
     DialogManager dialogManager,
     SettingsService settingsService,
-    LocalizationManager localizationManager
+    LocalizationManager localizationManager,
+    UpdateService updateService
 ) : ViewModelBase
 {
     public LocalizationManager LocalizationManager { get; } = localizationManager;
@@ -125,11 +126,32 @@ public partial class MainViewModel(
         await dialogManager.ShowDialogAsync(settingsDialog);
     }
 
+    private bool _isInitialized;
+
+    // Whether there's something to tell the user as soon as the app starts (so the window is
+    // shown, even if it's set to start hidden)
+    public bool HasStartupMessages =>
+        (Program.IsDevelopmentBuild && !Debugger.IsAttached)
+        || (
+            settingsService is
+            { IsExtendedGammaRangeUnlocked: false, IsGammaRangePromptEnabled: true }
+        )
+        || settingsService.IsFirstTimeExperienceEnabled;
+
+    // Shown the first time the window is (rather than each time it's created again)
     public override async Task InitializeAsync()
     {
+        if (_isInitialized)
+            return;
+
+        _isInitialized = true;
+
         await ShowDevelopmentBuildMessageAsync();
         await ShowGammaRangeMessageAsync();
         await ShowFirstTimeExperienceMessageAsync();
+
+        // An update that's waiting is shown the first time the window is
+        await ShowUpdateAsync();
     }
 
     private async Task ShowSettingsTabAsync<TTab>()
@@ -149,6 +171,7 @@ public partial class MainViewModel(
         settingsDialog.ActivateTab<TTab>();
 
         _isSettingsOpen = true;
+        _openSettings = settingsDialog;
         try
         {
             await dialogManager.ShowDialogAsync(settingsDialog);
@@ -156,10 +179,12 @@ public partial class MainViewModel(
         finally
         {
             _isSettingsOpen = false;
+            _openSettings = null;
         }
     }
 
     private bool _isSettingsOpen;
+    private Dialogs.SettingsViewModel? _openSettings;
 
     [RelayCommand]
     private async Task ShowSettingsAsync() =>
@@ -169,6 +194,67 @@ public partial class MainViewModel(
     private async Task ShowLocationSettingsAsync() =>
         await ShowSettingsTabAsync<ScheduleSettingsTabViewModel>();
 
+    private bool _isUpdateShown;
+
+    /// <summary>
+    /// Shows the update that's available (its version, and what's changed), to install it right
+    /// away or later. Putting it off ("Later") means it isn't brought up again by itself for that
+    /// version, only when asked for (e.g. when its notification is clicked).
+    /// </summary>
+    public async Task ShowUpdateAsync(bool isRequested = false)
+    {
+        if (_isUpdateShown || updateService.AvailableVersion is not { } version)
+            return;
+
+        var versionText = version.ToString(3);
+        if (
+            !isRequested
+            && string.Equals(
+                settingsService.DismissedUpdateVersion,
+                versionText,
+                StringComparison.Ordinal
+            )
+        )
+            return;
+
+        if (_isSettingsOpen)
+        {
+            // Not brought up by itself over the settings (which show it too, with their own
+            // button). Asked for, the settings are closed (as their back button would, keeping
+            // every change) to show it.
+            if (!isRequested)
+                return;
+
+            _openSettings?.BackCommand.Execute(null);
+        }
+
+        _isUpdateShown = true;
+        try
+        {
+            var dialog = viewModelManager.GetMessageBoxViewModel(
+                string.Format(LocalizationManager.UpdateAvailableTitle, Program.Name, versionText),
+                await updateService.GetChangesAsync(LocalizationManager.UpdateChangesHeading)
+                    ?? LocalizationManager.UpdateNoNotesText,
+                LocalizationManager.UpdateNowButton,
+                LocalizationManager.LaterButton
+            );
+
+            if (await dialogManager.ShowDialogAsync(dialog) == true)
+            {
+                await updateService.UpdateAsync();
+            }
+            else
+            {
+                settingsService.DismissedUpdateVersion = versionText;
+                settingsService.TrySaveToFile();
+            }
+        }
+        finally
+        {
+            _isUpdateShown = false;
+        }
+    }
+
     [RelayCommand]
     private void ShowAbout() => Process.StartShellExecute(Program.ProjectUrl);
 
@@ -177,13 +263,13 @@ public partial class MainViewModel(
         StartOptions.Current.IsInitiallyHidden || settingsService.IsStartMinimizedEnabled;
 
     [RelayCommand]
-    private void ShowWindow() =>
-        Application.Current?.ApplicationLifetime?.TryGetMainWindow()?.ShowActivateFocus();
+    private void ShowWindow() => App.ShowMainWindow();
 
     [RelayCommand]
     private async Task ShowWindowWithSettingsAsync()
     {
-        ShowWindow();
+        // (a window that's only just been created has to load before it can show the settings)
+        await App.ShowMainWindowAsync();
         await ShowSettingsAsync();
     }
 

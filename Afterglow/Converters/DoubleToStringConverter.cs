@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using Afterglow.Utils;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 
 namespace Afterglow.Converters;
@@ -21,13 +23,8 @@ public class DoubleToStringConverter : IValueConverter
         object? parameter,
         CultureInfo culture
     ) =>
-        value is string stringValue
-        && double.TryParse(
-            stringValue,
-            NumberStyles.Float | NumberStyles.AllowThousands,
-            culture,
-            out var result
-        )
+        // (anything that isn't a number leaves the value as it was)
+        NumberInput.TryParse(value as string, culture, out var result)
             ? result
-            : default;
+            : BindingOperations.DoNothing;
 }

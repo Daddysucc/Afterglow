@@ -69,6 +69,10 @@ public static class Program
 
     public static string ProjectUrl { get; } = "https://github.com/Daddysucc/Afterglow";
 
+    // What's new in each version, as kept in the repository (at the given version's release)
+    public static string GetChangelogUrl(Version version) =>
+        $"https://raw.githubusercontent.com/Daddysucc/Afterglow/v{version.ToString(3)}/Changelog.md";
+
     // Latest stable release, as listed by the GitHub API (drafts and pre-releases are left out)
     public static string LatestReleaseApiUrl { get; } =
         "https://api.github.com/repos/Daddysucc/Afterglow/releases/latest";

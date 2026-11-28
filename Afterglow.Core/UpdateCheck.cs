@@ -42,7 +42,14 @@ public sealed record ReleaseAsset(string Name, Uri DownloadUrl, long Size, strin
 /// <summary>
 /// A newer release, with the files that can be downloaded from it.
 /// </summary>
-public sealed record Release(Version Version, IReadOnlyList<ReleaseAsset> Assets);
+/// <param name="Version">The release's version.</param>
+/// <param name="Assets">The files that can be downloaded.</param>
+/// <param name="Notes">What changed, as written for the release (Markdown), if anything.</param>
+public sealed record Release(
+    Version Version,
+    IReadOnlyList<ReleaseAsset> Assets,
+    string? Notes = null
+);
 
 /// <summary>
 /// How often to look for a newer release on GitHub, when that's turned on.
@@ -184,7 +191,9 @@ public static class UpdateCheck
             }
         }
 
-        return new Release(version, assets);
+        var notes = TryGetString(release, "body");
+
+        return new Release(version, assets, string.IsNullOrWhiteSpace(notes) ? null : notes);
     }
 
     /// <summary>

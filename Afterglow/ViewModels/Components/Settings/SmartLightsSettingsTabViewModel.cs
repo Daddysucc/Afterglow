@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Afterglow.Core;
 using Afterglow.Localization;
 using Afterglow.Services;
+using Afterglow.Utils;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Material.Icons;
@@ -123,6 +124,15 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
         set => SettingsService.IsAccentColorMatched = value;
     }
 
+    // Whether the accent color follows the screen (with the lights' warmth and dimming)
+    public bool IsAccentColorUsed =>
+        SettingsService.IsDynamicWallpaperEnabled && SettingsService.IsAccentColorMatched;
+
+    // The warmth and dimming apply to the lights (if they follow that), and to the accent color
+    public bool IsLightWarmthUsed => IsHueTemperatureFollowed || IsAccentColorUsed;
+
+    public bool IsLightDimmingUsed => IsHueBrightnessFollowed || IsAccentColorUsed;
+
     public bool IsHueEnabled
     {
         get => SettingsService.IsHueEnabled;
@@ -171,7 +181,17 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
     }
 
     // e.g. "×2.0"
-    public string LightWarmthText => "×" + LightWarmth.ToString("0.0", CultureInfo.CurrentCulture);
+    // (typed in: the number in it is applied, kept within bounds as the slider would; anything
+    // else is ignored)
+    public string LightWarmthText
+    {
+        get => "×" + LightWarmth.ToString("0.0", CultureInfo.CurrentCulture);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                LightWarmth = number;
+        }
+    }
 
     public double LightDimming
     {
@@ -188,8 +208,17 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
     }
 
     // e.g. "×1.0"
-    public string LightDimmingText =>
-        "×" + LightDimming.ToString("0.0", CultureInfo.CurrentCulture);
+    // (typed in: the number in it is applied, kept within bounds as the slider would; anything
+    // else is ignored)
+    public string LightDimmingText
+    {
+        get => "×" + LightDimming.ToString("0.0", CultureInfo.CurrentCulture);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                LightDimming = number;
+        }
+    }
 
     public bool IsHuePausedWithScreen
     {
@@ -226,8 +255,23 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
     public double MaximumHueReclaimMinutes => HueService.MaximumReclaimDuration.TotalMinutes;
 
     // e.g. "45 min", "1 h 15 min"
-    public string HueReclaimText =>
-        FormatDuration(TimeSpan.FromMinutes(HueReclaimMinutes), LocalizationManager);
+    // (typed in as minutes, hours, or both, e.g. "45", "2 h", "1 h 15 min", "1:15")
+    public string HueReclaimText
+    {
+        get => FormatDuration(TimeSpan.FromMinutes(HueReclaimMinutes), LocalizationManager);
+        set
+        {
+            if (
+                NumberInput.TryParseMinutes(
+                    value,
+                    CultureInfo.CurrentCulture,
+                    LocalizationManager.HoursValueText,
+                    out var minutes
+                )
+            )
+                HueReclaimMinutes = minutes;
+        }
+    }
 
     internal static string FormatDuration(TimeSpan duration, LocalizationManager localization) =>
         ((int)duration.TotalHours, duration.Minutes) switch
@@ -357,10 +401,47 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
     }
 
     // e.g. "2700 K", "30%"
-    public string HuePauseTemperatureText => FormatTemperature(HuePauseTemperature);
-    public string HuePauseBrightnessText => FormatBrightness(HuePauseBrightness);
-    public string HueShutdownTemperatureText => FormatTemperature(HueShutdownTemperature);
-    public string HueShutdownBrightnessText => FormatBrightness(HueShutdownBrightness);
+    // (typed in: the number in it is applied, kept within bounds as the slider would; anything
+    // else is ignored)
+    public string HuePauseTemperatureText
+    {
+        get => FormatTemperature(HuePauseTemperature);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                HuePauseTemperature = number;
+        }
+    }
+
+    public string HuePauseBrightnessText
+    {
+        get => FormatBrightness(HuePauseBrightness);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                HuePauseBrightness = number / 100;
+        }
+    }
+
+    public string HueShutdownTemperatureText
+    {
+        get => FormatTemperature(HueShutdownTemperature);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                HueShutdownTemperature = number;
+        }
+    }
+
+    public string HueShutdownBrightnessText
+    {
+        get => FormatBrightness(HueShutdownBrightness);
+        set
+        {
+            if (NumberInput.TryParse(value, CultureInfo.CurrentCulture, out var number))
+                HueShutdownBrightness = number / 100;
+        }
+    }
 
     public double MinimumLookTemperature => HueService.MinimumLookTemperature;
     public double MaximumLookTemperature => HueService.MaximumLookTemperature;

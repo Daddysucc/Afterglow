@@ -28,7 +28,7 @@ public partial class LocalizationManager
             [nameof(LanguageTooltip)] = "Бажана мова інтерфейсу",
             [nameof(StartWithWindowsLabel)] = "Запускати з Windows",
             [nameof(StartWithWindowsTooltip)] = "Запускати Afterglow при старті Windows",
-            [nameof(DefaultToDayConfigLabel)] = "Повертатись до денної конфігурації",
+            [nameof(DefaultToDayConfigLabel)] = "Денні кольори, коли вимкнено або призупинено",
             [nameof(DefaultToDayConfigTooltip)] =
                 "Коли Afterglow вимкнено або призупинено, відновлювати налаштовану денну температуру та яскравість замість гами монітора за замовчуванням",
             [nameof(PauseWhenFullscreenLabel)] = "Призупиняти при повноекранному режимі",
@@ -222,7 +222,7 @@ public partial class LocalizationManager
             [nameof(ProjectPageTooltip)] = "Afterglow на GitHub",
             [nameof(CycleTabName)] = "Цикл і кольори",
             [nameof(ScheduleTabName)] = "Розклад і місце",
-            [nameof(RulesTabName)] = "Правила і білий список",
+            [nameof(RulesTabName)] = "Призупинення",
             [nameof(ControlsTabName)] = "Програма і керування",
             [nameof(DayCardSubtitle)] = "Від сходу до заходу сонця",
             [nameof(EveningCardSubtitle)] = "Від заходу сонця до часу сну",
@@ -252,6 +252,12 @@ public partial class LocalizationManager
                 "Призупиняти Afterglow, поки вибрана програма або відповідне вікно на передньому плані.",
             [nameof(UpdateAvailableButton)] = "Доступне оновлення",
             [nameof(UpdateAvailableTooltip)] = "Доступна версія {0} {1}. Натисніть, щоб оновити.",
+            [nameof(UpdateAvailableTitle)] = "Доступна версія {0} {1}",
+            [nameof(UpdateNotificationText)] = "Натисніть, щоб переглянути зміни та оновити.",
+            [nameof(UpdateNoNotesText)] = "У цій версії не вказано, що змінилося.",
+            [nameof(UpdateChangesHeading)] = "Нове у {0}",
+            [nameof(UpdateNowButton)] = "Оновити",
+            [nameof(LaterButton)] = "Пізніше",
             [nameof(UpdateDownloadingText)] = "Завантаження оновлення… {0}",
             [nameof(UpdateInstallingText)] = "Встановлення оновлення…",
             [nameof(UpdateFailedButton)] = "Оновити вручну",
@@ -295,7 +301,7 @@ public partial class LocalizationManager
                 "Лампи набувають колірної температури циклу (наскільки можуть, приблизно від 2000 K до 6500 K)",
             [nameof(LightWarmthLabel)] = "Теплота",
             [nameof(LightWarmthTooltip)] =
-                "Наскільки теплішим за екран налаштовується освітлення, щоб воно здавалося таким самим теплим. Кольорові лампи переходять на бурштиновий і помаранчевий, коли теплі відтінки білого закінчуються.",
+                "Наскільки теплішим за екран налаштовується освітлення, щоб воно здавалося таким самим теплим. Кольорові лампи переходять на бурштиновий і помаранчевий, коли теплі відтінки білого закінчуються. Цей параметр також застосовується до кольору акценту (для підсвічування монітора) з динамічними шпалерами.",
             [nameof(HueFollowBrightnessLabel)] = "Слідувати за яскравістю",
             [nameof(HueFollowBrightnessTooltip)] =
                 "Лампи набувають яскравості циклу (100 % в Afterglow — це повна яскравість)",
@@ -304,7 +310,7 @@ public partial class LocalizationManager
                 "Освітлення також повертається до попереднього стану, поки екран призупинено автоматично (повноекранні застосунки, застосунки з білого списку, віддалена трансляція, заблокований екран)",
             [nameof(LightDimmingLabel)] = "Приглушення",
             [nameof(LightDimmingTooltip)] =
-                "Наскільки сильно приглушується освітлення, коли екран тьмянішає. При ×2.2 лампи дають стільки ж світла, скільки й екран (приглушений теплий екран дає набагато менше світла, ніж здається з його яскравості); менші значення лишають їх яскравішими, більші приглушують сильніше. Повна яскравість екрана без відтінку завжди лишається повною.",
+                "Наскільки сильно приглушується освітлення, коли екран тьмянішає. При ×2.2 лампи дають стільки ж світла, скільки й екран (приглушений теплий екран дає набагато менше світла, ніж здається з його яскравості); менші значення лишають їх яскравішими, більші приглушують сильніше. Повна яскравість екрана без відтінку завжди лишається повною. Цей параметр також застосовується до кольору акценту (для підсвічування монітора) з динамічними шпалерами.",
             [nameof(DynamicWallpaperCardTitle)] = "Динамічні шпалери",
             [nameof(DynamicWallpaperCardSubtitle)] =
                 "Небо в колірній температурі та яскравості екрана, крізь схід і захід сонця. Якщо динамічне освітлення Windows відповідає кольору акценту, підсвічування монітора теж слідує за ним.",
@@ -387,7 +393,7 @@ public partial class LocalizationManager
                 "Коли лампу змінено поза Afterglow (у застосунку Hue, вимикачем, сценою чи голосовим помічником), її лишають як є; ось як довго, рахуючи від останньої зміни. «Слідувати знову» у списку ламп одразу знову вмикає слідування.",
             [nameof(HueReclaimNeverOption)] = "Лишати як є, доки не вимкнуть і не ввімкнуть",
             [nameof(HueLightLeftAloneUntilText)] = "Змінено деінде, знову слідуватиме о {0}",
-            [nameof(SmartLightsTabName)] = "Розумне освітлення",
+            [nameof(SmartLightsTabName)] = "Світло та шпалери",
             [nameof(HueReclaimAfterOption)] = "Знову слідувати через заданий час",
             [nameof(HueReclaimAfterLabel)] = "Через",
             [nameof(MinutesValueText)] = "{0} хв",
@@ -477,7 +483,12 @@ public partial class LocalizationManager
             [nameof(HotkeysCardTitle)] = "Глобальні гарячі клавіші",
             [nameof(HotkeysCardSubtitle)] =
                 "Клацніть поле та натисніть комбінацію клавіш, щоб призначити її.",
-            [nameof(SystemPreferencesCardTitle)] = "Системні параметри",
+            [nameof(AppCardTitle)] = "Програма",
+            [nameof(AdvancedCardTitle)] = "Додатково",
+            [nameof(BedtimeSummaryTooltip)] =
+                "Час сну задається разом із вечірніми кольорами на вкладці Цикл і кольори.",
+            [nameof(AccentUsesLightSettingsHint)] =
+                "Колір акценту використовує параметри «Теплота» і «Приглушення» освітлення вище.",
             [nameof(StartMinimizedLabel)] = "Запускати згорнутим",
             [nameof(StartMinimizedTooltip)] =
                 "Ховати Afterglow в системний трей під час запуску, навіть якщо його запущено вручну",

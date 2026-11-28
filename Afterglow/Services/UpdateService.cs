@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Afterglow.Core;
+using Afterglow.Core.Utils;
 using Afterglow.Utils;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -157,6 +158,10 @@ public partial class UpdateService : ObservableObject, IDisposable
                 )
                     InstallState = UpdateInstallState.None;
 
+                // What's changed is fetched right away, so that it's ready to be shown
+                if (release?.Version != _availableRelease?.Version)
+                    _changes = release is not null ? FetchChangesAsync(release) : null;
+
                 _availableRelease = release;
                 AvailableVersion = release?.Version;
                 Status = release is not null
@@ -179,6 +184,61 @@ public partial class UpdateService : ObservableObject, IDisposable
     // ---- Installing ----
 
     private Release? _availableRelease;
+
+    // What's changed in the available update (as plain text), if its release says so
+    private string? AvailableReleaseNotes =>
+        _availableRelease?.Notes is { } notes
+        && ReleaseNotes.ToPlainText(notes) is { Length: > 0 } text
+            ? text
+            : null;
+
+    /// <summary>
+    /// What's changed since this version, up to the available update: every version in between,
+    /// as the changelog says (each under a heading in the given format, e.g. "New in {0}"), or
+    /// else what the update's release says, or null if neither says.
+    /// </summary>
+    public async Task<string?> GetChangesAsync(string headingFormat)
+    {
+        if (_availableRelease is null)
+            return null;
+
+        var changelog = _changes is not null ? await _changes : null;
+        if (changelog is not null && _availableRelease is { } release)
+        {
+            var changes = ReleaseNotes.GetChangesBetween(
+                changelog,
+                Program.Version,
+                release.Version,
+                headingFormat
+            );
+
+            if (changes is not null)
+                return changes;
+        }
+
+        return AvailableReleaseNotes;
+    }
+
+    // The changelog as of the available update's release (or null if it couldn't be fetched)
+    private Task<string?>? _changes;
+
+    private static async Task<string?> FetchChangesAsync(Release release)
+    {
+        try
+        {
+            using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            return await Http.Client.GetStringAsync(
+                Program.GetChangelogUrl(release.Version),
+                cancellation.Token
+            );
+        }
+        // (offline, or the file isn't there, e.g. for releases from before it was kept)
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to get the changelog: {ex.Message}");
+            return null;
+        }
+    }
 
     // How far updating has come, shown on the update buttons
     [ObservableProperty]

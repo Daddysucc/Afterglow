@@ -20,9 +20,18 @@ public partial class NotifyIcon : IDisposable
     private const int NifMessage = 0x1;
     private const int NifIcon = 0x2;
     private const int NifTip = 0x4;
+    private const int NifInfo = 0x10;
+
+    // NIIF_INFO (the standard information icon), NIIF_USER (an icon of one's own), NIIF_LARGE_ICON
+    private const int NiifInfo = 0x1;
+    private const int NiifUser = 0x4;
+    private const int NiifLargeIcon = 0x20;
 
     private const int WmLButtonUp = 0x0202;
     private const int WmRButtonUp = 0x0205;
+
+    // NIN_BALLOONUSERCLICK (WM_USER + 5)
+    private const int NinBalloonUserClick = 0x0400 + 5;
 
     // Must be within the WM_APP range (0x8000-0xBFFF)
     private const int CallbackMessageId = 0x8000 + 0x0142;
@@ -35,6 +44,9 @@ public partial class NotifyIcon : IDisposable
 
     private nint _iconHandle;
     private bool _ownsIconHandle;
+
+    // The icon at the size notifications show it (created when the first one is shown)
+    private nint _notificationIconHandle;
     private string _toolTip;
     private bool _isDisposed;
 
@@ -75,6 +87,51 @@ public partial class NotifyIcon : IDisposable
     /// or the cursor position otherwise.
     /// </summary>
     public event EventHandler<Rect>? RightClicked;
+
+    /// <summary>
+    /// Occurs when the notification shown by <see cref="ShowNotification" /> is clicked.
+    /// </summary>
+    public event EventHandler? NotificationClicked;
+
+    /// <summary>
+    /// Shows a notification from the icon (a regular Windows notification, on Windows 10 and
+    /// later, which also goes to the notification center). It doesn't take the focus, and
+    /// Windows holds it back while the user shouldn't be disturbed (e.g. in a fullscreen game).
+    /// </summary>
+    public void ShowNotification(string title, string text)
+    {
+        if (_isDisposed)
+            return;
+
+        var data = CreateData(NifInfo);
+
+        // (limited to 64 and 256 characters, including the null terminator)
+        data.InfoTitle = title.Length > 63 ? title[..63] : title;
+        data.Info = text.Length > 255 ? text[..255] : text;
+
+        // The app's own icon at the large size (Windows doesn't show a notification at all when
+        // it's asked for a large icon, but given the tray's small one), or else the standard one
+        if (_notificationIconHandle == 0 && _iconData is not null)
+        {
+            var (width, height) = IconHandle.GetLargeIconSize();
+            _notificationIconHandle = IconHandle.TryCreateFromIco(_iconData, width, height);
+        }
+
+        if (_notificationIconHandle != 0)
+        {
+            data.InfoFlags = NiifUser | NiifLargeIcon;
+            data.BalloonIconHandle = _notificationIconHandle;
+        }
+        else
+        {
+            data.InfoFlags = NiifInfo;
+        }
+
+        if (!NativeMethods.Shell_NotifyIcon(NimModify, ref data))
+        {
+            Debug.WriteLine($"Failed to show a notification. Error {Marshal.GetLastWin32Error()}.");
+        }
+    }
 
     public string ToolTip
     {
@@ -145,6 +202,10 @@ public partial class NotifyIcon : IDisposable
                 LeftClicked?.Invoke(this, EventArgs.Empty);
                 break;
 
+            case NinBalloonUserClick:
+                NotificationClicked?.Invoke(this, EventArgs.Empty);
+                break;
+
             case WmRButtonUp:
             {
                 var (x, y) = GetCursorPosition();
@@ -196,6 +257,10 @@ public partial class NotifyIcon : IDisposable
 
         _wndProcRegistration.Dispose();
         DestroyIcon();
+
+        if (_notificationIconHandle != 0)
+            NativeMethods.DestroyIcon(_notificationIconHandle);
+        _notificationIconHandle = 0;
 
         GC.SuppressFinalize(this);
     }

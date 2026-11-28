@@ -30,7 +30,7 @@ public partial class LocalizationManager
         [nameof(LanguageTooltip)] = "Langue d'interface préférée",
         [nameof(StartWithWindowsLabel)] = "Démarrer avec Windows",
         [nameof(StartWithWindowsTooltip)] = "Lancer Afterglow au démarrage de Windows",
-        [nameof(DefaultToDayConfigLabel)] = "Revenir à la configuration diurne",
+        [nameof(DefaultToDayConfigLabel)] = "Couleurs de jour à l'arrêt ou en pause",
         [nameof(DefaultToDayConfigTooltip)] =
             "Quand Afterglow est désactivé ou en pause, restaurer la température et la luminosité diurnes configurées au lieu du gamma par défaut du moniteur",
         [nameof(PauseWhenFullscreenLabel)] = "Pause en plein écran",
@@ -223,7 +223,7 @@ public partial class LocalizationManager
         [nameof(ProjectPageTooltip)] = "Afterglow sur GitHub",
         [nameof(CycleTabName)] = "Cycle et couleurs",
         [nameof(ScheduleTabName)] = "Horaire et lieu",
-        [nameof(RulesTabName)] = "Règles et liste blanche",
+        [nameof(RulesTabName)] = "Mise en pause",
         [nameof(ControlsTabName)] = "Appli et commandes",
         [nameof(DayCardSubtitle)] = "Du lever au coucher du soleil",
         [nameof(EveningCardSubtitle)] = "Du coucher du soleil à l'heure du coucher",
@@ -253,6 +253,12 @@ public partial class LocalizationManager
             "Mettre Afterglow en pause lorsqu'un programme sélectionné ou une fenêtre correspondante est au premier plan.",
         [nameof(UpdateAvailableButton)] = "Mise à jour disponible",
         [nameof(UpdateAvailableTooltip)] = "{0} {1} est disponible. Cliquez pour mettre à jour.",
+        [nameof(UpdateAvailableTitle)] = "{0} {1} est disponible",
+        [nameof(UpdateNotificationText)] = "Cliquez pour voir les nouveautés et mettre à jour.",
+        [nameof(UpdateNoNotesText)] = "Cette version ne précise pas ce qui a changé.",
+        [nameof(UpdateChangesHeading)] = "Nouveautés de la {0}",
+        [nameof(UpdateNowButton)] = "Mettre à jour",
+        [nameof(LaterButton)] = "Plus tard",
         [nameof(UpdateDownloadingText)] = "Téléchargement de la mise à jour… {0}",
         [nameof(UpdateInstallingText)] = "Installation de la mise à jour…",
         [nameof(UpdateFailedButton)] = "Mettre à jour manuellement",
@@ -296,7 +302,7 @@ public partial class LocalizationManager
             "Les lampes prennent la température de couleur du cycle (dans la mesure du possible, d’environ 2000 K à 6500 K)",
         [nameof(LightWarmthLabel)] = "Chaleur",
         [nameof(LightWarmthTooltip)] =
-            "À quel point les lumières sont réglées plus chaudes que l'écran, pour paraître aussi chaudes que lui. Les lumières qui affichent des couleurs passent à l'ambre et à l'orange une fois à court de blancs chauds.",
+            "À quel point les lumières sont réglées plus chaudes que l'écran, pour paraître aussi chaudes que lui. Les lumières qui affichent des couleurs passent à l'ambre et à l'orange une fois à court de blancs chauds. Ce réglage s'applique aussi à la couleur d'accentuation (pour le rétroéclairage de l'écran), avec le fond d'écran dynamique.",
         [nameof(HueFollowBrightnessLabel)] = "Suivre la luminosité",
         [nameof(HueFollowBrightnessTooltip)] =
             "Les lampes prennent la luminosité du cycle (les 100 % d'Afterglow correspondent à la pleine luminosité)",
@@ -305,7 +311,7 @@ public partial class LocalizationManager
             "Les lumières reviennent aussi à leur état précédent tant que l'écran est suspendu automatiquement (applications en plein écran, applications de la liste blanche, streaming à distance, écran verrouillé)",
         [nameof(LightDimmingLabel)] = "Atténuation",
         [nameof(LightDimmingTooltip)] =
-            "À quel point les lumières baissent quand l'écran baisse. À ×2.2, elles émettent autant de lumière que l'écran (un écran assombri et chaud émet bien moins de lumière que sa luminosité ne le laisse penser) ; des valeurs plus basses les gardent plus lumineuses, des valeurs plus élevées les baissent davantage. La pleine luminosité d'un écran non teinté reste toujours pleine.",
+            "À quel point les lumières baissent quand l'écran baisse. À ×2.2, elles émettent autant de lumière que l'écran (un écran assombri et chaud émet bien moins de lumière que sa luminosité ne le laisse penser) ; des valeurs plus basses les gardent plus lumineuses, des valeurs plus élevées les baissent davantage. La pleine luminosité d'un écran non teinté reste toujours pleine. Ce réglage s'applique aussi à la couleur d'accentuation (pour le rétroéclairage de l'écran), avec le fond d'écran dynamique.",
         [nameof(DynamicWallpaperCardTitle)] = "Fond d'écran dynamique",
         [nameof(DynamicWallpaperCardSubtitle)] =
             "Un ciel à la température de couleur et à la luminosité de l'écran, au fil du lever et du coucher du soleil. Si l'éclairage dynamique de Windows suit la couleur d'accentuation, le rétroéclairage d'un moniteur le suit aussi.",
@@ -389,7 +395,7 @@ public partial class LocalizationManager
         [nameof(HueReclaimNeverOption)] =
             "Laisser telles quelles jusqu'à être éteintes puis rallumées",
         [nameof(HueLightLeftAloneUntilText)] = "Modifiée ailleurs, suivie à nouveau à {0}",
-        [nameof(SmartLightsTabName)] = "Lampes connectées",
+        [nameof(SmartLightsTabName)] = "Lumières et fond d'écran",
         [nameof(HueReclaimAfterOption)] = "Suivre à nouveau après une durée choisie",
         [nameof(HueReclaimAfterLabel)] = "Après",
         [nameof(MinutesValueText)] = "{0} min",
@@ -480,7 +486,12 @@ public partial class LocalizationManager
         [nameof(HotkeysCardTitle)] = "Raccourcis globaux",
         [nameof(HotkeysCardSubtitle)] =
             "Cliquez sur un champ et appuyez sur une combinaison de touches pour l'attribuer.",
-        [nameof(SystemPreferencesCardTitle)] = "Préférences système",
+        [nameof(AppCardTitle)] = "Application",
+        [nameof(AdvancedCardTitle)] = "Avancé",
+        [nameof(BedtimeSummaryTooltip)] =
+            "L'heure du coucher se règle avec les couleurs du soir, dans l'onglet Cycle et couleurs.",
+        [nameof(AccentUsesLightSettingsHint)] =
+            "La couleur d'accentuation utilise les réglages Chaleur et Atténuation des lumières ci-dessus.",
         [nameof(StartMinimizedLabel)] = "Démarrer réduit",
         [nameof(StartMinimizedTooltip)] =
             "Réduire Afterglow dans la zone de notification au démarrage, même lorsqu'il est lancé manuellement",

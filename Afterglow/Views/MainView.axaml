@@ -16,7 +16,6 @@
     Closing="Window_OnClosing"
     Icon="/favicon.ico"
     IsVisible="{Binding IsOpen, Mode=TwoWay}"
-    Loaded="Window_OnLoaded"
     RenderOptions.BitmapInterpolationMode="HighQuality"
     WindowDecorations="None"
     WindowStartupLocation="CenterScreen"

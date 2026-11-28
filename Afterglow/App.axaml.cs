@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Afterglow.Framework;
 using Afterglow.Localization;
 using Afterglow.PlatformInterop;
@@ -189,12 +190,20 @@ public partial class App : Application, IDisposable
         hueService.Start();
         wallpaperService.Start();
 
+        // The cycle runs whether or not the window is ever shown
+        _ = dashboard.InitializeAsync();
+
         // Initialize the lifetime
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var viewManager = _services.GetRequiredService<ViewManager>();
+            // The window may not exist (see ShowMainWindow), so the app keeps running without
+            // one, until it's told to exit
+            desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-            desktop.MainWindow = viewManager.TryBindWindow(_mainViewModel);
+            // Started hidden, the window isn't even created, unless there's something to tell
+            // the user right away (e.g. the welcome message)
+            if (!_mainViewModel.IsStartHidden || _mainViewModel.HasStartupMessages)
+                ShowMainWindow();
 
             // Although `App.Dispose()` is invoked from `Program.Main(...)`, on some platforms
             // it may be called too late in the shutdown lifecycle. Attach an exit
@@ -252,21 +261,86 @@ public partial class App : Application, IDisposable
         _notifyIcon = new NotifyIcon(_mainViewModel.Dashboard.StatusText, TryReadAppIcon());
 
         // Left click toggles the main window
-        _notifyIcon.LeftClicked += (_, _) =>
-            Dispatcher.UIThread.Post(() => ApplicationLifetime?.TryGetMainWindow()?.Toggle());
+        _notifyIcon.LeftClicked += (_, _) => Dispatcher.UIThread.Post(ToggleMainWindow);
 
         // Right click opens the tray menu next to the icon
         _notifyIcon.RightClicked += (_, anchor) =>
             Dispatcher.UIThread.Post(() => ShowTrayMenu(anchor));
 
-        _notifyIconSubscription = _mainViewModel.Dashboard.WatchProperty(
-            o => o.StatusText,
-            v =>
+        // Clicking the update's notification shows it (what's changed, and a button to update)
+        _notifyIcon.NotificationClicked += (_, _) =>
+            Dispatcher.UIThread.Post(async () =>
             {
-                if (_notifyIcon is not null)
-                    _notifyIcon.ToolTip = v;
-            }
+                await ShowMainWindowAsync();
+                await _mainViewModel.ShowUpdateAsync(true);
+            });
+
+        // A newer version is shown as soon as it's found (see AnnounceUpdateAsync)
+        var updateService = _services.GetRequiredService<UpdateService>();
+
+        _notifyIconSubscription = PowerKit.Disposable.Merge(
+            _mainViewModel.Dashboard.WatchProperty(
+                o => o.StatusText,
+                v =>
+                {
+                    if (_notifyIcon is not null)
+                        _notifyIcon.ToolTip = v;
+                }
+            ),
+            updateService.WatchProperty(o => o.AvailableVersion, v => _ = AnnounceUpdateAsync(v))
         );
+    }
+
+    // Shows an update that's just been found (e.g. shortly after the PC starts), with what's
+    // changed and a button to update, unless it was put off ("Later") for that version. If
+    // something is fullscreen (e.g. a game), it isn't interrupted: a notification says so instead
+    // (once for each version, as the dashboard keeps showing that an update is available), and
+    // the update is shown the next time the window is opened.
+    private async Task AnnounceUpdateAsync(Version? version)
+    {
+        if (version?.ToString(3) is not { } versionText)
+            return;
+
+        if (
+            string.Equals(
+                _settingsService.DismissedUpdateVersion,
+                versionText,
+                StringComparison.Ordinal
+            )
+        )
+            return;
+
+        var externalApplications = _services.GetRequiredService<ExternalApplicationService>();
+        if (
+            externalApplications.TryGetForegroundFullScreenMonitor(out var fullScreenMonitor)
+            && fullScreenMonitor is not null
+        )
+        {
+            if (
+                string.Equals(
+                    _settingsService.NotifiedUpdateVersion,
+                    versionText,
+                    StringComparison.Ordinal
+                )
+            )
+                return;
+
+            _settingsService.NotifiedUpdateVersion = versionText;
+            _settingsService.TrySaveToFile();
+
+            _notifyIcon?.ShowNotification(
+                string.Format(
+                    _mainViewModel.LocalizationManager.UpdateAvailableTitle,
+                    Program.Name,
+                    versionText
+                ),
+                _mainViewModel.LocalizationManager.UpdateNotificationText
+            );
+            return;
+        }
+
+        await ShowMainWindowAsync();
+        await _mainViewModel.ShowUpdateAsync();
     }
 
     private void ShowTrayMenu(PlatformInterop.Rect anchor)
@@ -288,15 +362,66 @@ public partial class App : Application, IDisposable
         trayMenu.ShowAt(anchor);
     }
 
-    private void ShowMainWindow()
+    /// <summary>
+    /// Shows the main window, creating it the first time. When the app starts hidden (as it
+    /// does with Windows), the window isn't created until it's first shown, which may well be
+    /// never: that saves about half of the app's memory and threads (for the window's rendering),
+    /// for as long as it stays that way.
+    /// </summary>
+    public static void ShowMainWindow() => _ = ShowMainWindowAsync();
+
+    /// <summary>
+    /// Shows the main window (see <see cref="ShowMainWindow" />), and completes once it's ready
+    /// to show a dialog (a new window takes a moment to load).
+    /// </summary>
+    public static Task ShowMainWindowAsync() =>
+        (Current as App)?.ShowMainWindowCoreAsync() ?? Task.CompletedTask;
+
+    /// <summary>
+    /// Hides the main window to the tray. Once created, it's kept (releasing it again wouldn't
+    /// free anything, as the rendering stays loaded, and showing it again would take longer).
+    /// </summary>
+    public static void HideMainWindow() => Current?.ApplicationLifetime?.TryGetMainWindow()?.Hide();
+
+    public static void ToggleMainWindow()
     {
-        if (ApplicationLifetime?.TryGetMainWindow() is not { } window)
-            return;
+        if (Current?.ApplicationLifetime?.TryGetMainWindow() is { IsVisible: true })
+            HideMainWindow();
+        else
+            ShowMainWindow();
+    }
+
+    private Task ShowMainWindowCoreAsync()
+    {
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+            return Task.CompletedTask;
+
+        var loaded = Task.CompletedTask;
+
+        if (desktop.MainWindow is not { } window)
+        {
+            window = _services.GetRequiredService<ViewManager>().TryBindWindow(_mainViewModel);
+            if (window is null)
+                return Task.CompletedTask;
+
+            desktop.MainWindow = window;
+
+            var loading = new TaskCompletionSource();
+            window.Loaded += (_, _) => loading.TrySetResult();
+            loaded = loading.Task;
+
+            // The Material theme applies its own palette to a new window (deferred), so the
+            // custom one is applied right away, and again once that has happened
+            InitializeTheme();
+            Dispatcher.UIThread.Post(InitializeTheme, DispatcherPriority.Background);
+        }
 
         if (window.WindowState == WindowState.Minimized)
             window.WindowState = WindowState.Normal;
 
         window.ShowActivateFocus();
+
+        return loaded;
     }
 
     private static void TryRun(Action action)

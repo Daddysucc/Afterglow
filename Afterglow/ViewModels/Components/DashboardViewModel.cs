@@ -63,7 +63,8 @@ public partial class DashboardViewModel : ViewModelBase
     // Last known states, kept while an unidentifiable application (e.g. the taskbar) is in focus
     private string? _fullScreenMonitor;
 
-    private bool _isDashboardVisible = true;
+    // (not until the window shows it, which it may never do, if the app starts hidden)
+    private bool _isDashboardVisible;
 
     private readonly GrayscaleController _grayscaleController = new();
     private bool _isGrayscaleWanted;
@@ -926,7 +927,7 @@ public partial class DashboardViewModel : ViewModelBase
         {
             _hotKeyService.RegisterHotKey(
                 _settingsService.ToggleWindowHotKey,
-                () => Application.Current?.ApplicationLifetime?.TryGetMainWindow()?.Toggle()
+                App.ToggleMainWindow
             );
         }
 
@@ -1450,8 +1451,17 @@ public partial class DashboardViewModel : ViewModelBase
         UpdateGrayscale();
     }
 
+    private bool _isInitialized;
+
+    // Started once, when the app starts (whether or not the window is shown), rather than each
+    // time the window is created
     public override Task InitializeAsync()
     {
+        if (_isInitialized)
+            return Task.CompletedTask;
+
+        _isInitialized = true;
+
         _updateTimer.Start();
         _updateService.Start();
 

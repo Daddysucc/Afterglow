@@ -153,6 +153,14 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial string? AvailableUpdateVersion { get; set; }
 
+    // The newest version a notification was shown for (so that each one is only announced once)
+    [ObservableProperty]
+    public partial string? NotifiedUpdateVersion { get; set; }
+
+    // The version whose update was put off ("Later"), which isn't brought up again by itself
+    [ObservableProperty]
+    public partial string? DismissedUpdateVersion { get; set; }
+
     // Philips Hue lights following the cycle directly (off unless turned on)
     [ObservableProperty]
     public partial bool IsHueEnabled { get; set; }

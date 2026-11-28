@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using Afterglow.Utils;
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 
 namespace Afterglow.Converters;
@@ -21,8 +23,8 @@ public class TimeOnlyToStringConverter : IValueConverter
         object? parameter,
         CultureInfo culture
     ) =>
-        value is string stringValue
-        && TimeOnly.TryParse(stringValue, culture, DateTimeStyles.None, out var result)
+        // (also a plain hour, e.g. "22"; anything that isn't a time leaves the value as it was)
+        NumberInput.TryParseTimeOfDay(value as string, culture, out var result)
             ? result
-            : default;
+            : BindingOperations.DoNothing;
 }

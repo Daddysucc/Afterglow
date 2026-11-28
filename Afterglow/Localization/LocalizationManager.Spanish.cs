@@ -28,7 +28,7 @@ public partial class LocalizationManager
             [nameof(LanguageTooltip)] = "Idioma de interfaz preferido",
             [nameof(StartWithWindowsLabel)] = "Iniciar con Windows",
             [nameof(StartWithWindowsTooltip)] = "Iniciar Afterglow al arrancar Windows",
-            [nameof(DefaultToDayConfigLabel)] = "Usar configuración diurna por defecto",
+            [nameof(DefaultToDayConfigLabel)] = "Colores de día al estar apagado o en pausa",
             [nameof(DefaultToDayConfigTooltip)] =
                 "Cuando Afterglow está desactivado o en pausa, restaurar la temperatura y el brillo diurnos configurados en lugar del gamma predeterminado del monitor",
             [nameof(PauseWhenFullscreenLabel)] = "Pausar en pantalla completa",
@@ -224,7 +224,7 @@ public partial class LocalizationManager
             [nameof(ProjectPageTooltip)] = "Afterglow en GitHub",
             [nameof(CycleTabName)] = "Ciclo y colores",
             [nameof(ScheduleTabName)] = "Horario y ubicación",
-            [nameof(RulesTabName)] = "Reglas y lista blanca",
+            [nameof(RulesTabName)] = "Pausas",
             [nameof(ControlsTabName)] = "Aplicación y controles",
             [nameof(DayCardSubtitle)] = "Del amanecer a la puesta de sol",
             [nameof(EveningCardSubtitle)] = "De la puesta de sol a la hora de dormir",
@@ -254,6 +254,12 @@ public partial class LocalizationManager
                 "Pausar Afterglow mientras un programa seleccionado o una ventana coincidente esté en primer plano.",
             [nameof(UpdateAvailableButton)] = "Actualización disponible",
             [nameof(UpdateAvailableTooltip)] = "{0} {1} está disponible. Haz clic para actualizar.",
+            [nameof(UpdateAvailableTitle)] = "{0} {1} está disponible",
+            [nameof(UpdateNotificationText)] = "Haz clic para ver las novedades y actualizar.",
+            [nameof(UpdateNoNotesText)] = "Esta versión no indica qué ha cambiado.",
+            [nameof(UpdateChangesHeading)] = "Novedades de la {0}",
+            [nameof(UpdateNowButton)] = "Actualizar",
+            [nameof(LaterButton)] = "Más tarde",
             [nameof(UpdateDownloadingText)] = "Descargando actualización… {0}",
             [nameof(UpdateInstallingText)] = "Instalando actualización…",
             [nameof(UpdateFailedButton)] = "Actualizar manualmente",
@@ -297,7 +303,7 @@ public partial class LocalizationManager
                 "Las luces adoptan la temperatura de color del ciclo (hasta donde pueden, de unos 2000 K a 6500 K)",
             [nameof(LightWarmthLabel)] = "Calidez",
             [nameof(LightWarmthTooltip)] =
-                "Cuánto más cálidas que la pantalla se ajustan las luces, para que parezcan tan cálidas como ella. Las luces que muestran colores pasan a ámbar y naranja cuando se quedan sin blancos cálidos.",
+                "Cuánto más cálidas que la pantalla se ajustan las luces, para que parezcan tan cálidas como ella. Las luces que muestran colores pasan a ámbar y naranja cuando se quedan sin blancos cálidos. Este ajuste también se aplica al color de énfasis (para la retroiluminación del monitor), con el fondo de pantalla dinámico.",
             [nameof(HueFollowBrightnessLabel)] = "Seguir el brillo",
             [nameof(HueFollowBrightnessTooltip)] =
                 "Las luces adoptan el brillo del ciclo (el 100 % de Afterglow es el brillo máximo)",
@@ -306,7 +312,7 @@ public partial class LocalizationManager
                 "Las luces también vuelven a su estado anterior mientras la pantalla está en pausa automáticamente (aplicaciones a pantalla completa, aplicaciones de la lista blanca, transmisión remota, pantalla bloqueada)",
             [nameof(LightDimmingLabel)] = "Atenuación",
             [nameof(LightDimmingTooltip)] =
-                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×2.2 emiten tanta luz como la pantalla (una pantalla atenuada y cálida emite mucha menos luz de lo que sugiere su brillo); los valores más bajos las mantienen más brillantes y los más altos las atenúan más. El brillo máximo de una pantalla sin tinte siempre se mantiene.",
+                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×2.2 emiten tanta luz como la pantalla (una pantalla atenuada y cálida emite mucha menos luz de lo que sugiere su brillo); los valores más bajos las mantienen más brillantes y los más altos las atenúan más. El brillo máximo de una pantalla sin tinte siempre se mantiene. Este ajuste también se aplica al color de énfasis (para la retroiluminación del monitor), con el fondo de pantalla dinámico.",
             [nameof(DynamicWallpaperCardTitle)] = "Fondo de pantalla dinámico",
             [nameof(DynamicWallpaperCardSubtitle)] =
                 "Un cielo con la temperatura de color y el brillo de la pantalla, a lo largo del amanecer y el atardecer. Si la iluminación dinámica de Windows sigue el color de énfasis, la retroiluminación de un monitor también lo sigue.",
@@ -391,7 +397,7 @@ public partial class LocalizationManager
             [nameof(HueReclaimNeverOption)] = "Dejarlas así hasta apagarlas y encenderlas",
             [nameof(HueLightLeftAloneUntilText)] =
                 "Cambiada en otro lugar; se sigue de nuevo a las {0}",
-            [nameof(SmartLightsTabName)] = "Luces inteligentes",
+            [nameof(SmartLightsTabName)] = "Luces y fondo",
             [nameof(HueReclaimAfterOption)] = "Volver a seguir tras un tiempo fijado",
             [nameof(HueReclaimAfterLabel)] = "Tras",
             [nameof(MinutesValueText)] = "{0} min",
@@ -483,7 +489,12 @@ public partial class LocalizationManager
             [nameof(HotkeysCardTitle)] = "Atajos globales",
             [nameof(HotkeysCardSubtitle)] =
                 "Haz clic en un campo y pulsa una combinación de teclas para asignarla.",
-            [nameof(SystemPreferencesCardTitle)] = "Preferencias del sistema",
+            [nameof(AppCardTitle)] = "Aplicación",
+            [nameof(AdvancedCardTitle)] = "Avanzado",
+            [nameof(BedtimeSummaryTooltip)] =
+                "La hora de dormir se ajusta junto con los colores de la tarde, en la pestaña Ciclo y colores.",
+            [nameof(AccentUsesLightSettingsHint)] =
+                "El color de énfasis usa los ajustes Calidez y Atenuación de las luces de arriba.",
             [nameof(StartMinimizedLabel)] = "Iniciar minimizado",
             [nameof(StartMinimizedTooltip)] =
                 "Ocultar Afterglow en la bandeja del sistema al iniciarse, incluso cuando se abre manualmente",

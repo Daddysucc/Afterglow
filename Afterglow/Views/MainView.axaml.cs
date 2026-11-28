@@ -26,17 +26,9 @@ public partial class MainView : Window<MainViewModel>
         }
     }
 
-    private void Window_OnLoaded(object? sender, RoutedEventArgs args)
-    {
-        // If the app is set to start hidden (by launch argument or setting), hide the window,
-        // unless a dialog is open
-        if (DataContext.IsStartHidden && !DialogHost.IsOpen)
-            Hide();
-    }
-
     private void Window_OnClosing(object? sender, WindowClosingEventArgs args)
     {
-        // When the user tries to close the window, hide it instead
+        // When the user tries to close the window, hide it to the tray instead
         if (args.CloseReason == WindowCloseReason.WindowClosing)
         {
             args.Cancel = true;
@@ -47,5 +39,5 @@ public partial class MainView : Window<MainViewModel>
     private void HeaderBorder_OnPointerPressed(object? sender, PointerPressedEventArgs args) =>
         BeginMoveDrag(args);
 
-    private void HideButton_OnClick(object sender, RoutedEventArgs args) => Hide();
+    private void HideButton_OnClick(object sender, RoutedEventArgs args) => App.HideMainWindow();
 }

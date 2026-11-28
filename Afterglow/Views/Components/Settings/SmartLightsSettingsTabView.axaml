@@ -2,6 +2,7 @@
     x:Class="Afterglow.Views.Components.Settings.SmartLightsSettingsTabView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Afterglow.Views.Controls"
     xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     xmlns:settings="clr-namespace:Afterglow.ViewModels.Components.Settings"
     x:DataType="settings:SmartLightsSettingsTabViewModel"
@@ -259,7 +260,7 @@
                 <Grid
                     ColumnDefinitions="Auto,*,Auto"
                     ColumnSpacing="12"
-                    IsEnabled="{Binding IsHueTemperatureFollowed}"
+                    IsEnabled="{Binding IsLightWarmthUsed}"
                     ToolTip.Tip="{Binding LocalizationManager.LightWarmthTooltip}"
                 >
                     <TextBlock
@@ -278,12 +279,13 @@
                         TickFrequency="0.1"
                         Value="{Binding LightWarmth}"
                     />
-                    <TextBlock
+                    <controls:ValueTextBox
                         Grid.Column="2"
                         MinWidth="40"
                         Classes="value"
-                        Text="{Binding LightWarmthText}"
+                        Text="{Binding LightWarmthText, UpdateSourceTrigger=LostFocus}"
                         TextAlignment="Right"
+                        Theme="{DynamicResource CompactTextBox}"
                     />
                 </Grid>
 
@@ -306,7 +308,7 @@
                 <Grid
                     ColumnDefinitions="Auto,*,Auto"
                     ColumnSpacing="12"
-                    IsEnabled="{Binding IsHueBrightnessFollowed}"
+                    IsEnabled="{Binding IsLightDimmingUsed}"
                     ToolTip.Tip="{Binding LocalizationManager.LightDimmingTooltip}"
                 >
                     <TextBlock
@@ -325,12 +327,13 @@
                         TickFrequency="0.1"
                         Value="{Binding LightDimming}"
                     />
-                    <TextBlock
+                    <controls:ValueTextBox
                         Grid.Column="2"
                         MinWidth="40"
                         Classes="value"
-                        Text="{Binding LightDimmingText}"
+                        Text="{Binding LightDimmingText, UpdateSourceTrigger=LostFocus}"
                         TextAlignment="Right"
+                        Theme="{DynamicResource CompactTextBox}"
                     />
                 </Grid>
             </StackPanel>
@@ -402,12 +405,13 @@
                             TickFrequency="5"
                             Value="{Binding HueReclaimMinutes}"
                         />
-                        <TextBlock
+                        <controls:ValueTextBox
                             Grid.Column="2"
                             MinWidth="72"
                             Classes="value"
-                            Text="{Binding HueReclaimText}"
+                            Text="{Binding HueReclaimText, UpdateSourceTrigger=LostFocus}"
                             TextAlignment="Right"
+                            Theme="{DynamicResource CompactTextBox}"
                         />
                     </Grid>
                 </StackPanel>
@@ -499,12 +503,13 @@
                             TickFrequency="50"
                             Value="{Binding HuePauseTemperature}"
                         />
-                        <TextBlock
+                        <controls:ValueTextBox
                             Grid.Column="2"
                             MinWidth="56"
                             Classes="value"
-                            Text="{Binding HuePauseTemperatureText}"
+                            Text="{Binding HuePauseTemperatureText, UpdateSourceTrigger=LostFocus}"
                             TextAlignment="Right"
+                            Theme="{DynamicResource CompactTextBox}"
                         />
                     </Grid>
                     <Grid
@@ -530,12 +535,13 @@
                             TickFrequency="0.01"
                             Value="{Binding HuePauseBrightness}"
                         />
-                        <TextBlock
+                        <controls:ValueTextBox
                             Grid.Column="2"
                             MinWidth="56"
                             Classes="value"
-                            Text="{Binding HuePauseBrightnessText}"
+                            Text="{Binding HuePauseBrightnessText, UpdateSourceTrigger=LostFocus}"
                             TextAlignment="Right"
+                            Theme="{DynamicResource CompactTextBox}"
                         />
                     </Grid>
                 </StackPanel>
@@ -627,12 +633,13 @@
                             TickFrequency="50"
                             Value="{Binding HueShutdownTemperature}"
                         />
-                        <TextBlock
+                        <controls:ValueTextBox
                             Grid.Column="2"
                             MinWidth="56"
                             Classes="value"
-                            Text="{Binding HueShutdownTemperatureText}"
+                            Text="{Binding HueShutdownTemperatureText, UpdateSourceTrigger=LostFocus}"
                             TextAlignment="Right"
+                            Theme="{DynamicResource CompactTextBox}"
                         />
                     </Grid>
                     <Grid
@@ -658,12 +665,13 @@
                             TickFrequency="0.01"
                             Value="{Binding HueShutdownBrightness}"
                         />
-                        <TextBlock
+                        <controls:ValueTextBox
                             Grid.Column="2"
                             MinWidth="56"
                             Classes="value"
-                            Text="{Binding HueShutdownBrightnessText}"
+                            Text="{Binding HueShutdownBrightnessText, UpdateSourceTrigger=LostFocus}"
                             TextAlignment="Right"
+                            Theme="{DynamicResource CompactTextBox}"
                         />
                     </Grid>
                 </StackPanel>
@@ -672,7 +680,7 @@
 
         <!--  Dynamic wallpaper (and accent color, for Windows Dynamic Lighting)  -->
         <Border Classes="card">
-            <StackPanel Orientation="Vertical" Spacing="10">
+            <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical" Spacing="10">
                 <StackPanel Orientation="Vertical" Spacing="2">
                     <TextBlock
                         Classes="card-title"
@@ -717,6 +725,89 @@
                         IsChecked="{Binding IsAccentColorMatched}"
                     />
                 </Grid>
+
+                <!--  How warm and dim the accent color gets (the same settings as the lights'
+                      above, which are shown here while there are no Hue lights)  -->
+                <Grid
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsAccentColorUsed}"
+                    IsVisible="{Binding !IsHueControlShown}"
+                    ToolTip.Tip="{Binding LocalizationManager.LightWarmthTooltip}"
+                >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="AccentSliderLabel" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Classes="setting-hint"
+                        Text="{Binding LocalizationManager.LightWarmthLabel}"
+                    />
+                    <Slider
+                        Grid.Column="1"
+                        IsSnapToTickEnabled="True"
+                        LargeChange="0.5"
+                        Maximum="8"
+                        Minimum="1"
+                        SmallChange="0.1"
+                        TickFrequency="0.1"
+                        Value="{Binding LightWarmth}"
+                    />
+                    <controls:ValueTextBox
+                        Grid.Column="2"
+                        MinWidth="40"
+                        Classes="value"
+                        Text="{Binding LightWarmthText, UpdateSourceTrigger=LostFocus}"
+                        TextAlignment="Right"
+                        Theme="{DynamicResource CompactTextBox}"
+                    />
+                </Grid>
+
+                <Grid
+                    ColumnSpacing="12"
+                    IsEnabled="{Binding IsAccentColorUsed}"
+                    IsVisible="{Binding !IsHueControlShown}"
+                    ToolTip.Tip="{Binding LocalizationManager.LightDimmingTooltip}"
+                >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="AccentSliderLabel" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Classes="setting-hint"
+                        Text="{Binding LocalizationManager.LightDimmingLabel}"
+                    />
+                    <Slider
+                        Grid.Column="1"
+                        IsSnapToTickEnabled="True"
+                        LargeChange="0.5"
+                        Maximum="6"
+                        Minimum="0.5"
+                        SmallChange="0.1"
+                        TickFrequency="0.1"
+                        Value="{Binding LightDimming}"
+                    />
+                    <controls:ValueTextBox
+                        Grid.Column="2"
+                        MinWidth="40"
+                        Classes="value"
+                        Text="{Binding LightDimmingText, UpdateSourceTrigger=LostFocus}"
+                        TextAlignment="Right"
+                        Theme="{DynamicResource CompactTextBox}"
+                    />
+                </Grid>
+
+                <TextBlock
+                    Classes="setting-hint"
+                    IsVisible="{Binding IsHueControlShown}"
+                    Text="{Binding LocalizationManager.AccentUsesLightSettingsHint}"
+                    TextWrapping="Wrap"
+                />
 
                 <!--  Stepping through the day, to try it out  -->
                 <StackPanel Orientation="Horizontal" Spacing="8">

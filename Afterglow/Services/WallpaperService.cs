@@ -121,6 +121,7 @@ public class WallpaperService : IDisposable
     private readonly ExternalApplicationService _externalApplicationService;
     private readonly string _dirPath;
     private readonly IDisposable _settingsSubscription;
+    private IDisposable? _sessionSubscription;
 
     // All work with the files, the wallpaper and the accent color happens one piece at a time
     private readonly SemaphoreSlim _lock = new(1, 1);
@@ -200,8 +201,26 @@ public class WallpaperService : IDisposable
     {
         _isStarted = true;
 
-        // (already being on at startup isn't turning it on)
+        // Locking the screen (or waking up to the lock screen) is the best moment for the accent
+        // color, as nobody's there to notice, so it's checked right away rather than at the
+        // regular pace (which could miss a quick unlock)
+        _sessionSubscription = PowerKit.Disposable.Merge(
+            SessionEvents.RegisterLock(isLocked =>
+            {
+                if (isLocked)
+                    NotifyTargetChanged();
+            }),
+            SessionEvents.RegisterSleep(isSuspending =>
+            {
+                if (!isSuspending)
+                    NotifyTargetChanged();
+            })
+        );
+
+        // (already being on at startup isn't turning it on, so the accent color only changes once
+        // the user is away, and only if it isn't still right from before)
         _wasAccentColorMatched = IsAccentColorMatched;
+        _appliedAccentColor = TryGetStillAppliedAccentColor();
         Evaluate();
     }
 
@@ -986,6 +1005,47 @@ public class WallpaperService : IDisposable
         File.Delete(filePath);
     }
 
+    // The accent color this set last (as Windows stores it), if it's known
+    private static uint? TryReadAppliedAccentColor(string dirPath)
+    {
+        try
+        {
+            var filePath = Path.Combine(dirPath, AppliedAccentColorFileName);
+            return
+                File.Exists(filePath)
+                && uint.TryParse(
+                    File.ReadAllText(filePath).Trim(),
+                    NumberStyles.None,
+                    CultureInfo.InvariantCulture,
+                    out var value
+                )
+                ? value
+                : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
+    // The accent color this set last, if it's still the one Windows has (e.g. after a restart),
+    // so that it isn't set again (stalling everything for a moment) when it's still right
+    private WallpaperColor? TryGetStillAppliedAccentColor()
+    {
+        if (TryReadAppliedAccentColor(_dirPath) is not { } value)
+            return null;
+
+        if (AccentColor.TryGetCurrent() != value)
+            return null;
+
+        // (stored as 0xAABBGGRR)
+        return new WallpaperColor(
+            (byte)(value & 0xFF),
+            (byte)((value >> 8) & 0xFF),
+            (byte)((value >> 16) & 0xFF)
+        );
+    }
+
     // Sets the accent color, after remembering the user's own (the first time, and again whenever
     // it isn't the one this set last, i.e. the user chose another one meanwhile). Returns whether
     // it took.
@@ -998,16 +1058,7 @@ public class WallpaperService : IDisposable
 
         // (only known to be the user's own if it's known what this set last, e.g. not right
         // after updating from a version that didn't keep track of it)
-        var lastApplied =
-            File.Exists(appliedPath)
-            && uint.TryParse(
-                File.ReadAllText(appliedPath).Trim(),
-                NumberStyles.None,
-                CultureInfo.InvariantCulture,
-                out var value
-            )
-                ? value
-                : (uint?)null;
+        var lastApplied = TryReadAppliedAccentColor(_dirPath);
 
         if (
             !File.Exists(originalPath)
@@ -1199,6 +1250,7 @@ public class WallpaperService : IDisposable
         _timer?.Stop();
         _drawingCancellation?.Cancel();
         _settingsSubscription.Dispose();
+        _sessionSubscription?.Dispose();
         _gpuUsage.Dispose();
     }
 }

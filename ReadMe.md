@@ -18,7 +18,7 @@ It runs quietly in the system tray and has minimal impact on performance.
 - **Tray menu with snooze chips.** Pause Afterglow, temporarily disable grayscale, or pause your Hue lights, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
 - **Dashboard.** A 24-hour color curve and a plain-language status line, with a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
 - **Global hotkeys.** Turn Afterglow on or off, show its window, nudge the temperature and brightness, toggle grayscale, or pause your Hue lights from anywhere.
-- **Updates in one click.** Afterglow checks for a new version once a week (or as often as you choose), and installs it when you click **Update available**.
+- **Updates in one click.** Afterglow checks for a new version once a week (or as often as you choose), shows what's new since your version, and installs it when you click **Update**.
 - **Philips Hue.** Lights in the rooms you choose follow the color cycle while your PC is on, through the Hue bridge, without anything else to set up (see [Philips Hue](#philips-hue)).
 - **Works offline.** Only searching for a location, and the optional check for updates, use the internet (and, if you turn it on, Philips Hue, which stays on your own network).
 
@@ -32,7 +32,7 @@ Download the latest version from the [Releases](https://github.com/Daddysucc/Aft
 On ARM devices (such as Snapdragon laptops), use the `win-arm64` versions instead, and on 32-bit Windows, the `win-x86` ones.
 Afterglow requires Windows 10 or later.
 
-When a new version comes out, Afterglow shows **Update available** on its dashboard. Click it, and Afterglow downloads the new version, checks that it's exactly the released file, installs it, and restarts. An installed copy asks for administrator rights to update; a portable one replaces its own file. If it can't update itself, the button opens the download page instead.
+When a new version comes out, Afterglow shows what's new since your version, with **Update** and **Later** buttons (if you're in a fullscreen game, it shows a notification instead, and waits until you next open it). **Later** doesn't bring that version up again, but the dashboard keeps showing **Update available**. When you choose to update, Afterglow downloads the new version, checks that it's exactly the released file, installs it, and restarts. An installed copy asks for administrator rights to update; a portable one replaces its own file. If it can't update itself, the button opens the download page instead.
 
 > [!NOTE]
 > Afterglow isn't code-signed yet, so Windows may warn about it the first time: select **More info**, then **Run anyway**.
@@ -59,7 +59,7 @@ This produces a standalone `Afterglow.exe` in `Afterglow/bin/Release/net10.0-win
 
 Afterglow can make Philips Hue lights follow the color cycle directly, through the Hue bridge (the original square bridge or the Bridge Pro), while your PC is on. Nothing else needs setting up.
 
-1. In Afterglow, open the settings, then the **Smart Lights** tab, and turn on **Control Hue lights**.
+1. In Afterglow, open the settings, then the **Lights & Wallpaper** tab, and turn on **Control Hue lights**.
 2. Click **Connect**, then press the button on top of the bridge within 30 seconds. Afterglow finds the bridge on its own; if it can't, enter the bridge's IP address (shown in the Hue app, under **Settings** › **Bridges**) first.
 3. Choose the rooms (or zones) whose lights follow Afterglow, and whether they follow its color temperature, its brightness, or both. Click the line that says how many lights are following to see each light, and to leave out any you don't want following.
 
@@ -88,11 +88,11 @@ To keep lights following a similar curve while your PC is off, [Adaptive Lightin
 
 ![Tray menu](.assets/screenshot-tray.png)
 
-**Settings.** Everything is on one full-page screen, split into five tabs. The header also has a link to this page, and the same on/off and hide-to-tray buttons as the dashboard.
+**Settings.** Everything is on one full-page screen, split into five tabs. The header also has a link to this page, and the same on/off and hide-to-tray buttons as the dashboard. Every number next to a slider can also be typed in.
 
 <img src=".assets/screenshot-settings-icon.png" width="680" alt="Settings" />
 
-**Cycle & Colors.** The temperature and brightness of each stage, the bedtime that starts the night, how long transitions take, and when grayscale turns on.
+**Cycle & Colors.** The temperature and brightness of each stage (and whether to keep the day's colors while Afterglow is off or paused), the bedtime that starts the night, how long transitions take, when grayscale turns on, and per-display offsets for multi-monitor setups.
 
 <img src=".assets/screenshot-tab-cycle.png" width="648" alt="Cycle & Colors settings" />
 
@@ -100,17 +100,17 @@ To keep lights following a similar curve while your PC is off, [Adaptive Lightin
 
 <img src=".assets/screenshot-tab-schedule.png" width="648" alt="Schedule & Location settings" />
 
-**Rules & Whitelist.** When to pause automatically, per-display offsets for multi-monitor setups, and the applications and window titles that pause Afterglow.
+**Pausing.** When to pause automatically (fullscreen, a locked screen, remote streaming), and the applications and window titles that pause Afterglow.
 
-<img src=".assets/screenshot-tab-rules.png" width="648" alt="Rules & Whitelist settings" />
+<img src=".assets/screenshot-tab-rules.png" width="648" alt="Pausing settings" />
 
-**App & Controls.** Startup and gamma options, how often to check for updates (with **Check now**, and the version you have), the language, and global hotkeys.
+**App & Controls.** The language, startup, how often to check for updates (with **Check now**, and the version you have), advanced gamma options, and global hotkeys.
 
 <img src=".assets/screenshot-tab-app.png" width="648" alt="App & Controls settings" />
 
-**Smart Lights.** Connecting to a Philips Hue bridge, and how your lights follow the cycle, react to changes made elsewhere, pause, and behave at startup and shutdown. Once connected, it also lists your rooms and their lights. Each tab can reset its own settings with the button at its bottom.
+**Lights & Wallpaper.** Connecting to a Philips Hue bridge, and how your lights follow the cycle, react to changes made elsewhere, pause, and behave at startup and shutdown (once connected, it also lists your rooms and their lights), and the dynamic wallpaper and accent color for a monitor's backlight. Each tab can reset its own settings with the button at its bottom.
 
-<img src=".assets/screenshot-tab-lights.png" width="648" alt="Smart Lights settings" />
+<img src=".assets/screenshot-tab-lights.png" width="648" alt="Lights & Wallpaper settings" />
 
 ## Code signing policy
 
