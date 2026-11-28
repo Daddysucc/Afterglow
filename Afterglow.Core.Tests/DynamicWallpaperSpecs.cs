@@ -188,4 +188,198 @@ public class DynamicWallpaperSpecs
         (night.Red + night.Green + night.Blue).Should().BeLessThan(200);
         new[] { day, goldenHour, night }.Should().OnlyHaveUniqueItems();
     }
+
+    [Theory]
+    [InlineData(-30)]
+    [InlineData(-2)]
+    [InlineData(15)]
+    [InlineData(60)]
+    public void I_get_the_same_sky_without_weather_as_before_there_was_weather(double elevation)
+    {
+        // Act
+        var clear = DynamicWallpaper.GetPalette(elevation, SkyConditions.Clear);
+
+        // Assert
+        clear.Should().Be(DynamicWallpaper.GetPalette(elevation));
+    }
+
+    private static int Saturation(WallpaperColor c) =>
+        Math.Max(c.Red, Math.Max(c.Green, c.Blue)) - Math.Min(c.Red, Math.Min(c.Green, c.Blue));
+
+    [Fact]
+    public void I_get_a_greyer_sky_with_less_glow_the_cloudier_it_is()
+    {
+        // Act
+        var clear = DynamicWallpaper.GetPalette(-2, SkyConditions.Clear);
+        var some = DynamicWallpaper.GetPalette(-2, new SkyConditions(LowClouds: 0.4));
+        var overcast = DynamicWallpaper.GetPalette(-2, new SkyConditions(LowClouds: 1));
+
+        // Assert
+        Saturation(some.SkyHorizon).Should().BeLessThan(Saturation(clear.SkyHorizon));
+        Saturation(overcast.SkyHorizon).Should().BeLessThan(Saturation(some.SkyHorizon));
+        some.GlowStrength.Should().BeLessThan(clear.GlowStrength);
+        overcast.GlowStrength.Should().BeLessThan(some.GlowStrength);
+    }
+
+    [Fact]
+    public void I_get_a_lighter_sky_with_more_glow_under_high_clouds_than_under_low_ones()
+    {
+        // Act
+        var high = DynamicWallpaper.GetPalette(15, new SkyConditions(HighClouds: 1));
+        var low = DynamicWallpaper.GetPalette(15, new SkyConditions(LowClouds: 1));
+
+        // Assert
+        high.SkyTop.Green.Should().BeGreaterThan(low.SkyTop.Green);
+        high.GlowStrength.Should().BeGreaterThan(low.GlowStrength);
+    }
+
+    [Fact]
+    public void I_get_a_darker_sky_in_rain_and_storms_and_a_paler_one_in_snow()
+    {
+        // Arrange
+        static int Brightness(WallpaperPalette p) => p.SkyTop.Red + p.SkyTop.Green + p.SkyTop.Blue;
+        var overcast = new SkyConditions(LowClouds: 1);
+
+        // Act
+        var cloudy = DynamicWallpaper.GetPalette(15, overcast);
+        var rain = DynamicWallpaper.GetPalette(15, overcast with { Rain = 1 });
+        var storm = DynamicWallpaper.GetPalette(15, overcast with { Rain = 1, Storm = 1 });
+        var snow = DynamicWallpaper.GetPalette(15, overcast with { Snow = 1 });
+
+        // Assert
+        Brightness(rain).Should().BeLessThan(Brightness(cloudy));
+        Brightness(storm).Should().BeLessThan(Brightness(rain));
+        Brightness(snow).Should().BeGreaterThan(Brightness(cloudy));
+    }
+
+    [Fact]
+    public void I_get_a_flatter_sky_in_fog_and_a_redder_glow_in_haze_and_a_tan_sky_in_dust()
+    {
+        // Act
+        var clear = DynamicWallpaper.GetPalette(-2, SkyConditions.Clear);
+        var fog = DynamicWallpaper.GetPalette(-2, new SkyConditions(Fog: 1));
+        var haze = DynamicWallpaper.GetPalette(-2, new SkyConditions(Haze: 1));
+        var day = DynamicWallpaper.GetPalette(30, SkyConditions.Clear);
+        var dust = DynamicWallpaper.GetPalette(30, new SkyConditions(Dust: 1));
+
+        // Assert
+        WallpaperColor
+            .GetDifference(fog.SkyTop, fog.SkyHorizon)
+            .Should()
+            .BeLessThan(WallpaperColor.GetDifference(clear.SkyTop, clear.SkyHorizon));
+        (haze.Glow.Red - haze.Glow.Blue).Should().BeGreaterThan(clear.Glow.Red - clear.Glow.Blue);
+        (dust.SkyTop.Red - dust.SkyTop.Blue)
+            .Should()
+            .BeGreaterThan(day.SkyTop.Red - day.SkyTop.Blue);
+    }
+
+    [Fact]
+    public void I_get_a_small_change_in_the_sky_for_a_small_change_in_the_weather()
+    {
+        // Act
+        var a = DynamicWallpaper.GetPalette(10, new SkyConditions(LowClouds: 0.5, Rain: 0.2));
+        var b = DynamicWallpaper.GetPalette(10, new SkyConditions(LowClouds: 0.52, Rain: 0.21));
+
+        // Assert
+        DynamicWallpaper.GetDifference(a, b).Should().BeLessThan(DynamicWallpaper.StepSize);
+    }
+
+    [Fact]
+    public void I_get_steps_between_clear_skies_no_bigger_than_the_step_size()
+    {
+        // Arrange
+        var stops = DynamicWallpaper.GetStops();
+
+        // Act & Assert
+        DynamicWallpaper.StepSize.Should().BeInRange(5, 20);
+        for (var i = 1; i < stops.Count; i++)
+        {
+            DynamicWallpaper
+                .GetDifference(
+                    DynamicWallpaper.GetPalette(stops[i - 1]),
+                    DynamicWallpaper.GetPalette(stops[i])
+                )
+                .Should()
+                .BeLessThanOrEqualTo(DynamicWallpaper.StepSize + 1);
+        }
+    }
+
+    [Fact]
+    public void I_get_a_deeper_blue_sky_by_day_high_up_and_the_same_at_night()
+    {
+        // Act
+        var day = DynamicWallpaper.GetPalette(30, SkyConditions.Clear);
+        var dayHigh = DynamicWallpaper.GetPalette(30, new SkyConditions(Altitude: 1));
+        var night = DynamicWallpaper.GetPalette(-30, SkyConditions.Clear);
+        var nightHigh = DynamicWallpaper.GetPalette(-30, new SkyConditions(Altitude: 1));
+
+        // Assert
+        dayHigh.SkyTop.Green.Should().BeLessThan(day.SkyTop.Green);
+        (dayHigh.SkyTop.Blue - dayHigh.SkyTop.Red)
+            .Should()
+            .BeGreaterThan(day.SkyTop.Blue - day.SkyTop.Red);
+        nightHigh.Should().Be(night);
+        SkyConditions.GetAltitude(300).Should().Be(0);
+        SkyConditions.GetAltitude(null).Should().Be(0);
+        SkyConditions.GetAltitude(4000).Should().Be(1);
+    }
+
+    [Fact]
+    public void I_get_the_real_height_of_the_sun_where_I_am()
+    {
+        // Arrange
+        var greenwich = new GeoLocation(51.48, 0);
+        var equinoxNoon = new DateTimeOffset(2026, 3, 20, 12, 7, 0, TimeSpan.Zero);
+        var midsummerNoon = new DateTimeOffset(2026, 6, 21, 12, 2, 0, TimeSpan.Zero);
+        var midnight = new DateTimeOffset(2026, 3, 20, 0, 7, 0, TimeSpan.Zero);
+
+        // Act & Assert
+        DynamicWallpaper
+            .GetSunElevation(greenwich, equinoxNoon)
+            .Should()
+            .BeApproximately(38.5, 0.5);
+        DynamicWallpaper
+            .GetSunElevation(greenwich, midsummerNoon)
+            .Should()
+            .BeApproximately(62, 0.5);
+        DynamicWallpaper.GetSunElevation(greenwich, midnight).Should().BeApproximately(-38.5, 0.5);
+    }
+
+    [Theory]
+    [InlineData(51.48, 0)]
+    [InlineData(-33.87, 151.21)]
+    [InlineData(40.71, -74.0)]
+    public void I_get_the_sun_at_the_horizon_at_sunrise_and_sunset(
+        double latitude,
+        double longitude
+    )
+    {
+        // Arrange
+        var location = new GeoLocation(latitude, longitude);
+        var day = new DateTimeOffset(2026, 11, 26, 12, 0, 0, TimeSpan.Zero);
+        var times = SolarTimes.Calculate(location, day);
+
+        // (the sunrise and sunset are in UTC here, as the day is)
+        DateTimeOffset At(TimeOnly time) => new(day.Date + time.ToTimeSpan(), TimeSpan.Zero);
+
+        // Act & Assert
+        DynamicWallpaper
+            .GetSunElevation(location, At(times.Sunrise))
+            .Should()
+            .BeApproximately(0, 1);
+        DynamicWallpaper.GetSunElevation(location, At(times.Sunset)).Should().BeApproximately(0, 1);
+    }
+
+    [Fact]
+    public void I_get_the_sun_staying_up_or_down_all_day_near_the_poles()
+    {
+        // Arrange
+        var north = new GeoLocation(78.2, 15.6);
+        var summer = new DateTimeOffset(2026, 6, 21, 0, 0, 0, TimeSpan.Zero);
+        var winter = new DateTimeOffset(2026, 12, 21, 12, 0, 0, TimeSpan.Zero);
+
+        // Act & Assert
+        DynamicWallpaper.GetSunElevation(north, summer).Should().BeGreaterThan(0);
+        DynamicWallpaper.GetSunElevation(north, winter).Should().BeLessThan(0);
+    }
 }

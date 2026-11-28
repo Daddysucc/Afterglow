@@ -726,6 +726,37 @@
                     />
                 </Grid>
 
+                <!--  The weather in the sky (needs the location)  -->
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    IsEnabled="{Binding IsDynamicWallpaperEnabled}"
+                    ToolTip.Tip="{Binding LocalizationManager.SkyWeatherEnabledTooltip}"
+                >
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="setting-label"
+                        Text="{Binding LocalizationManager.SkyWeatherEnabledLabel}"
+                    />
+                    <ToggleSwitch
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding IsSkyWeatherEnabled}"
+                    />
+                </Grid>
+                <TextBlock
+                    Classes="setting-hint"
+                    Text="{Binding LocalizationManager.SkyWeatherLocationMissingHint}"
+                    TextWrapping="Wrap"
+                >
+                    <TextBlock.IsVisible>
+                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                            <Binding Path="IsDynamicWallpaperEnabled" />
+                            <Binding Path="IsSkyWeatherEnabled" />
+                            <Binding Path="IsLocationMissing" />
+                        </MultiBinding>
+                    </TextBlock.IsVisible>
+                </TextBlock>
+
                 <!--  Stepping through the day, to try it out  -->
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <Button

@@ -358,6 +358,9 @@ public partial class LocalizationManager
     public string DynamicWallpaperEnabledTooltip => Get();
     public string AccentColorMatchedLabel => Get();
     public string AccentColorMatchedTooltip => Get();
+    public string SkyWeatherEnabledLabel => Get();
+    public string SkyWeatherEnabledTooltip => Get();
+    public string SkyWeatherLocationMissingHint => Get();
     public string DynamicWallpaperStepButton => Get();
     public string DynamicWallpaperStepTooltip => Get();
     public string DynamicWallpaperStopButton => Get();

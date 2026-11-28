@@ -28,6 +28,9 @@ public partial class Monitor(nint handle) : IDisposable
 
     public Rect? TryGetBounds() => TryGetMonitorInfo()?.Monitor;
 
+    // The display without the taskbar (and anything else docked to its edges)
+    public Rect? TryGetWorkArea() => TryGetMonitorInfo()?.WorkArea;
+
     public string? TryGetDeviceName() => TryGetMonitorInfo()?.DeviceName;
 
     public DeviceContext? TryCreateDeviceContext()

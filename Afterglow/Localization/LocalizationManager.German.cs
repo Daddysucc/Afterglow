@@ -316,6 +316,11 @@ public partial class LocalizationManager
         [nameof(AccentColorMatchedLabel)] = "Akzentfarbe passend setzen",
         [nameof(AccentColorMatchedTooltip)] =
             "Setzt die Windows-Akzentfarbe auf die des Himmels: tagsüber blau, bei Sonnenauf- und -untergang sowie am Abend golden und nachts tiefblau. Sie ändert sich nur, wenn es niemand sehen kann (Bildschirm gesperrt, Bildschirm aus oder Bildschirmschoner aktiv), da Windows bei jeder Änderung kurz alle Apps einfriert. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird.",
+        [nameof(SkyWeatherEnabledLabel)] = "Wetter am Himmel zeigen",
+        [nameof(SkyWeatherEnabledTooltip)] =
+            "Zeigt das Wetter an Ihrem Standort am Himmel: Wolken, Regen, Gewitter, Schnee, Nebel, Dunst, Rauch und Staub sowie das tiefere Blau in großer Höhe. Die Vorhersage kommt stündlich von Open-Meteo, mit Ihrem auf etwa 10 km gerundeten Standort. Ohne Internetverbindung geht das letzte Wetter langsam in einen klaren Himmel über.",
+        [nameof(SkyWeatherLocationMissingHint)] =
+            "Legen Sie Ihren Standort im Tab „Zeitplan & Standort“ fest, um das Wetter zu zeigen.",
         [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen, Hintergrundbild und Akzentfarbe auf diese Tageszeit",

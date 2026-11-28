@@ -321,6 +321,11 @@ public partial class LocalizationManager
         [nameof(AccentColorMatchedLabel)] = "Accorder la couleur d'accentuation",
         [nameof(AccentColorMatchedTooltip)] =
             "Règle la couleur d'accentuation de Windows sur celle du ciel : bleue le jour, dorée au lever et au coucher du soleil et en soirée, bleu profond la nuit. Elle ne change que lorsque personne ne peut le voir (écran verrouillé, écran éteint ou économiseur d'écran actif), car Windows fige brièvement toutes les applications à chaque changement. Votre propre couleur d'accentuation revient quand cette option est désactivée.",
+        [nameof(SkyWeatherEnabledLabel)] = "Afficher la météo dans le ciel",
+        [nameof(SkyWeatherEnabledTooltip)] =
+            "Affiche dans le ciel la météo là où vous êtes : nuages, pluie, orages, neige, brouillard, brume, fumée et poussière, ainsi que le bleu plus profond en altitude. Les prévisions viennent d'Open-Meteo toutes les heures, avec votre position arrondie à environ 10 km. Sans connexion Internet, la dernière météo s'efface lentement vers un ciel dégagé.",
+        [nameof(SkyWeatherLocationMissingHint)] =
+            "Définissez votre position dans l'onglet « Horaire et lieu » pour afficher la météo.",
         [nameof(DynamicWallpaperStepButton)] = "Moment suivant",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Pour essayer : avance de 90 minutes à chaque fois, en réglant l'écran, les lumières, le fond d'écran et la couleur d'accentuation sur ce moment de la journée",

@@ -322,6 +322,11 @@ public partial class LocalizationManager
             [nameof(AccentColorMatchedLabel)] = "Ajustar el color de énfasis",
             [nameof(AccentColorMatchedTooltip)] =
                 "Ajusta el color de énfasis de Windows al del cielo: azul de día, dorado al amanecer, al atardecer y por la tarde, y azul profundo de noche. Solo cambia cuando nadie puede verlo (pantalla bloqueada, pantalla apagada o protector de pantalla activo), porque Windows congela brevemente todas las aplicaciones cada vez que cambia. Tu propio color de énfasis vuelve cuando se desactiva.",
+            [nameof(SkyWeatherEnabledLabel)] = "Mostrar el tiempo en el cielo",
+            [nameof(SkyWeatherEnabledTooltip)] =
+                "Muestra en el cielo el tiempo donde estás: nubes, lluvia, tormentas, nieve, niebla, calima, humo y polvo, y el azul más intenso de los lugares altos. El pronóstico llega de Open-Meteo cada hora, con tu ubicación redondeada a unos 10 km. Sin conexión a Internet, el último tiempo se desvanece poco a poco hasta un cielo despejado.",
+            [nameof(SkyWeatherLocationMissingHint)] =
+                "Establece tu ubicación en la pestaña «Horario y ubicación» para mostrar el tiempo.",
             [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces, el fondo de pantalla y el color de énfasis a esa hora del día",

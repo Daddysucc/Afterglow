@@ -2,6 +2,12 @@
 
 What's new in each version, newest first: a few short lines each (see `CLAUDE.md`).
 
+## 3.8.0
+
+- The sky can show the weather where you are (optional).
+- Wallpaper changes are smaller, and wait until you won't see them.
+- The sky follows the sun's real height where you are.
+
 ## 3.7.0
 
 - Clearer settings, and numbers you can type in.

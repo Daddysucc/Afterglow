@@ -18,10 +18,10 @@ It runs quietly in the system tray and has minimal impact on performance.
 - **Tray menu with snooze chips.** Pause Afterglow, temporarily disable grayscale, or pause your Hue lights, for 15 minutes, 1 hour, 3 hours, or until sunrise, right from the tray.
 - **Dashboard.** A 24-hour color curve and a plain-language status line, with a full-page settings screen, in English, Ukrainian, German, French, Spanish, and Simplified and Traditional Chinese.
 - **Global hotkeys.** Turn Afterglow on or off, show its window, nudge the temperature and brightness, toggle grayscale, or pause your Hue lights from anywhere.
-- **Dynamic wallpaper (optional).** A sky that follows the sun through the day, drawn for each display, with your own wallpaper put back when you turn it off. It can also set the Windows accent color to the sky's (blue by day, golden around sunrise and sunset, deep blue at night), changing it only while nobody can see it, such as when the screen is locked.
+- **Dynamic wallpaper (optional).** A sky that follows the sun through the day, drawn for each display, with your own wallpaper put back when you turn it off. It can also set the Windows accent color to the sky's (blue by day, golden around sunrise and sunset, deep blue at night), changing it only while nobody can see it, such as when the screen is locked. If you set your location, the sky can also show the weather: clouds at each height, rain, storms, snow, fog, haze, smoke and dust, and the deeper blue of high altitude. Weather changes, and the sun's, come in steps too small to notice, while the desktop is hidden or you're away from it.
 - **Updates in one click.** Afterglow checks for a new version once a week (or as often as you choose), shows what's new since your version, and installs it when you click **Update**.
 - **Philips Hue.** Lights in the rooms you choose follow the color cycle while your PC is on, through the Hue bridge, without anything else to set up (see [Philips Hue](#philips-hue)).
-- **Works offline.** Only searching for a location, and the optional check for updates, use the internet (and, if you turn it on, Philips Hue, which stays on your own network).
+- **Works offline.** Only searching for a location, the optional check for updates, and the weather in the sky if you turn it on (a weather and air quality forecast from [Open-Meteo](https://open-meteo.com) every hour, for your location rounded to about 10 km) use the internet. Philips Hue, if you turn it on, stays on your own network.
 
 ## Download
 

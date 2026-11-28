@@ -107,6 +107,7 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
         SettingsService.IsHueTurnedOnAtStart = defaults.IsHueTurnedOnAtStart;
         SettingsService.IsDynamicWallpaperEnabled = defaults.IsDynamicWallpaperEnabled;
         SettingsService.IsAccentColorMatched = defaults.IsAccentColorMatched;
+        SettingsService.IsSkyWeatherEnabled = defaults.IsSkyWeatherEnabled;
     }
 
     // For stepping through the day (trying out the dynamic wallpaper)
@@ -123,6 +124,15 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
         get => SettingsService.IsAccentColorMatched;
         set => SettingsService.IsAccentColorMatched = value;
     }
+
+    public bool IsSkyWeatherEnabled
+    {
+        get => SettingsService.IsSkyWeatherEnabled;
+        set => SettingsService.IsSkyWeatherEnabled = value;
+    }
+
+    // The weather needs to know where the user is (set on the Schedule tab)
+    public bool IsLocationMissing => SettingsService.Location is not { IsValid: true };
 
     public bool IsHueEnabled
     {

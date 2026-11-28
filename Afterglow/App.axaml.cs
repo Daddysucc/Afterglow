@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Afterglow.Core;
 using Afterglow.Framework;
 using Afterglow.Localization;
 using Afterglow.PlatformInterop;
@@ -58,6 +59,7 @@ public partial class App : Application, IDisposable
         services.AddSingleton<UpdateService>();
         services.AddSingleton<HueService>();
         services.AddSingleton<WallpaperService>();
+        services.AddSingleton<WeatherService>();
 
         // View models
         services.AddTransient<MainViewModel>();
@@ -137,17 +139,24 @@ public partial class App : Application, IDisposable
 
         // Draw the desktop wallpaper as the sky, and set the accent color to a color of the sky
         // for the part of the day, if that's turned on, but not while the cycle preview plays
-        // through the day (other than when stepping through it)
+        // through the day (other than when stepping through it). The sky shows the weather, if
+        // that's turned on (also when stepping through the day, for the times the forecast covers,
+        // and clear otherwise), and holds still for a moment while the weather isn't known yet
+        // (e.g. at startup, before the network is up).
         var wallpaperService = _services.GetRequiredService<WallpaperService>();
+        var weatherService = _services.GetRequiredService<WeatherService>();
         wallpaperService.SetTargetSource(() =>
-            dashboard.IsCyclePreviewEnabled && !dashboard.IsSteppingThroughDay
+            (dashboard.IsCyclePreviewEnabled || weatherService.IsWaiting)
+            && !dashboard.IsSteppingThroughDay
                 ? null
                 : new WallpaperTarget(
                     dashboard.Phase.Stage,
                     dashboard.SunElevation,
-                    dashboard.IsSteppingThroughDay
+                    dashboard.IsSteppingThroughDay,
+                    weatherService.GetAt(dashboard.Instant) ?? SkyConditions.Clear
                 )
         );
+        weatherService.ShowRequested += (_, _) => wallpaperService.ShowNow();
 
         void OnDashboardChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args)
         {
@@ -186,6 +195,7 @@ public partial class App : Application, IDisposable
         );
         hueService.Start();
         wallpaperService.Start();
+        weatherService.Start();
 
         // The cycle runs whether or not the window is ever shown
         _ = dashboard.InitializeAsync();

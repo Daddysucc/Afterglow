@@ -21,45 +21,104 @@ namespace Afterglow.Services;
 /// <param name="Stage">The part of the cycle (for the accent color).</param>
 /// <param name="SunElevation">How high the sun is, in degrees (negative below the horizon).</param>
 /// <param name="IsImmediate">Whether it's shown right away (when stepping through the day).</param>
+/// <param name="Weather">The weather the sky shows (clear, unless that's turned on).</param>
 public readonly record struct WallpaperTarget(
     CycleStage Stage,
     double SunElevation,
-    bool IsImmediate = false
+    bool IsImmediate = false,
+    SkyConditions Weather = default
 );
 
 /// <summary>
-/// Sets the desktop wallpaper to a sky for where the sun is (see <see cref="DynamicWallpaper" />),
-/// and the Windows accent color to a color of that sky for the part of the day.
+/// A sky that a display shows: one of the clear skies drawn ahead of time (by its stop, see
+/// <see cref="DynamicWallpaper.GetStops" />, and how high up the user is, see <see
+/// cref="AltitudeLevels" />), or one drawn when it's needed (for the weather, or on the way to or
+/// from it).
+/// </summary>
+internal readonly record struct WallpaperSky(WallpaperPalette Palette, int? Stop, int Altitude = 0)
+{
+    /// <summary>
+    /// How finely the clear skies follow how high up the user is (see <see
+    /// cref="SkyConditions.Altitude" />): a set of them for each level (about 440 m apart), drawn
+    /// for where the user is. Level 0 (up to about 500 m, where most people live) is the plain
+    /// one.
+    /// </summary>
+    public const int AltitudeLevels = 8;
+
+    public static int GetAltitudeLevel(double altitude) =>
+        (int)
+            Math.Round(Math.Clamp(double.IsFinite(altitude) ? altitude : 0, 0, 1) * AltitudeLevels);
+
+    public static SkyConditions GetClearConditions(int altitude) =>
+        new(Altitude: (double)altitude / AltitudeLevels);
+
+    public static WallpaperSky Clear(int stop, int altitude = 0) =>
+        new(
+            altitude == 0
+                ? DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[stop])
+                : DynamicWallpaper.GetPalette(
+                    DynamicWallpaper.GetStops()[stop],
+                    GetClearConditions(altitude)
+                ),
+            stop,
+            altitude
+        );
+
+    // (with the glow's strength kept to what a file name holds, see GetImageFileName, so that the
+    // image and its name always agree)
+    public static WallpaperSky Drawn(WallpaperPalette palette) =>
+        new(palette with { GlowStrength = Math.Round(palette.GlowStrength * 255) / 255 }, null);
+}
+
+/// <summary>
+/// Sets the desktop wallpaper to a sky for where the sun is and the weather (see <see
+/// cref="DynamicWallpaper" />), and the Windows accent color to a color of that sky for the part
+/// of the day.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The images are natural skies, which only depend on how high the sun is: the screen's tint
-/// warms and dims them live, like everything else on the screen. So a fixed set of skies (one for each of the stops along the
-/// sun's path, shared by the morning and the evening) is drawn once, for each display size: the
-/// one that's needed first right away, and the others one at a time in the background. After
-/// that, following the sun is just pointing Windows at another image.
+/// The images are natural skies, which only depend on how high the sun is and the weather: the
+/// screen's tint warms and dims them live, like everything else on the screen. The clear skies
+/// (one for each of the stops along the sun's path, shared by the morning and the evening) are
+/// drawn once for each display size, the one that's needed first right away and the others one at
+/// a time in the background, so that following the sun is just pointing Windows at another
+/// image. A sky with weather is drawn when it's needed (in well under a second, at the lowest
+/// priority), and only kept while a display shows it.
 /// </para>
 /// <para>
-/// Following the sun and the cycle waits for a quiet moment, so that nothing changes in the
-/// middle of something:
+/// The goal is that the user never sees the wallpaper change. Every change is a small step (no
+/// bigger than from one clear sky to the next, see <see cref="DynamicWallpaper.StepSize" />), so a
+/// change of the weather, or a display catching up, goes one step at a time, never in a jump. And
+/// each display only takes a step when nobody's likely to be looking at its desktop:
 /// <list type="bullet">
-/// <item>A display that's covered by a fullscreen application, or that the user is working on
-/// (where the mouse or the window in focus is, while there's been input in the last few seconds),
-/// keeps its sky until it isn't. The other displays carry on.</item>
-/// <item>The accent color has three colors a day (see <see cref="DynamicWallpaper.GetAccentTime"
-/// />), and only changes while nobody can see it: while the screen is locked, the display is off,
-/// or a screensaver runs. Windows has every application re-theme at once when it changes, which
-/// stalls them all (and, through the applications that watch the mouse, the mouse too) for up to a
-/// couple of seconds, besides changing the taskbar and title bars in front of the user. If nobody
-/// steps away for a while, it just waits. The only exceptions are turning it on and stepping
-/// through the day, which show it right away.</item>
-/// <item>Changing the wallpaper itself costs next to nothing (measured at 2 to 6 ms, without
-/// stalling anything), so it doesn't wait for any of that.</item>
-/// <item>The wallpaper doesn't change while the screen is locked, and nothing is drawn in the
-/// background while an application is fullscreen.</item>
+/// <item>While nobody can see the screen at all (it's locked, the display is off, or a screensaver
+/// runs), it goes straight to the right sky.</item>
+/// <item>While a window covers the whole display (other than the taskbar), the desktop can't be
+/// seen, so it steps along briskly (still in steps, as some windows show a blur of the wallpaper
+/// through them).</item>
+/// <item>Otherwise it waits until the user has been away from that display for a while (working on
+/// another one, or not using the computer), and hasn't just uncovered its desktop (e.g. by
+/// minimizing a window, when they're likely to be looking at it), and then takes steps a minute
+/// or two apart.</item>
+/// <item>Never under a fullscreen application (a game, or a video), and nothing is drawn in the
+/// background meanwhile.</item>
 /// </list>
+/// A sky that takes a moment to draw is only shown if that's all still true once it's drawn.
+/// What the user is doing is only looked up while a display has a step to take, and at a slow
+/// pace, so that following the sun costs next to nothing.
+/// </para>
+/// <para>
+/// The accent color has three colors a day (see <see cref="DynamicWallpaper.GetAccentTime" />),
+/// and only changes while nobody can see it: while the screen is locked, the display is off, or a
+/// screensaver runs. Windows has every application re-theme at once when it changes, which stalls
+/// them all (and, through the applications that watch the mouse, the mouse too) for up to a couple
+/// of seconds, besides changing the taskbar and title bars in front of the user. If nobody steps
+/// away for a while, it just waits. The only exceptions are turning it on and stepping through the
+/// day, which show it right away.
+/// </para>
+/// <para>
 /// Stepping through the day (by hand, to see how it all looks) shows the sky and the accent color
-/// right away, whatever it costs, and stopping it puts the accent color back right away.
+/// right away, whatever it costs, and stopping it puts them back right away.
 /// </para>
 /// <para>
 /// Images are drawn at each display's own resolution (so Windows doesn't scale them), dithered
@@ -69,16 +128,27 @@ public readonly record struct WallpaperTarget(
 /// </remarks>
 public class WallpaperService : IDisposable
 {
-    // Checked often while something is waiting (or the user just changed something), and
-    // rarely otherwise (the sun moves slowly), so that it wakes up as little as possible
+    // Checked often while the user just changed something (or something's being drawn), and
+    // rarely otherwise (the sun moves slowly, and a step waits for a quiet moment anyway), so
+    // that it wakes up as little as possible
     private static readonly TimeSpan FastCheckInterval = TimeSpan.FromSeconds(3);
     private static readonly TimeSpan SlowCheckInterval = TimeSpan.FromSeconds(15);
 
     // How long checks stay frequent after the user changes something
     private static readonly TimeSpan FastCheckTime = TimeSpan.FromSeconds(30);
 
-    // How long without mouse or keyboard input a display counts as not being worked on
-    private static readonly TimeSpan QuietTime = TimeSpan.FromSeconds(10);
+    // A display the user is working on (where the mouse or the window in focus is) counts as
+    // being worked on until there's been no input for this long
+    private static readonly TimeSpan QuietTime = TimeSpan.FromMinutes(2);
+
+    // How long a display waits after the user was last working on it, and after its desktop was
+    // last covered, before its (visible) desktop takes a step
+    private static readonly TimeSpan AwayTime = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan UncoveredTime = TimeSpan.FromMinutes(2);
+
+    // How far apart steps are, on a desktop that can be seen and on a covered one
+    private static readonly TimeSpan VisibleStepInterval = TimeSpan.FromSeconds(90);
+    private static readonly TimeSpan CoveredStepInterval = TimeSpan.FromSeconds(30);
 
     // How long the background drawing waits while a video or a game is playing
     private static readonly TimeSpan BusyRetryDelay = TimeSpan.FromSeconds(30);
@@ -109,17 +179,33 @@ public class WallpaperService : IDisposable
     // What the user is doing (see UpdateActivity)
     private Rect? _fullScreenBounds;
     private IReadOnlyList<Rect> _busyBounds = [];
+    private IReadOnlyList<Rect> _coveredBounds = [];
     private bool _isLocked;
     private bool _isUnseen;
     private volatile bool _isDrawingPaused;
+    private DateTimeOffset _activityCheckedAt = DateTimeOffset.MinValue;
 
     // Whether the display is off (as Windows reports it, when it changes)
     private bool _isDisplayOff;
 
-    // What's shown now (null until shown on every display), and a sky only shown on the displays
-    // that weren't busy (along with which ones were)
-    private int? _shownStop;
-    private (int Stop, string Skipped)? _partialStop;
+    // Each display (by its bounds), what it shows, and when the user was last on it
+    private sealed class Display(string id)
+    {
+        public string Id { get; set; } = id;
+
+        // (null for anything other than these skies, e.g. the user's own wallpaper)
+        public WallpaperSky? Shown { get; set; }
+        public DateTimeOffset ChangedAt { get; set; } = DateTimeOffset.MinValue;
+        public DateTimeOffset BusyAt { get; set; } = DateTimeOffset.MinValue;
+        public DateTimeOffset CoveredAt { get; set; } = DateTimeOffset.MinValue;
+    }
+
+    private readonly Dictionary<Rect, Display> _displays = [];
+
+    // Whether the displays (and what they show) need to be looked up again, e.g. when one is
+    // connected
+    private bool _isRefreshNeeded = true;
+
     private WallpaperColor? _appliedAccentColor;
 
     // Whether the accent color was just turned on (so it's shown right away, once), and whether it
@@ -127,6 +213,13 @@ public class WallpaperService : IDisposable
     private bool _isAccentRequested;
     private bool _wasImmediate;
     private bool _wasAccentColorMatched;
+
+    // Whether the sky goes straight to the right one once: when the app starts, the computer wakes
+    // up, the user changes something about it (see ShowNow), or stops stepping through the day
+    private bool _isJumpRequested = true;
+
+    // How high up the user is (the clear skies drawn ahead are for that, see WallpaperSky)
+    private volatile int _altitude;
 
     // The display sizes that images are drawn for, and the drawing of the rest in the background
     private IReadOnlyList<(int Width, int Height)> _sizes = [];
@@ -162,8 +255,8 @@ public class WallpaperService : IDisposable
         _isStarted = true;
 
         // The screen being locked (or waking up to the lock screen), and the display turning off,
-        // are when the accent color can change, so they're checked right away rather than at the
-        // regular pace (which could miss a quick unlock)
+        // are when the accent color can change (and the sky catch up at once), so they're checked
+        // right away rather than at the regular pace (which could miss a quick unlock)
         _sessionSubscription = PowerKit.Disposable.Merge(
             PowerSettingNotification.TryRegister(
                 PowerSettingNotification.Ids.ConsoleDisplayStateChanged,
@@ -183,8 +276,24 @@ public class WallpaperService : IDisposable
             SessionEvents.RegisterSleep(isSuspending =>
             {
                 if (!isSuspending)
+                {
+                    _isRefreshNeeded = true;
+                    _isJumpRequested = true;
+
+                    // (after anything else that's woken up, e.g. the weather, which may make it
+                    // wait for a fresh forecast)
+                    Dispatcher.UIThread.Post(NotifyTargetChanged, DispatcherPriority.Background);
+                }
+            }),
+            // A display connected, disconnected, or changed (e.g. its resolution)
+            SystemEvent.Register(
+                SystemEvent.Ids.DisplayChanged,
+                () =>
+                {
+                    _isRefreshNeeded = true;
                     NotifyTargetChanged();
-            })
+                }
+            )
         );
 
         // (already being on at startup isn't turning it on, so the accent color only changes once
@@ -237,10 +346,11 @@ public class WallpaperService : IDisposable
             _timer = null;
             _drawingCancellation?.Cancel();
             _drawingCancellation = null;
-            _shownStop = null;
-            _partialStop = null;
+            _displays.Clear();
+            _isRefreshNeeded = true;
             _appliedAccentColor = null;
             _isAccentRequested = false;
+            _isJumpRequested = false;
             _wasAccentColorMatched = false;
 
             // Also puts back what was left over from an earlier run (e.g. after a crash)
@@ -270,6 +380,16 @@ public class WallpaperService : IDisposable
     }
 
     /// <summary>
+    /// Shows the right sky right away, on every display (rather than in small steps, in quiet
+    /// moments), e.g. when the user changed something about it, so that they can see it working.
+    /// </summary>
+    public void ShowNow()
+    {
+        _isJumpRequested = true;
+        NotifyTargetChanged();
+    }
+
+    /// <summary>
     /// Checks whether the wallpaper needs to change, without waiting for the next regular check.
     /// </summary>
     public void NotifyTargetChanged()
@@ -289,12 +409,19 @@ public class WallpaperService : IDisposable
             _timer.Interval = interval;
     }
 
-    // Only looked up when there's something to do, as it opens the foreground application
-    private void UpdateActivity()
+    // Only looked up while there's something to do, as it opens the foreground application (and,
+    // if a display might take a step, goes over the windows to see which displays they cover)
+    private void UpdateActivity(bool isCoverageNeeded)
     {
-        // The cheapest first: while the screen is locked, the user is away and the wallpaper
-        // doesn't change, so the foreground application isn't looked up (and it's the best time
-        // to draw)
+        var now = DateTimeOffset.Now;
+
+        // Not looked at for a while (nothing was waiting): what the user did meanwhile isn't known,
+        // so they may have just been on any display (or uncovered it)
+        var isHistoryKnown = now - _activityCheckedAt <= SlowCheckInterval * 2;
+        _activityCheckedAt = now;
+
+        // The cheapest first: while the screen is locked, the user is away, so the foreground
+        // application isn't looked up (and it's the best time to draw)
         _isLocked = InputDesktop.IsLocked();
         if (_isLocked)
         {
@@ -320,108 +447,240 @@ public class WallpaperService : IDisposable
                     ?.TryGetBounds();
         }
 
-        var isIdle = UserActivity.GetIdleTime() >= QuietTime;
+        // The displays being worked on (where the mouse or the window in focus is, until there's
+        // been no input for a while)
+        _busyBounds =
+            UserActivity.GetIdleTime() < QuietTime ? UserActivity.GetActiveMonitorBounds() : [];
 
-        // The displays to leave alone for now: one that's covered, and the ones being worked on
-        var busyBounds = new List<Rect>();
-        if (_fullScreenBounds is { } fullScreenBounds)
-            busyBounds.Add(fullScreenBounds);
-        if (!isIdle)
+        _coveredBounds = isCoverageNeeded ? DesktopCoverage.GetCoveredMonitorBounds() : [];
+
+        foreach (var (bounds, display) in _displays)
         {
-            foreach (var bounds in UserActivity.GetActiveMonitorBounds())
-            {
-                if (!busyBounds.Contains(bounds))
-                    busyBounds.Add(bounds);
-            }
+            if (!isHistoryKnown || _busyBounds.Contains(bounds))
+                display.BusyAt = now;
+            if (!isHistoryKnown || _coveredBounds.Contains(bounds))
+                display.CoveredAt = now;
         }
 
-        _busyBounds = busyBounds;
-
-        // The accent color only changes while nobody can see it (see the remarks). Changing the
-        // wallpaper costs next to nothing, so the displays that aren't busy carry on meanwhile.
-        // Drawing (at the lowest priority) only waits for a fullscreen application.
+        // The accent color only changes while nobody can see it (see the remarks). Drawing (at the
+        // lowest priority) only waits for a fullscreen application.
         _isUnseen = _isDisplayOff || UserActivity.IsScreenSaverRunning();
         _isDrawingPaused = _fullScreenBounds is not null;
     }
 
-    private static string GetKey(IReadOnlyList<Rect> bounds) =>
-        string.Join(';', bounds.Select(b => $"{b.Left},{b.Top},{b.Right},{b.Bottom}").Order());
+    // The sky that should be shown: the clear one for where the sun is (and how high up the user
+    // is), unless there's enough weather to show (and then one drawn for it)
+    private static WallpaperSky GetTargetSky(WallpaperTarget target)
+    {
+        var altitude = WallpaperSky.GetAltitudeLevel(target.Weather.Altitude);
+        var clearConditions = WallpaperSky.GetClearConditions(altitude);
+        var clear = WallpaperSky.Clear(
+            DynamicWallpaper.GetStopIndex(target.SunElevation),
+            altitude
+        );
+
+        // (the altitude as the clear skies have it, so that the two agree)
+        var weather = target.Weather with
+        {
+            Altitude = clearConditions.Altitude,
+        };
+        if (weather == clearConditions)
+            return clear;
+
+        var palette = DynamicWallpaper.GetPalette(target.SunElevation, weather);
+
+        // (so little weather that it wouldn't show: the clear sky, which is drawn already)
+        return DynamicWallpaper.GetDifference(palette, clear.Palette) < DynamicWallpaper.StepSize
+            ? clear
+            : WallpaperSky.Drawn(palette);
+    }
+
+    // Whether a display showing the one sky should move towards the other: always for a clear sky
+    // (which is exact), and for one with weather once it's a whole step away (as it moves along
+    // with the sun and the weather all the time)
+    private static bool IsStepNeeded(WallpaperSky? shown, WallpaperSky target) =>
+        shown is not { } sky
+        || (
+            target.Stop is not null
+                ? sky != target
+                : DynamicWallpaper.GetDifference(sky.Palette, target.Palette)
+                    >= DynamicWallpaper.StepSize
+        );
+
+    // The next step from the one sky towards the other: from one clear sky to the next, or a step's
+    // worth of the way (and the target itself, once it's that close)
+    private static WallpaperSky GetNextSky(WallpaperSky shown, WallpaperSky target)
+    {
+        if (shown.Stop is { } from && target.Stop is { } to && shown.Altitude == target.Altitude)
+            return WallpaperSky.Clear(from + Math.Sign(to - from), target.Altitude);
+
+        var palette = DynamicWallpaper.StepTowards(
+            shown.Palette,
+            target.Palette,
+            DynamicWallpaper.StepSize
+        );
+
+        return palette == target.Palette ? target : WallpaperSky.Drawn(palette);
+    }
+
+    // How a display may change now, if at all (see the remarks)
+    private enum ChangeKind
+    {
+        None,
+        Jump,
+        Step,
+    }
+
+    private ChangeKind GetChangeKind(Rect bounds, Display display, bool isImmediate)
+    {
+        // Stepping through the day, turned on just now (or the display shows something else), or
+        // nobody can see the screen
+        if (isImmediate || display.Shown is null || _isLocked || _isUnseen)
+            return ChangeKind.Jump;
+
+        if (_fullScreenBounds == bounds)
+            return ChangeKind.None;
+
+        var now = DateTimeOffset.Now;
+        var sinceChange = now - display.ChangedAt;
+
+        if (_coveredBounds.Contains(bounds))
+            return sinceChange >= CoveredStepInterval ? ChangeKind.Step : ChangeKind.None;
+
+        return
+            sinceChange >= VisibleStepInterval
+            && !_busyBounds.Contains(bounds)
+            && now - display.BusyAt >= AwayTime
+            && now - display.CoveredAt >= UncoveredTime
+            ? ChangeKind.Step
+            : ChangeKind.None;
+    }
 
     private void Check()
     {
         if (!IsEnabled || _isBusy || _getTarget?.Invoke() is not { } target)
             return;
 
-        var stop = DynamicWallpaper.GetStopIndex(target.SunElevation);
+        // The displays (and what they show) are looked up first
+        if (_isRefreshNeeded || _displays.Count == 0)
+        {
+            SetCheckInterval(true);
+            Apply([], null, false);
+            return;
+        }
+
+        var targetSky = GetTargetSky(target);
+
+        // (so that the clear skies for this altitude are kept, and drawn ahead)
+        _altitude = targetSky.Altitude;
+
         var accent = DynamicWallpaper.GetAccentColor(
             DynamicWallpaper.GetAccentTime(target.Stage, target.SunElevation)
         );
 
-        var isSkyNeeded = _shownStop != stop;
-
-        // Stepping through the day is for seeing how it all looks, so the accent color is shown
-        // right away along with everything else, whatever it costs, and it goes back to the time
-        // of day right away once that stops
+        // Stepping through the day is for seeing how it all looks, so the sky and the accent color
+        // are shown right away, whatever it costs, and they go back to the time of day right away
+        // once that stops
         if (_wasImmediate && !target.IsImmediate)
+        {
             _isAccentRequested = true;
+            _isJumpRequested = true;
+        }
         _wasImmediate = target.IsImmediate;
+        var isImmediate = target.IsImmediate || _isJumpRequested;
         var isAccentForced = _isAccentRequested || target.IsImmediate;
 
+        var pending = _displays.Where(d => IsStepNeeded(d.Value.Shown, targetSky)).ToArray();
         var isAccentNeeded = IsAccentColorMatched && _appliedAccentColor != accent;
 
-        // Checked often while anything is waiting. An accent color waiting for nobody to be able
-        // to see it is checked at the regular pace (that takes minutes anyway).
-        SetCheckInterval(isSkyNeeded || !_drawing.IsCompleted || _isAccentRequested);
+        // Checked often only while something's being drawn (to stop for a fullscreen application)
+        // or was asked for just now: a step waits for a quiet moment, which takes a while anyway
+        SetCheckInterval(!_drawing.IsCompleted || _isAccentRequested || isImmediate);
 
-        // Also keeps the background drawing informed
-        if (!isSkyNeeded && !isAccentNeeded && _drawing.IsCompleted)
+        // (also keeps the background drawing informed)
+        if (pending.Length == 0 && !isAccentNeeded && _drawing.IsCompleted)
+        {
+            _isJumpRequested = false;
             return;
+        }
 
-        UpdateActivity();
+        // The windows are only gone over if a covered display could take a step now
+        var now = DateTimeOffset.Now;
+        UpdateActivity(
+            !isImmediate
+                && pending.Any(d =>
+                    d.Value.Shown is not null && now - d.Value.ChangedAt >= CoveredStepInterval
+                )
+        );
 
         // The accent color waits for nobody to be able to see it (unless it's forced, see above)
-        if (isAccentNeeded && !isAccentForced && !_isUnseen)
+        if (isAccentNeeded && !isAccentForced && !_isUnseen && !_isLocked)
             isAccentNeeded = false;
 
-        IReadOnlyList<Rect> skipped = [];
-        if (!target.IsImmediate)
+        var changes = new List<(Rect Bounds, WallpaperSky Sky)>();
+        foreach (var (bounds, display) in pending)
         {
-            // (while the screen is locked, only the accent color changes)
-            if (_isLocked)
-                isSkyNeeded = false;
-
-            skipped = _busyBounds;
+            switch (GetChangeKind(bounds, display, isImmediate))
+            {
+                case ChangeKind.Jump:
+                    changes.Add((bounds, targetSky));
+                    break;
+                case ChangeKind.Step:
+                    changes.Add((bounds, GetNextSky(display.Shown!.Value, targetSky)));
+                    break;
+            }
         }
 
-        // (a sky already shown on every display that isn't busy is only shown again on the rest
-        // once they aren't)
-        var skippedKey = GetKey(skipped);
-        if (isSkyNeeded && _partialStop is { } partial && partial.Stop == stop)
-            isSkyNeeded = partial.Skipped != skippedKey;
+        _isJumpRequested = false;
 
-        if (isSkyNeeded || isAccentNeeded)
-        {
-            Apply(isSkyNeeded ? stop : null, isAccentNeeded ? accent : null, skipped, skippedKey);
-        }
+        if (changes.Count > 0 || isAccentNeeded)
+            Apply(changes, isAccentNeeded ? accent : null, isImmediate);
     }
 
     private async void Apply(
-        int? stop,
+        IReadOnlyList<(Rect Bounds, WallpaperSky Sky)> changes,
         WallpaperColor? accent,
-        IReadOnlyList<Rect> skippedBounds,
-        string skippedKey
+        bool isImmediate
     )
     {
         _isBusy = true;
-        var (isSkyApplied, isSkipped, isAccentApplied) = (false, false, false);
+        var applied = new List<(Rect Bounds, WallpaperSky Sky)>();
+        var isAccentApplied = false;
+        IReadOnlyList<(string Id, Rect Bounds, WallpaperSky? Shown)>? displays = null;
 
         try
         {
+            // The images that aren't there yet are drawn first, without holding anything up
+            var sizes = changes.Select(c => (Size: GetSize(c.Bounds), c.Sky)).Distinct().ToArray();
+            var isDrawn = await Task.Run(() =>
+            {
+                var drew = false;
+                foreach (var (size, sky) in sizes)
+                    drew |= EnsureImage(size, sky);
+                return drew;
+            });
+
+            // A step that took a moment to draw is only taken if the display is still as quiet as
+            // it was (e.g. the user didn't just come back to it)
+            if (isDrawn && !isImmediate && IsEnabled)
+            {
+                UpdateActivity(_coveredBounds.Count > 0);
+                changes = changes
+                    .Where(c =>
+                        _displays.TryGetValue(c.Bounds, out var display)
+                        && GetChangeKind(c.Bounds, display, false) != ChangeKind.None
+                    )
+                    .ToArray();
+            }
+
+            if (!IsEnabled)
+                return;
+
             await _lock.WaitAsync();
             try
             {
-                (isSkyApplied, isSkipped, isAccentApplied) = await Task.Run(() =>
-                    ApplyCore(stop, accent, skippedBounds)
+                (applied, isAccentApplied, displays) = await Task.Run(() =>
+                    ApplyCore(changes, accent)
                 );
             }
             finally
@@ -446,19 +705,17 @@ public class WallpaperService : IDisposable
             return;
         }
 
-        if (stop is not null && isSkyApplied)
-        {
-            if (isSkipped)
-            {
-                _partialStop = (stop.Value, skippedKey);
-            }
-            else
-            {
-                _shownStop = stop;
-                _partialStop = null;
-            }
+        if (displays is not null)
+            UpdateDisplays(displays);
 
-            StartDrawing(stop.Value);
+        var now = DateTimeOffset.Now;
+        foreach (var (bounds, sky) in applied)
+        {
+            if (_displays.TryGetValue(bounds, out var display))
+            {
+                display.Shown = sky;
+                display.ChangedAt = now;
+            }
         }
 
         if (accent is not null)
@@ -468,113 +725,264 @@ public class WallpaperService : IDisposable
                 _appliedAccentColor = accent;
             _isAccentRequested = false;
         }
+
+        // The clear skies that aren't drawn yet, closest to the one for where the sun is first
+        if (_getTarget?.Invoke() is { } target)
+        {
+            StartDrawing(
+                DynamicWallpaper.GetStopIndex(target.SunElevation),
+                WallpaperSky.GetAltitudeLevel(target.Weather.Altitude)
+            );
+        }
+
+        // (a display that was just looked up may need a step already)
+        if (changes.Count == 0 && accent is null && !_isRefreshNeeded)
+            Check();
     }
 
-    private string GetImagePath((int Width, int Height) size, int stop) =>
-        Path.Combine(_dirPath, $"{ImagePrefix}{size.Width}x{size.Height} {stop:00}.png");
+    private static (int Width, int Height) GetSize(Rect bounds) =>
+        (bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
 
-    // Returns whether the sky was shown (and whether a display was left as it was, as it's
-    // busy), and whether the accent color took
-    private (bool IsSkyApplied, bool IsSkipped, bool IsAccentApplied) ApplyCore(
-        int? stop,
-        WallpaperColor? accent,
-        IReadOnlyList<Rect> skippedBounds
-    )
+    // e.g. "Sky 4 1920x1080 23.png" for a clear sky ("Sky 4 1920x1080 h3 23.png" high up), and
+    // "Sky 4 1920x1080 1a2b3c….png" for one drawn when it's needed (with its colors in the name, so
+    // that it's known again, e.g. after a restart)
+    internal static string GetImageFileName((int Width, int Height) size, WallpaperSky sky)
     {
-        var isSkyApplied = false;
-        var isSkipped = false;
+        var name = sky.Stop is { } stop
+            ? (sky.Altitude > 0 ? $"h{sky.Altitude} {stop:00}" : $"{stop:00}")
+            : string.Concat(
+                new[]
+                {
+                    sky.Palette.SkyTop,
+                    sky.Palette.SkyMiddle,
+                    sky.Palette.SkyHorizon,
+                    sky.Palette.Glow,
+                }.Select(c => $"{c.Red:x2}{c.Green:x2}{c.Blue:x2}")
+            ) + $"{(int)Math.Round(sky.Palette.GlowStrength * 255):x2}";
 
-        if (stop is { } index && DesktopWallpaper.TryCreate() is { } desktop)
+        return $"{ImagePrefix}{size.Width}x{size.Height} {name}.png";
+    }
+
+    private string GetImagePath((int Width, int Height) size, WallpaperSky sky) =>
+        Path.Combine(_dirPath, GetImageFileName(size, sky));
+
+    /// <summary>
+    /// Gets the sky in one of these images, from its file name (see <see cref="GetImageFileName"
+    /// />), or null if it isn't one.
+    /// </summary>
+    internal static WallpaperSky? TryParseImageFileName(string fileName)
+    {
+        if (
+            !fileName.StartsWith(ImagePrefix, StringComparison.Ordinal)
+            || !fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+        )
+            return null;
+
+        var parts = fileName[ImagePrefix.Length..^".png".Length].Split(' ');
+
+        static int? TryParseNumber(string text, int max) =>
+            text.Length is > 0 and <= 2
+            && text.All(char.IsAsciiDigit)
+            && int.Parse(text, CultureInfo.InvariantCulture) is var number
+            && number < max
+                ? number
+                : null;
+
+        // (a clear sky high up)
+        if (
+            parts.Length == 3
+            && parts[1].StartsWith('h')
+            && TryParseNumber(parts[1][1..], WallpaperSky.AltitudeLevels + 1) is { } altitude
+            && altitude > 0
+            && parts[2].Length == 2
+            && TryParseNumber(parts[2], DynamicWallpaper.StopCount) is { } highStop
+        )
+            return WallpaperSky.Clear(highStop, altitude);
+
+        if (parts.Length != 2)
+            return null;
+
+        var name = parts[1];
+        if (name.Length == 2 && TryParseNumber(name, DynamicWallpaper.StopCount) is { } stop)
+            return WallpaperSky.Clear(stop);
+
+        if (name.Length != 26 || !name.All(char.IsAsciiHexDigitLower))
+            return null;
+
+        var bytes = Convert.FromHexString(name);
+        WallpaperColor ColorAt(int i) => new(bytes[i], bytes[i + 1], bytes[i + 2]);
+
+        return WallpaperSky.Drawn(
+            new WallpaperPalette(ColorAt(0), ColorAt(3), ColorAt(6), ColorAt(9), bytes[12] / 255.0)
+        );
+    }
+
+    // Draws the image if it isn't there yet (at the lowest priority, so that it never gets in the
+    // way, even if it takes a moment longer), and returns whether it had to
+    private bool EnsureImage((int Width, int Height) size, WallpaperSky sky)
+    {
+        var filePath = GetImagePath(size, sky);
+        if (File.Exists(filePath))
+            return false;
+
+        Directory.CreateDirectory(_dirPath);
+
+        using var backgroundMode = BackgroundWork.EnterBackgroundMode();
+        var tempFilePath = RenderToTempFile(sky.Palette, size.Width, size.Height, filePath, 1);
+        try
+        {
+            File.Move(tempFilePath, filePath, true);
+        }
+        finally
+        {
+            TryDelete(tempFilePath);
+        }
+
+        return true;
+    }
+
+    // Shows the given skies (on the displays that are still there), and sets the accent color.
+    // Returns the skies that were shown, whether the accent color took, and the displays and what
+    // they show now (null if they couldn't be looked up).
+    private (
+        List<(Rect Bounds, WallpaperSky Sky)> Applied,
+        bool IsAccentApplied,
+        IReadOnlyList<(string Id, Rect Bounds, WallpaperSky? Shown)>? Displays
+    ) ApplyCore(IReadOnlyList<(Rect Bounds, WallpaperSky Sky)> changes, WallpaperColor? accent)
+    {
+        var applied = new List<(Rect, WallpaperSky)>();
+        IReadOnlyList<(string, Rect, WallpaperSky?)>? displays = null;
+
+        if (DesktopWallpaper.TryCreate() is { } desktop)
         {
             using var _ = desktop;
             var monitors = desktop.GetMonitors();
-            if (monitors.Count > 0)
+
+            if (changes.Count > 0)
             {
-                isSkyApplied = ApplySky(desktop, monitors, index, skippedBounds, out isSkipped);
+                Directory.CreateDirectory(_dirPath);
+                RememberOriginalWallpapers(desktop, monitors);
+                DeleteOutdatedImages();
             }
+
+            foreach (var (bounds, sky) in changes)
+            {
+                var monitor = monitors.FirstOrDefault(m => m.Bounds == bounds);
+                if (monitor.Id is null)
+                    continue;
+
+                var filePath = GetImagePath(GetSize(bounds), sky);
+
+                // (drawn just before, unless it was deleted meanwhile)
+                if (!File.Exists(filePath))
+                    continue;
+
+                if (
+                    !string.Equals(
+                        desktop.TryGetWallpaper(monitor.Id),
+                        filePath,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                )
+                    desktop.SetWallpaper(monitor.Id, filePath);
+
+                applied.Add((bounds, sky));
+            }
+
+            if (changes.Count > 0 && desktop.Position != DesktopWallpaper.FillPosition)
+                desktop.Position = DesktopWallpaper.FillPosition;
+
+            displays = GetDisplays(desktop, monitors);
+
+            if (changes.Count > 0)
+                DeleteUnusedImages(desktop, monitors);
         }
 
         // (also when the sky couldn't be shown)
         var isAccentApplied = accent is { } color && SetAccentColor(color);
 
-        return (isSkyApplied, isSkipped, isAccentApplied);
+        return (applied, isAccentApplied, displays);
     }
 
-    private bool ApplySky(
+    // The displays that are connected now, and what they show (the user may have chosen another
+    // wallpaper meanwhile, which counts as nothing being shown)
+    private IReadOnlyList<(string Id, Rect Bounds, WallpaperSky? Shown)> GetDisplays(
         DesktopWallpaper desktop,
-        IReadOnlyList<(string Id, Rect Bounds)> monitors,
-        int index,
-        IReadOnlyList<Rect> skippedBounds,
-        out bool isSkipped
+        IReadOnlyList<(string Id, Rect Bounds)> monitors
+    ) =>
+        monitors
+            .Select(m =>
+            {
+                var wallpaper = desktop.TryGetWallpaper(m.Id);
+                var shown =
+                    !string.IsNullOrEmpty(wallpaper)
+                    && IsOwnFile(wallpaper, _dirPath)
+                    && File.Exists(wallpaper)
+                        ? TryParseImageFileName(Path.GetFileName(wallpaper))
+                        : null;
+
+                return (m.Id, m.Bounds, shown);
+            })
+            .ToArray();
+
+    private void UpdateDisplays(
+        IReadOnlyList<(string Id, Rect Bounds, WallpaperSky? Shown)> displays
     )
     {
-        isSkipped = false;
+        foreach (
+            var bounds in _displays.Keys.Where(b => displays.All(d => d.Bounds != b)).ToArray()
+        )
+            _displays.Remove(bounds);
 
-        Directory.CreateDirectory(_dirPath);
-        RememberOriginalWallpapers(desktop, monitors);
-        DeleteOutdatedImages();
-
-        var sizes = new List<(int, int)>();
-        foreach (var (id, bounds) in monitors)
+        foreach (var (id, bounds, shown) in displays)
         {
-            // Drawn at the display's own size, so that Windows doesn't scale it
-            var size = (bounds.Right - bounds.Left, bounds.Bottom - bounds.Top);
-            if (!sizes.Contains(size))
-                sizes.Add(size);
+            if (!_displays.TryGetValue(bounds, out var display))
+                _displays[bounds] = display = new Display(id);
 
-            // Covered by a fullscreen application, or being worked on: changed later (unless
-            // it shows this sky already)
-            if (skippedBounds.Contains(bounds))
-            {
-                if (
-                    !string.Equals(
-                        desktop.TryGetWallpaper(id),
-                        GetImagePath(size, index),
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
-                    isSkipped = true;
-
-                continue;
-            }
-
-            var filePath = GetImagePath(size, index);
-            if (!File.Exists(filePath))
-            {
-                // (at the lowest priority as well, so that it never gets in the way, even
-                // if it takes a moment longer)
-                using var backgroundMode = BackgroundWork.EnterBackgroundMode();
-                Render(
-                    DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[index]),
-                    size.Item1,
-                    size.Item2,
-                    filePath,
-                    1
-                );
-            }
-
-            if (
-                !string.Equals(
-                    desktop.TryGetWallpaper(id),
-                    filePath,
-                    StringComparison.OrdinalIgnoreCase
-                )
-            )
-                desktop.SetWallpaper(id, filePath);
+            display.Id = id;
+            display.Shown = shown;
         }
 
-        if (desktop.Position != DesktopWallpaper.FillPosition)
-            desktop.Position = DesktopWallpaper.FillPosition;
-
-        _sizes = sizes;
-
-        return true;
+        _sizes = displays.Select(d => GetSize(d.Bounds)).Distinct().ToArray();
+        _isRefreshNeeded = false;
     }
 
-    // Draws the images that aren't there yet, one at a time, closest to the shown one first (as
-    // they're needed soonest), and waiting while the desktop can't be seen
-    private void StartDrawing(int shownStop)
+    // The skies drawn when they were needed are only kept while a display shows them (they're
+    // drawn again if they're needed after all), and so are the clear skies for an altitude other
+    // than the user's (e.g. after moving), and anything else (e.g. left over from an earlier
+    // version)
+    private void DeleteUnusedImages(
+        DesktopWallpaper desktop,
+        IReadOnlyList<(string Id, Rect Bounds)> monitors
+    )
     {
+        var shown = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (id, _) in monitors)
+        {
+            if (desktop.TryGetWallpaper(id) is { Length: > 0 } wallpaper)
+                shown.Add(Path.GetFileName(wallpaper));
+        }
+
+        foreach (var filePath in Directory.EnumerateFiles(_dirPath, ImagePrefix + "*.png"))
+        {
+            var fileName = Path.GetFileName(filePath);
+            if (
+                shown.Contains(fileName)
+                || TryParseImageFileName(fileName) is { Stop: not null } clear
+                    && (clear.Altitude == 0 || clear.Altitude == _altitude)
+            )
+                continue;
+
+            TryDelete(filePath);
+        }
+    }
+
+    // Draws the clear skies that aren't there yet, one at a time, closest to the given one first
+    // (as they're needed soonest), and waiting while an application is fullscreen
+    private void StartDrawing(int nearStop, int altitude)
+    {
+        _altitude = altitude;
+
         if (!_drawing.IsCompleted)
             return;
 
@@ -583,10 +991,10 @@ public class WallpaperService : IDisposable
             .SelectMany(size =>
                 Enumerable
                     .Range(0, DynamicWallpaper.StopCount)
-                    .Select(stop => (Size: size, Stop: stop))
+                    .Select(stop => (Size: size, Sky: WallpaperSky.Clear(stop, altitude)))
             )
-            .Where(i => !File.Exists(GetImagePath(i.Size, i.Stop)))
-            .OrderBy(i => Math.Abs(i.Stop - shownStop))
+            .Where(i => !File.Exists(GetImagePath(i.Size, i.Sky)))
+            .OrderBy(i => Math.Abs(i.Sky.Stop!.Value - nearStop))
             .ToArray();
 
         if (missing.Length <= 0)
@@ -603,7 +1011,7 @@ public class WallpaperService : IDisposable
             {
                 using var backgroundMode = BackgroundWork.EnterBackgroundMode();
 
-                foreach (var (size, stop) in missing)
+                foreach (var (size, sky) in missing)
                 {
                     while (_isDrawingPaused)
                     {
@@ -614,7 +1022,7 @@ public class WallpaperService : IDisposable
                     if (token.IsCancellationRequested)
                         return;
 
-                    var filePath = GetImagePath(size, stop);
+                    var filePath = GetImagePath(size, sky);
                     if (File.Exists(filePath))
                         continue;
 
@@ -625,7 +1033,7 @@ public class WallpaperService : IDisposable
                     try
                     {
                         tempFilePath = RenderToTempFile(
-                            DynamicWallpaper.GetPalette(DynamicWallpaper.GetStops()[stop]),
+                            sky.Palette,
                             size.Width,
                             size.Height,
                             filePath,

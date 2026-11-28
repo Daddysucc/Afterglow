@@ -331,6 +331,11 @@ public partial class LocalizationManager
             [nameof(AccentColorMatchedLabel)] = "Set the accent color to match",
             [nameof(AccentColorMatchedTooltip)] =
                 "Sets the Windows accent color to the sky's: blue by day, golden around sunrise and sunset and through the evening, and deep blue at night. It only changes while nobody can see it (the screen locked, the display off, or a screensaver running), as Windows briefly stalls every app when it changes. Your own accent color comes back when this is turned off.",
+            [nameof(SkyWeatherEnabledLabel)] = "Show the weather in the sky",
+            [nameof(SkyWeatherEnabledTooltip)] =
+                "Shows the weather where you are in the sky: clouds, rain, storms, snow, fog, haze, smoke and dust, and the deeper blue of high places. The forecast comes from Open-Meteo every hour, with your location rounded to about 10 km. Without an internet connection, the last weather fades slowly back to a clear sky.",
+            [nameof(SkyWeatherLocationMissingHint)] =
+                "Set your location on the Schedule & Location tab to show the weather.",
             [nameof(DynamicWallpaperStepButton)] = "Next time of day",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights, the wallpaper and the accent color to that time of day",

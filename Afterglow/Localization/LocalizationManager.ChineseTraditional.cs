@@ -299,6 +299,11 @@ public partial class LocalizationManager
             [nameof(AccentColorMatchedLabel)] = "設定相符的輔色",
             [nameof(AccentColorMatchedTooltip)] =
                 "將 Windows 輔色設為天空的顏色：白天為藍色，日出、日落和傍晚為金色，夜間為深藍色。僅在無人能看到時變更（螢幕鎖定、顯示器關閉或螢幕保護程式執行時），因為每次變更時 Windows 都會讓所有應用程式短暫停頓。關閉後會恢復你自己的輔色。",
+            [nameof(SkyWeatherEnabledLabel)] = "在天空中顯示天氣",
+            [nameof(SkyWeatherEnabledTooltip)] =
+                "在天空中顯示你所在地的天氣：雲、雨、雷暴、雪、霧、霾、煙和沙塵，以及高海拔地區更深的藍色。每小時從 Open-Meteo 取得一次預報，傳送的位置會四捨五入到約 10 公里。沒有網路連線時，最後的天氣會慢慢恢復為晴朗的天空。",
+            [nameof(SkyWeatherLocationMissingHint)] =
+                "請在「排程與位置」分頁中設定你的位置，以顯示天氣。",
             [nameof(DynamicWallpaperStepButton)] = "下一個時段",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "用於試用：每次前進 90 分鐘，並將螢幕、燈光、桌布和輔色設為該時段",

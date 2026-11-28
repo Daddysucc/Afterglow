@@ -419,10 +419,18 @@ public partial class DashboardViewModel : ViewModelBase
             )
             : "";
 
-    // How high the sun is (in degrees, negative below the horizon), following the sunrise and
-    // sunset (calculated or entered by hand) and the location's latitude if it's known
+    // How high the sun is (in degrees, negative below the horizon): the real sun where the user
+    // is, when that's what sunrise and sunset follow, and otherwise a smooth arc between the times
+    // entered by hand (as the sky should follow those), for the location's latitude if it's known
     public double SunElevation =>
-        DynamicWallpaper.GetSunElevation(SolarTimes, Instant, _settingsService.Location?.Latitude);
+        _settingsService
+            is { IsManualSunriseSunsetEnabled: false, Location: { IsValid: true } location }
+            ? DynamicWallpaper.GetSunElevation(location, Instant)
+            : DynamicWallpaper.GetSunElevation(
+                SolarTimes,
+                Instant,
+                _settingsService.Location?.Latitude
+            );
 
     // Moves on to the next time of day (starting from the next step after now), holding the
     // screen, the lights and the dynamic wallpaper there until stopped

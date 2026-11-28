@@ -253,6 +253,12 @@ public partial class SettingsService : SettingsBase
     [ObservableProperty]
     public partial bool IsAccentColorMatched { get; set; } = true;
 
+    // Along with the dynamic wallpaper, the sky shows the weather where the user is (clouds, rain
+    // or snow), from a forecast fetched every hour (the only regular use of the
+    // internet, so it's off unless the user turns it on)
+    [ObservableProperty]
+    public partial bool IsSkyWeatherEnabled { get; set; }
+
     [ObservableProperty]
     public partial bool IsDefaultToDayConfigurationEnabled { get; set; }
 

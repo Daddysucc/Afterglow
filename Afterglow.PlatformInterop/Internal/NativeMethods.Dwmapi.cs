@@ -14,4 +14,13 @@ internal static partial class NativeMethods
         out int pvAttribute,
         int cbAttribute
     );
+
+    // Returns an HRESULT
+    [DllImport(Dwmapi, EntryPoint = "DwmGetWindowAttribute")]
+    public static extern int DwmGetWindowRectAttribute(
+        nint hwnd,
+        int dwAttribute,
+        out Rect pvAttribute,
+        int cbAttribute
+    );
 }

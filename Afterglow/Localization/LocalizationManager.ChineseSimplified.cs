@@ -305,6 +305,11 @@ public partial class LocalizationManager
             [nameof(AccentColorMatchedLabel)] = "设置匹配的主题色",
             [nameof(AccentColorMatchedTooltip)] =
                 "将 Windows 主题色设为天空的颜色：白天为蓝色，日出、日落和傍晚为金色，夜间为深蓝色。仅在无人能看到时更改（屏幕锁定、显示器关闭或屏幕保护程序运行时），因为每次更改时 Windows 都会让所有应用短暂卡顿。关闭后会恢复你自己的主题色。",
+            [nameof(SkyWeatherEnabledLabel)] = "在天空中显示天气",
+            [nameof(SkyWeatherEnabledTooltip)] =
+                "在天空中显示你所在地的天气：云、雨、雷暴、雪、雾、霾、烟和沙尘，以及高海拔地区更深的蓝色。每小时从 Open-Meteo 获取一次预报，发送的位置会四舍五入到约 10 公里。没有网络连接时，最后的天气会慢慢恢复为晴朗的天空。",
+            [nameof(SkyWeatherLocationMissingHint)] =
+                "请在“时间表与位置”选项卡中设置你的位置，以显示天气。",
             [nameof(DynamicWallpaperStepButton)] = "下一个时段",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "用于试用：每次前进 90 分钟，并将屏幕、灯光、壁纸和主题色设为该时段",
