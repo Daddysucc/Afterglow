@@ -12,8 +12,7 @@ namespace Afterglow.PlatformInterop;
 public static partial class UserActivity
 {
     /// <summary>
-    /// How long it's been since the last mouse or keyboard input (game controllers don't count:
-    /// see <see cref="TryGetControllerState" />).
+    /// How long it's been since the last mouse or keyboard input (game controllers don't count).
     /// </summary>
     public static TimeSpan GetIdleTime()
     {
@@ -65,47 +64,22 @@ public static partial class UserActivity
     }
 
     /// <summary>
-    /// A value that changes whenever a game controller (any that Windows sees as an Xbox
-    /// controller) is used, connected or disconnected, or <c>null</c> if that can't be told.
-    /// Only meaningful compared with an earlier one.
+    /// Whether a screensaver is running.
     /// </summary>
-    public static int? TryGetControllerState()
+    public static bool IsScreenSaverRunning()
     {
-        const uint maxControllers = 4;
-
-        try
-        {
-            var hash = new HashCode();
-            for (uint i = 0; i < maxControllers; i++)
-            {
-                // (the packet number goes up with every change, however short)
-                hash.Add(XInputGetState(i, out var state) == 0 ? (long)state.PacketNumber : -1);
-            }
-
-            return hash.ToHashCode();
-        }
-        // XInput may be missing on stripped-down editions of Windows
-        catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
-        {
-            return null;
-        }
+        const uint getScreenSaverRunning = 0x0072;
+        return SystemParametersInfo(getScreenSaverRunning, 0, out var isRunning, 0) && isRunning;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct ControllerState
-    {
-        public uint PacketNumber;
-        public ushort Buttons;
-        public byte LeftTrigger;
-        public byte RightTrigger;
-        public short LeftThumbX;
-        public short LeftThumbY;
-        public short RightThumbX;
-        public short RightThumbY;
-    }
-
-    [LibraryImport("xinput1_4.dll")]
-    private static partial uint XInputGetState(uint userIndex, out ControllerState state);
+    [LibraryImport("user32.dll", EntryPoint = "SystemParametersInfoW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SystemParametersInfo(
+        uint action,
+        uint param,
+        [MarshalAs(UnmanagedType.Bool)] out bool value,
+        uint flags
+    );
 
     [StructLayout(LayoutKind.Sequential)]
     private struct LastInputInfo

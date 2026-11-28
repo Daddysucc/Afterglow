@@ -31,41 +31,6 @@ public readonly record struct WallpaperColor(byte Red, byte Green, byte Blue)
             Math.Abs(a.Red - b.Red),
             Math.Max(Math.Abs(a.Green - b.Green), Math.Abs(a.Blue - b.Blue))
         );
-
-    /// <summary>
-    /// How different the two colors look (the distance between them in OKLab, a color space laid
-    /// out the way the eye tells colors apart): from 0 (the same) to about 1 (black and white).
-    /// About 0.02 is the smallest difference that can just be seen side by side.
-    /// </summary>
-    public static double GetPerceptualDifference(WallpaperColor a, WallpaperColor b)
-    {
-        var (l1, a1, b1) = a.ToOklab();
-        var (l2, a2, b2) = b.ToOklab();
-
-        return Math.Sqrt((l1 - l2) * (l1 - l2) + (a1 - a2) * (a1 - a2) + (b1 - b2) * (b1 - b2));
-    }
-
-    // https://bottosson.github.io/posts/oklab
-    private (double L, double A, double B) ToOklab()
-    {
-        static double ToLinear(byte value)
-        {
-            var x = value / 255.0;
-            return x <= 0.04045 ? x / 12.92 : Math.Pow((x + 0.055) / 1.055, 2.4);
-        }
-
-        var (r, g, b) = (ToLinear(Red), ToLinear(Green), ToLinear(Blue));
-
-        var l = Math.Cbrt(0.4122214708 * r + 0.5363015264 * g + 0.0514459929 * b);
-        var m = Math.Cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
-        var s = Math.Cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
-
-        return (
-            0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
-            1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
-            0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
-        );
-    }
 }
 
 /// <summary>
@@ -108,9 +73,6 @@ public static class DynamicWallpaper
             new(new(72, 110, 236), new(100, 140, 245), new(170, 190, 245), new(240, 230, 215), 0.3)
         ),
     ];
-
-    // The accent color never goes fully dark, even when lights would be very dim
-    private const double MinimumAccentBrightness = 0.08;
 
     // Used for the sun's path when no location is set (sunrise and sunset entered by hand)
     private const double DefaultLatitude = 45;
@@ -260,27 +222,35 @@ public static class DynamicWallpaper
         return best;
     }
 
+    // The sun's elevation (in degrees) below which the day's accent color gives way to the
+    // golden hour's, around sunrise and sunset
+    private const double GoldenHourElevation = 6;
+
     /// <summary>
-    /// Gets the accent color: the color that lights take on for the given screen color
-    /// temperature, as bright as they'd be for the given screen brightness.
+    /// Gets the part of the day that the accent color shows: the night after bedtime, the golden
+    /// hour around sunrise and sunset (and through the evening until bedtime), and the day.
     /// </summary>
-    public static WallpaperColor GetAccentColor(
-        double screenKelvin,
-        double screenBrightness,
-        double warmth,
-        double dimming
-    )
-    {
-        var lightKelvin = 1_000_000 / HueLightController.ToLightMired(screenKelvin, warmth);
-        var (red, green, blue) = WhitePoint.GetRgb(lightKelvin);
+    public static AccentTime GetAccentTime(CycleStage stage, double sunElevation) =>
+        stage switch
+        {
+            CycleStage.Night => AccentTime.Night,
+            CycleStage.Evening => AccentTime.GoldenHour,
+            _ when sunElevation < GoldenHourElevation => AccentTime.GoldenHour,
+            _ => AccentTime.Day,
+        };
 
-        var brightness = Math.Max(
-            HueLightController.ToLightBrightness(screenBrightness, dimming, screenKelvin) / 100,
-            MinimumAccentBrightness
-        );
-
-        return WallpaperColor.From(red * 255, green * 255, blue * 255).Scale(brightness);
-    }
+    /// <summary>
+    /// Gets the accent color for a part of the day: a color of the wallpaper's sky at that time
+    /// (the day's blue, the glow of the sunset, and the night's deep blue, which is muted so
+    /// that it stays out of the way at night).
+    /// </summary>
+    public static WallpaperColor GetAccentColor(AccentTime time) =>
+        time switch
+        {
+            AccentTime.Night => GetPalette(LowestStop).SkyMiddle,
+            AccentTime.GoldenHour => GetPalette(0).Glow,
+            _ => GetPalette(HighestStop).SkyMiddle,
+        };
 
     /// <summary>
     /// Gets about how high the sun is (in degrees, negative below the horizon) at the given
@@ -383,4 +353,15 @@ public static class DynamicWallpaper
 
         return difference <= maxStep ? to : from.Lerp(to, (double)maxStep / difference);
     }
+}
+
+/// <summary>
+/// The parts of the day that the accent color follows (see
+/// <see cref="DynamicWallpaper.GetAccentTime" />).
+/// </summary>
+public enum AccentTime
+{
+    Day,
+    GoldenHour,
+    Night,
 }

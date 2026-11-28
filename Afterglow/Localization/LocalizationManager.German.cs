@@ -297,7 +297,7 @@ public partial class LocalizationManager
             "Lampen übernehmen die Farbtemperatur des Zyklus (soweit möglich, etwa 2000 K bis 6500 K)",
         [nameof(LightWarmthLabel)] = "Wärme",
         [nameof(LightWarmthTooltip)] =
-            "Wie viel wärmer die Lampen als der Bildschirm eingestellt werden, damit sie so warm wirken wie er. Farbfähige Lampen wechseln zu Bernstein und Orange, wenn ihre warmen Weißtöne nicht mehr reichen. Diese Einstellung gilt auch für die Akzentfarbe (für die Hintergrundbeleuchtung des Monitors) beim dynamischen Hintergrundbild.",
+            "Wie viel wärmer die Lampen als der Bildschirm eingestellt werden, damit sie so warm wirken wie er. Farbfähige Lampen wechseln zu Bernstein und Orange, wenn ihre warmen Weißtöne nicht mehr reichen.",
         [nameof(HueFollowBrightnessLabel)] = "Helligkeit folgen",
         [nameof(HueFollowBrightnessTooltip)] =
             "Lampen übernehmen die Helligkeit des Zyklus (100 % in Afterglow ist volle Helligkeit)",
@@ -306,16 +306,16 @@ public partial class LocalizationManager
             "Lampen kehren auch in ihren vorherigen Zustand zurück, solange der Bildschirm automatisch pausiert ist (Vollbildanwendungen, Anwendungen auf der Whitelist, Remote-Streaming, gesperrter Bildschirm)",
         [nameof(LightDimmingLabel)] = "Dimmen",
         [nameof(LightDimmingTooltip)] =
-            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×2.2 geben sie so viel Licht ab wie der Bildschirm (ein gedimmter, warmer Bildschirm gibt viel weniger Licht ab, als seine Helligkeit vermuten lässt); niedrigere Werte lassen sie heller, höhere dimmen sie stärker. Volle Helligkeit eines ungetönten Bildschirms bleibt immer voll. Diese Einstellung gilt auch für die Akzentfarbe (für die Hintergrundbeleuchtung des Monitors) beim dynamischen Hintergrundbild.",
+            "Wie stark die Lampen gedimmt werden, wenn der Bildschirm dunkler wird. Bei ×2.2 geben sie so viel Licht ab wie der Bildschirm (ein gedimmter, warmer Bildschirm gibt viel weniger Licht ab, als seine Helligkeit vermuten lässt); niedrigere Werte lassen sie heller, höhere dimmen sie stärker. Volle Helligkeit eines ungetönten Bildschirms bleibt immer voll.",
         [nameof(DynamicWallpaperCardTitle)] = "Dynamisches Hintergrundbild",
         [nameof(DynamicWallpaperCardSubtitle)] =
-            "Ein Himmel in der Farbtemperatur und Helligkeit des Bildschirms, durch Sonnenaufgang und Sonnenuntergang. Wenn Windows Dynamic Lighting der Akzentfarbe folgt, folgt ihm auch die Hintergrundbeleuchtung eines Monitors.",
+            "Ein Himmel, der der Sonne durch den Tag folgt und wie alles andere vom Bildschirm getönt wird.",
         [nameof(DynamicWallpaperEnabledLabel)] = "Hintergrundbild zeichnen",
         [nameof(DynamicWallpaperEnabledTooltip)] =
             "Ersetzt das Hintergrundbild auf jedem Bildschirm (Hochformat-Bildschirme erhalten ein Bild im Hochformat). Ihr eigenes Hintergrundbild kehrt zurück, wenn dies ausgeschaltet wird (eine Diashow oder Windows-Blickpunkt kehrt als ihr aktuelles Bild zurück: schalten Sie sie unter Einstellungen › Personalisierung › Hintergrund wieder ein).",
         [nameof(AccentColorMatchedLabel)] = "Akzentfarbe passend setzen",
         [nameof(AccentColorMatchedTooltip)] =
-            "Setzt die Windows-Akzentfarbe genau auf die Farbe und Helligkeit des Lichts, für Dynamic Lighting (\"Meiner Windows-Akzentfarbe entsprechen\" unter Einstellungen › Personalisierung › Dynamische Beleuchtung einschalten). Eine automatisch aus dem Hintergrundbild gewählte Akzentfarbe würde die Dimmung auslassen. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird. Sie ändert sich nur, während Sie weg sind (30 Sekunden keine Eingabe, und nichts wird abgespielt), da Windows bei jeder Änderung der Akzentfarbe kurz alle Apps und die Maus einfriert.",
+            "Setzt die Windows-Akzentfarbe auf die des Himmels: tagsüber blau, bei Sonnenauf- und -untergang sowie am Abend golden und nachts tiefblau. Sie ändert sich nur, wenn es niemand sehen kann (Bildschirm gesperrt, Bildschirm aus oder Bildschirmschoner aktiv), da Windows bei jeder Änderung kurz alle Apps einfriert. Ihre eigene Akzentfarbe kehrt zurück, wenn dies ausgeschaltet wird.",
         [nameof(DynamicWallpaperStepButton)] = "Nächste Tageszeit",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Zum Ausprobieren: springt jeweils 90 Minuten weiter und stellt Bildschirm, Lampen, Hintergrundbild und Akzentfarbe auf diese Tageszeit",
@@ -482,8 +482,6 @@ public partial class LocalizationManager
         [nameof(AdvancedCardTitle)] = "Erweitert",
         [nameof(BedtimeSummaryTooltip)] =
             "Die Schlafenszeit wird zusammen mit den Abendfarben im Tab Zyklus & Farben eingestellt.",
-        [nameof(AccentUsesLightSettingsHint)] =
-            "Die Akzentfarbe verwendet die Einstellungen Wärme und Dimmen der Lampen oben.",
         [nameof(StartMinimizedLabel)] = "Minimiert starten",
         [nameof(StartMinimizedTooltip)] =
             "Afterglow beim Start in den Infobereich minimieren, auch wenn es manuell gestartet wird",

@@ -5,8 +5,8 @@ What's new in each version, newest first: a few short lines each (see `CLAUDE.md
 ## 3.7.0
 
 - Clearer settings, and numbers you can type in.
-- Updates show what's new before you install them.
-- Half the memory while it sits in the tray.
+- Updates show what's new; half the memory in the tray.
+- The accent color follows the sky, and only changes unseen.
 
 ## 3.6.5
 

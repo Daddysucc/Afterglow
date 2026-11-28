@@ -303,7 +303,7 @@ public partial class LocalizationManager
                 "Las luces adoptan la temperatura de color del ciclo (hasta donde pueden, de unos 2000 K a 6500 K)",
             [nameof(LightWarmthLabel)] = "Calidez",
             [nameof(LightWarmthTooltip)] =
-                "Cuánto más cálidas que la pantalla se ajustan las luces, para que parezcan tan cálidas como ella. Las luces que muestran colores pasan a ámbar y naranja cuando se quedan sin blancos cálidos. Este ajuste también se aplica al color de énfasis (para la retroiluminación del monitor), con el fondo de pantalla dinámico.",
+                "Cuánto más cálidas que la pantalla se ajustan las luces, para que parezcan tan cálidas como ella. Las luces que muestran colores pasan a ámbar y naranja cuando se quedan sin blancos cálidos.",
             [nameof(HueFollowBrightnessLabel)] = "Seguir el brillo",
             [nameof(HueFollowBrightnessTooltip)] =
                 "Las luces adoptan el brillo del ciclo (el 100 % de Afterglow es el brillo máximo)",
@@ -312,16 +312,16 @@ public partial class LocalizationManager
                 "Las luces también vuelven a su estado anterior mientras la pantalla está en pausa automáticamente (aplicaciones a pantalla completa, aplicaciones de la lista blanca, transmisión remota, pantalla bloqueada)",
             [nameof(LightDimmingLabel)] = "Atenuación",
             [nameof(LightDimmingTooltip)] =
-                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×2.2 emiten tanta luz como la pantalla (una pantalla atenuada y cálida emite mucha menos luz de lo que sugiere su brillo); los valores más bajos las mantienen más brillantes y los más altos las atenúan más. El brillo máximo de una pantalla sin tinte siempre se mantiene. Este ajuste también se aplica al color de énfasis (para la retroiluminación del monitor), con el fondo de pantalla dinámico.",
+                "Cuánto se atenúan las luces cuando la pantalla se atenúa. Con ×2.2 emiten tanta luz como la pantalla (una pantalla atenuada y cálida emite mucha menos luz de lo que sugiere su brillo); los valores más bajos las mantienen más brillantes y los más altos las atenúan más. El brillo máximo de una pantalla sin tinte siempre se mantiene.",
             [nameof(DynamicWallpaperCardTitle)] = "Fondo de pantalla dinámico",
             [nameof(DynamicWallpaperCardSubtitle)] =
-                "Un cielo con la temperatura de color y el brillo de la pantalla, a lo largo del amanecer y el atardecer. Si la iluminación dinámica de Windows sigue el color de énfasis, la retroiluminación de un monitor también lo sigue.",
+                "Un cielo que sigue al sol a lo largo del día, teñido por la pantalla como todo lo demás.",
             [nameof(DynamicWallpaperEnabledLabel)] = "Dibujar el fondo de pantalla",
             [nameof(DynamicWallpaperEnabledTooltip)] =
                 "Reemplaza el fondo de pantalla en cada pantalla (las pantallas verticales reciben una imagen vertical). Tu propio fondo de pantalla vuelve cuando se desactiva (una presentación o Contenido destacado de Windows vuelve como su imagen actual: vuelve a activarlo en Configuración › Personalización › Fondo).",
             [nameof(AccentColorMatchedLabel)] = "Ajustar el color de énfasis",
             [nameof(AccentColorMatchedTooltip)] =
-                "Ajusta el color de énfasis de Windows exactamente al color y brillo de la luz, para la iluminación dinámica (activa «Coincidir con mi color de énfasis de Windows» en Configuración › Personalización › Iluminación dinámica). Un color de énfasis automático tomado del fondo de pantalla dejaría fuera la atenuación. Tu propio color de énfasis vuelve cuando se desactiva. Solo cambia mientras no estás (30 segundos sin actividad y sin nada reproduciéndose), porque Windows congela brevemente todas las aplicaciones, y el ratón, cada vez que cambia el color de énfasis.",
+                "Ajusta el color de énfasis de Windows al del cielo: azul de día, dorado al amanecer, al atardecer y por la tarde, y azul profundo de noche. Solo cambia cuando nadie puede verlo (pantalla bloqueada, pantalla apagada o protector de pantalla activo), porque Windows congela brevemente todas las aplicaciones cada vez que cambia. Tu propio color de énfasis vuelve cuando se desactiva.",
             [nameof(DynamicWallpaperStepButton)] = "Siguiente hora del día",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "Para probarlo: avanza 90 minutos cada vez y ajusta la pantalla, las luces, el fondo de pantalla y el color de énfasis a esa hora del día",
@@ -493,8 +493,6 @@ public partial class LocalizationManager
             [nameof(AdvancedCardTitle)] = "Avanzado",
             [nameof(BedtimeSummaryTooltip)] =
                 "La hora de dormir se ajusta junto con los colores de la tarde, en la pestaña Ciclo y colores.",
-            [nameof(AccentUsesLightSettingsHint)] =
-                "El color de énfasis usa los ajustes Calidez y Atenuación de las luces de arriba.",
             [nameof(StartMinimizedLabel)] = "Iniciar minimizado",
             [nameof(StartMinimizedTooltip)] =
                 "Ocultar Afterglow en la bandeja del sistema al iniciarse, incluso cuando se abre manualmente",

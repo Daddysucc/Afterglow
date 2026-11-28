@@ -473,7 +473,6 @@ public partial class LocalizationManager
 
     public string BedtimeSummaryTooltip => Get();
 
-    public string AccentUsesLightSettingsHint => Get();
     public string StartMinimizedLabel => Get();
     public string StartMinimizedTooltip => Get();
     public string ExtendedGammaRangeLabel => Get();

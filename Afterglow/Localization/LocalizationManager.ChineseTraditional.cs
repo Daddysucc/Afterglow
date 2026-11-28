@@ -280,7 +280,7 @@ public partial class LocalizationManager
                 "燈會採用週期的色溫（在其支援的範圍內，約 2000 K 到 6500 K）",
             [nameof(LightWarmthLabel)] = "暖度",
             [nameof(LightWarmthTooltip)] =
-                "燈比螢幕設得暖多少，以便看起來和螢幕一樣暖。可顯示顏色的燈在暖白色用盡後會變為琥珀色和橙色。使用動態桌布時，它也會用於輔色（螢幕背光）。",
+                "燈比螢幕設得暖多少，以便看起來和螢幕一樣暖。可顯示顏色的燈在暖白色用盡後會變為琥珀色和橙色。",
             [nameof(HueFollowBrightnessLabel)] = "跟隨亮度",
             [nameof(HueFollowBrightnessTooltip)] =
                 "燈會採用週期的亮度（Afterglow 的 100% 即為最大亮度）",
@@ -289,16 +289,16 @@ public partial class LocalizationManager
                 "螢幕自動暫停時（全螢幕應用程式、白名單應用程式、遠端串流、鎖定畫面），燈也會恢復到先前的狀態",
             [nameof(LightDimmingLabel)] = "調暗",
             [nameof(LightDimmingTooltip)] =
-                "螢幕變暗時燈變暗的程度。×2.2 時燈發出的光與螢幕相同（變暗、偏暖的螢幕發出的光遠少於其亮度所示）；數值越低燈越亮，越高燈越暗。未著色螢幕的滿亮度始終保持滿亮度。使用動態桌布時，它也會用於輔色（螢幕背光）。",
+                "螢幕變暗時燈變暗的程度。×2.2 時燈發出的光與螢幕相同（變暗、偏暖的螢幕發出的光遠少於其亮度所示）；數值越低燈越亮，越高燈越暗。未著色螢幕的滿亮度始終保持滿亮度。",
             [nameof(DynamicWallpaperCardTitle)] = "動態桌布",
             [nameof(DynamicWallpaperCardSubtitle)] =
-                "依螢幕色溫和亮度繪製的天空，隨日出和日落變化。當 Windows 動態光源配合輔色時，螢幕背光也會隨之變化。",
+                "隨太陽在一天中變化的天空，並像其他內容一樣受螢幕色調影響。",
             [nameof(DynamicWallpaperEnabledLabel)] = "繪製桌布",
             [nameof(DynamicWallpaperEnabledTooltip)] =
                 "取代每個螢幕上的桌面桌布（直向螢幕使用直向圖像）。關閉後會恢復你自己的桌布（投影片放映或 Windows 焦點會以其目前圖片恢復，請在「設定 › 個人化 › 背景」中重新開啟）。",
             [nameof(AccentColorMatchedLabel)] = "設定相符的輔色",
             [nameof(AccentColorMatchedTooltip)] =
-                "將 Windows 輔色設為燈光的準確顏色和亮度，供動態光源使用（在「設定 › 個人化 › 動態光源」中開啟「配合我的 Windows 輔色」）。從桌布自動選取的輔色會忽略調暗。關閉後會恢復你自己的輔色。僅在你離開時變更（30 秒無輸入，且沒有播放內容），因為每次變更輔色時 Windows 都會讓所有應用程式和滑鼠短暫停頓。",
+                "將 Windows 輔色設為天空的顏色：白天為藍色，日出、日落和傍晚為金色，夜間為深藍色。僅在無人能看到時變更（螢幕鎖定、顯示器關閉或螢幕保護程式執行時），因為每次變更時 Windows 都會讓所有應用程式短暫停頓。關閉後會恢復你自己的輔色。",
             [nameof(DynamicWallpaperStepButton)] = "下一個時段",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "用於試用：每次前進 90 分鐘，並將螢幕、燈光、桌布和輔色設為該時段",
@@ -444,7 +444,6 @@ public partial class LocalizationManager
             [nameof(AppCardTitle)] = "應用程式",
             [nameof(AdvancedCardTitle)] = "進階",
             [nameof(BedtimeSummaryTooltip)] = "就寢時間與傍晚色彩一起在「週期與色彩」分頁中設定。",
-            [nameof(AccentUsesLightSettingsHint)] = "輔色使用上方燈光的「暖度」和「調暗」設定。",
             [nameof(StartMinimizedLabel)] = "啟動時最小化",
             [nameof(StartMinimizedTooltip)] = "啟動時將 Afterglow 隱藏到系統匣，即使是手動啟動",
             [nameof(ExtendedGammaRangeLabel)] = "延伸 Gamma 範圍",

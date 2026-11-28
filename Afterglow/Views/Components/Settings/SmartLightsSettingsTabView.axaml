@@ -260,7 +260,7 @@
                 <Grid
                     ColumnDefinitions="Auto,*,Auto"
                     ColumnSpacing="12"
-                    IsEnabled="{Binding IsLightWarmthUsed}"
+                    IsEnabled="{Binding IsHueTemperatureFollowed}"
                     ToolTip.Tip="{Binding LocalizationManager.LightWarmthTooltip}"
                 >
                     <TextBlock
@@ -308,7 +308,7 @@
                 <Grid
                     ColumnDefinitions="Auto,*,Auto"
                     ColumnSpacing="12"
-                    IsEnabled="{Binding IsLightDimmingUsed}"
+                    IsEnabled="{Binding IsHueBrightnessFollowed}"
                     ToolTip.Tip="{Binding LocalizationManager.LightDimmingTooltip}"
                 >
                     <TextBlock
@@ -680,7 +680,7 @@
 
         <!--  Dynamic wallpaper (and accent color, for Windows Dynamic Lighting)  -->
         <Border Classes="card">
-            <StackPanel Grid.IsSharedSizeScope="True" Orientation="Vertical" Spacing="10">
+            <StackPanel Orientation="Vertical" Spacing="10">
                 <StackPanel Orientation="Vertical" Spacing="2">
                     <TextBlock
                         Classes="card-title"
@@ -725,89 +725,6 @@
                         IsChecked="{Binding IsAccentColorMatched}"
                     />
                 </Grid>
-
-                <!--  How warm and dim the accent color gets (the same settings as the lights'
-                      above, which are shown here while there are no Hue lights)  -->
-                <Grid
-                    ColumnSpacing="12"
-                    IsEnabled="{Binding IsAccentColorUsed}"
-                    IsVisible="{Binding !IsHueControlShown}"
-                    ToolTip.Tip="{Binding LocalizationManager.LightWarmthTooltip}"
-                >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="AccentSliderLabel" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Classes="setting-hint"
-                        Text="{Binding LocalizationManager.LightWarmthLabel}"
-                    />
-                    <Slider
-                        Grid.Column="1"
-                        IsSnapToTickEnabled="True"
-                        LargeChange="0.5"
-                        Maximum="8"
-                        Minimum="1"
-                        SmallChange="0.1"
-                        TickFrequency="0.1"
-                        Value="{Binding LightWarmth}"
-                    />
-                    <controls:ValueTextBox
-                        Grid.Column="2"
-                        MinWidth="40"
-                        Classes="value"
-                        Text="{Binding LightWarmthText, UpdateSourceTrigger=LostFocus}"
-                        TextAlignment="Right"
-                        Theme="{DynamicResource CompactTextBox}"
-                    />
-                </Grid>
-
-                <Grid
-                    ColumnSpacing="12"
-                    IsEnabled="{Binding IsAccentColorUsed}"
-                    IsVisible="{Binding !IsHueControlShown}"
-                    ToolTip.Tip="{Binding LocalizationManager.LightDimmingTooltip}"
-                >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="AccentSliderLabel" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock
-                        Grid.Column="0"
-                        VerticalAlignment="Center"
-                        Classes="setting-hint"
-                        Text="{Binding LocalizationManager.LightDimmingLabel}"
-                    />
-                    <Slider
-                        Grid.Column="1"
-                        IsSnapToTickEnabled="True"
-                        LargeChange="0.5"
-                        Maximum="6"
-                        Minimum="0.5"
-                        SmallChange="0.1"
-                        TickFrequency="0.1"
-                        Value="{Binding LightDimming}"
-                    />
-                    <controls:ValueTextBox
-                        Grid.Column="2"
-                        MinWidth="40"
-                        Classes="value"
-                        Text="{Binding LightDimmingText, UpdateSourceTrigger=LostFocus}"
-                        TextAlignment="Right"
-                        Theme="{DynamicResource CompactTextBox}"
-                    />
-                </Grid>
-
-                <TextBlock
-                    Classes="setting-hint"
-                    IsVisible="{Binding IsHueControlShown}"
-                    Text="{Binding LocalizationManager.AccentUsesLightSettingsHint}"
-                    TextWrapping="Wrap"
-                />
 
                 <!--  Stepping through the day, to try it out  -->
                 <StackPanel Orientation="Horizontal" Spacing="8">

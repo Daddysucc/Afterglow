@@ -302,7 +302,7 @@ public partial class LocalizationManager
             "Les lampes prennent la température de couleur du cycle (dans la mesure du possible, d’environ 2000 K à 6500 K)",
         [nameof(LightWarmthLabel)] = "Chaleur",
         [nameof(LightWarmthTooltip)] =
-            "À quel point les lumières sont réglées plus chaudes que l'écran, pour paraître aussi chaudes que lui. Les lumières qui affichent des couleurs passent à l'ambre et à l'orange une fois à court de blancs chauds. Ce réglage s'applique aussi à la couleur d'accentuation (pour le rétroéclairage de l'écran), avec le fond d'écran dynamique.",
+            "À quel point les lumières sont réglées plus chaudes que l'écran, pour paraître aussi chaudes que lui. Les lumières qui affichent des couleurs passent à l'ambre et à l'orange une fois à court de blancs chauds.",
         [nameof(HueFollowBrightnessLabel)] = "Suivre la luminosité",
         [nameof(HueFollowBrightnessTooltip)] =
             "Les lampes prennent la luminosité du cycle (les 100 % d'Afterglow correspondent à la pleine luminosité)",
@@ -311,16 +311,16 @@ public partial class LocalizationManager
             "Les lumières reviennent aussi à leur état précédent tant que l'écran est suspendu automatiquement (applications en plein écran, applications de la liste blanche, streaming à distance, écran verrouillé)",
         [nameof(LightDimmingLabel)] = "Atténuation",
         [nameof(LightDimmingTooltip)] =
-            "À quel point les lumières baissent quand l'écran baisse. À ×2.2, elles émettent autant de lumière que l'écran (un écran assombri et chaud émet bien moins de lumière que sa luminosité ne le laisse penser) ; des valeurs plus basses les gardent plus lumineuses, des valeurs plus élevées les baissent davantage. La pleine luminosité d'un écran non teinté reste toujours pleine. Ce réglage s'applique aussi à la couleur d'accentuation (pour le rétroéclairage de l'écran), avec le fond d'écran dynamique.",
+            "À quel point les lumières baissent quand l'écran baisse. À ×2.2, elles émettent autant de lumière que l'écran (un écran assombri et chaud émet bien moins de lumière que sa luminosité ne le laisse penser) ; des valeurs plus basses les gardent plus lumineuses, des valeurs plus élevées les baissent davantage. La pleine luminosité d'un écran non teinté reste toujours pleine.",
         [nameof(DynamicWallpaperCardTitle)] = "Fond d'écran dynamique",
         [nameof(DynamicWallpaperCardSubtitle)] =
-            "Un ciel à la température de couleur et à la luminosité de l'écran, au fil du lever et du coucher du soleil. Si l'éclairage dynamique de Windows suit la couleur d'accentuation, le rétroéclairage d'un moniteur le suit aussi.",
+            "Un ciel qui suit le soleil au fil de la journée, teinté par l'écran comme tout le reste.",
         [nameof(DynamicWallpaperEnabledLabel)] = "Dessiner le fond d'écran",
         [nameof(DynamicWallpaperEnabledTooltip)] =
             "Remplace le fond d'écran sur chaque écran (les écrans en portrait reçoivent une image en portrait). Votre propre fond d'écran revient quand cette option est désactivée (un diaporama ou Windows à la une revient sous forme de son image actuelle : réactivez-le dans Paramètres › Personnalisation › Arrière-plan).",
         [nameof(AccentColorMatchedLabel)] = "Accorder la couleur d'accentuation",
         [nameof(AccentColorMatchedTooltip)] =
-            "Règle la couleur d'accentuation de Windows exactement sur la couleur et la luminosité de la lumière, pour l'éclairage dynamique (activez « Faire correspondre à la couleur d'accentuation de Windows » dans Paramètres › Personnalisation › Éclairage dynamique). Une couleur d'accentuation automatique tirée du fond d'écran laisserait de côté la baisse de luminosité. Votre propre couleur d'accentuation revient quand cette option est désactivée. Elle ne change que pendant votre absence (aucune saisie pendant 30 secondes, et rien en lecture), car Windows fige brièvement toutes les applications, et la souris, à chaque changement de couleur d'accentuation.",
+            "Règle la couleur d'accentuation de Windows sur celle du ciel : bleue le jour, dorée au lever et au coucher du soleil et en soirée, bleu profond la nuit. Elle ne change que lorsque personne ne peut le voir (écran verrouillé, écran éteint ou économiseur d'écran actif), car Windows fige brièvement toutes les applications à chaque changement. Votre propre couleur d'accentuation revient quand cette option est désactivée.",
         [nameof(DynamicWallpaperStepButton)] = "Moment suivant",
         [nameof(DynamicWallpaperStepTooltip)] =
             "Pour essayer : avance de 90 minutes à chaque fois, en réglant l'écran, les lumières, le fond d'écran et la couleur d'accentuation sur ce moment de la journée",
@@ -490,8 +490,6 @@ public partial class LocalizationManager
         [nameof(AdvancedCardTitle)] = "Avancé",
         [nameof(BedtimeSummaryTooltip)] =
             "L'heure du coucher se règle avec les couleurs du soir, dans l'onglet Cycle et couleurs.",
-        [nameof(AccentUsesLightSettingsHint)] =
-            "La couleur d'accentuation utilise les réglages Chaleur et Atténuation des lumières ci-dessus.",
         [nameof(StartMinimizedLabel)] = "Démarrer réduit",
         [nameof(StartMinimizedTooltip)] =
             "Réduire Afterglow dans la zone de notification au démarrage, même lorsqu'il est lancé manuellement",

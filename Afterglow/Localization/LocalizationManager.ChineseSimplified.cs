@@ -286,7 +286,7 @@ public partial class LocalizationManager
                 "灯会采用周期的色温（在其支持的范围内，约 2000 K 到 6500 K）",
             [nameof(LightWarmthLabel)] = "暖度",
             [nameof(LightWarmthTooltip)] =
-                "灯比屏幕设得暖多少，以便看起来和屏幕一样暖。可显示颜色的灯在暖白色用尽后会变为琥珀色和橙色。使用动态壁纸时，它也会用于主题色（显示器背光）。",
+                "灯比屏幕设得暖多少，以便看起来和屏幕一样暖。可显示颜色的灯在暖白色用尽后会变为琥珀色和橙色。",
             [nameof(HueFollowBrightnessLabel)] = "跟随亮度",
             [nameof(HueFollowBrightnessTooltip)] =
                 "灯会采用周期的亮度（Afterglow 的 100% 即为最大亮度）",
@@ -295,16 +295,16 @@ public partial class LocalizationManager
                 "屏幕自动暂停时（全屏应用、白名单应用、远程串流、锁屏），灯也会恢复到之前的状态",
             [nameof(LightDimmingLabel)] = "调暗",
             [nameof(LightDimmingTooltip)] =
-                "屏幕变暗时灯变暗的程度。×2.2 时灯发出的光与屏幕相同（变暗、偏暖的屏幕发出的光远少于其亮度所示）；数值越低灯越亮，越高灯越暗。未着色屏幕的满亮度始终保持满亮度。使用动态壁纸时，它也会用于主题色（显示器背光）。",
+                "屏幕变暗时灯变暗的程度。×2.2 时灯发出的光与屏幕相同（变暗、偏暖的屏幕发出的光远少于其亮度所示）；数值越低灯越亮，越高灯越暗。未着色屏幕的满亮度始终保持满亮度。",
             [nameof(DynamicWallpaperCardTitle)] = "动态壁纸",
             [nameof(DynamicWallpaperCardSubtitle)] =
-                "按屏幕色温和亮度绘制的天空，随日出和日落变化。当 Windows 动态光效匹配主题色时，显示器背光也会随之变化。",
+                "随太阳在一天中变化的天空，并像其他内容一样受屏幕色调影响。",
             [nameof(DynamicWallpaperEnabledLabel)] = "绘制壁纸",
             [nameof(DynamicWallpaperEnabledTooltip)] =
                 "替换每个显示器上的桌面壁纸（竖屏显示器使用竖向图像）。关闭后会恢复你自己的壁纸（幻灯片放映或 Windows 聚焦会以其当前图片恢复，请在“设置 › 个性化 › 背景”中重新打开）。",
             [nameof(AccentColorMatchedLabel)] = "设置匹配的主题色",
             [nameof(AccentColorMatchedTooltip)] =
-                "将 Windows 主题色设为灯光的准确颜色和亮度，供动态光效使用（在“设置 › 个性化 › 动态光效”中打开“匹配我的 Windows 主题色”）。从壁纸自动选取的主题色会忽略调暗。关闭后会恢复你自己的主题色。仅在你离开时更改（30 秒无输入，且没有播放内容），因为每次更改主题色时 Windows 都会让所有应用和鼠标短暂卡顿。",
+                "将 Windows 主题色设为天空的颜色：白天为蓝色，日出、日落和傍晚为金色，夜间为深蓝色。仅在无人能看到时更改（屏幕锁定、显示器关闭或屏幕保护程序运行时），因为每次更改时 Windows 都会让所有应用短暂卡顿。关闭后会恢复你自己的主题色。",
             [nameof(DynamicWallpaperStepButton)] = "下一个时段",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "用于试用：每次前进 90 分钟，并将屏幕、灯光、壁纸和主题色设为该时段",
@@ -450,7 +450,6 @@ public partial class LocalizationManager
             [nameof(AppCardTitle)] = "应用",
             [nameof(AdvancedCardTitle)] = "高级",
             [nameof(BedtimeSummaryTooltip)] = "就寝时间与傍晚颜色一起在“周期与色彩”选项卡中设置。",
-            [nameof(AccentUsesLightSettingsHint)] = "主题色使用上方灯光的“暖度”和“调暗”设置。",
             [nameof(StartMinimizedLabel)] = "启动时最小化",
             [nameof(StartMinimizedTooltip)] = "启动时将 Afterglow 隐藏到系统托盘，即使是手动启动",
             [nameof(ExtendedGammaRangeLabel)] = "扩展伽马范围",

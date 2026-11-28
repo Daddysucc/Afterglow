@@ -124,15 +124,6 @@ public partial class SmartLightsSettingsTabViewModel : SettingsTabViewModelBase
         set => SettingsService.IsAccentColorMatched = value;
     }
 
-    // Whether the accent color follows the screen (with the lights' warmth and dimming)
-    public bool IsAccentColorUsed =>
-        SettingsService.IsDynamicWallpaperEnabled && SettingsService.IsAccentColorMatched;
-
-    // The warmth and dimming apply to the lights (if they follow that), and to the accent color
-    public bool IsLightWarmthUsed => IsHueTemperatureFollowed || IsAccentColorUsed;
-
-    public bool IsLightDimmingUsed => IsHueBrightnessFollowed || IsAccentColorUsed;
-
     public bool IsHueEnabled
     {
         get => SettingsService.IsHueEnabled;

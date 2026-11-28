@@ -95,34 +95,6 @@ public class DynamicWallpaperSpecs
     }
 
     [Fact]
-    public void I_get_a_warmer_accent_color_for_a_warmer_screen()
-    {
-        // Act
-        var warmer = DynamicWallpaper.GetAccentColor(3000, 1, 4, 2.2);
-        var cooler = DynamicWallpaper.GetAccentColor(6500, 1, 4, 2.2);
-
-        // Assert (less green and blue for every bit of red)
-        ((double)warmer.Green / warmer.Red)
-            .Should()
-            .BeLessThan((double)cooler.Green / cooler.Red);
-        ((double)warmer.Blue / Math.Max(warmer.Red, (byte)1))
-            .Should()
-            .BeLessThan((double)cooler.Blue / cooler.Red);
-    }
-
-    [Fact]
-    public void I_get_a_dimmer_accent_color_for_a_dimmer_screen()
-    {
-        // Act
-        var dim = DynamicWallpaper.GetAccentColor(6500, 0.5, 4, 2.2);
-        var bright = DynamicWallpaper.GetAccentColor(6500, 1, 4, 2.2);
-
-        // Assert
-        dim.Red.Should().BeLessThan(bright.Red);
-        dim.Red.Should().BeGreaterThan(0);
-    }
-
-    [Fact]
     public void I_get_a_big_change_split_into_small_steps()
     {
         // Arrange
@@ -190,55 +162,30 @@ public class DynamicWallpaperSpecs
     }
 
     [Fact]
-    public void I_can_tell_how_different_two_colors_look()
+    public void I_get_the_accent_color_of_the_part_of_the_day()
     {
-        // Arrange
-        var black = new WallpaperColor(0, 0, 0);
-        var white = new WallpaperColor(255, 255, 255);
-        var warm = new WallpaperColor(255, 180, 110);
-
-        // Act & assert
-        WallpaperColor.GetPerceptualDifference(warm, warm).Should().Be(0);
-        WallpaperColor.GetPerceptualDifference(black, white).Should().BeApproximately(1, 0.001);
-        WallpaperColor
-            .GetPerceptualDifference(warm, white)
-            .Should()
-            .Be(WallpaperColor.GetPerceptualDifference(white, warm));
-
-        // (a step of one level is far too small to see, while a dim and a bright warm light are
-        // clearly apart)
-        WallpaperColor
-            .GetPerceptualDifference(warm, new WallpaperColor(254, 180, 110))
-            .Should()
-            .BeLessThan(0.005);
-        WallpaperColor
-            .GetPerceptualDifference(warm, new WallpaperColor(128, 90, 55))
-            .Should()
-            .BeGreaterThan(0.2);
+        // Act & assert (the night after bedtime, the golden hour in the evening and around
+        // sunrise and sunset, and the day otherwise)
+        DynamicWallpaper.GetAccentTime(CycleStage.Night, -30).Should().Be(AccentTime.Night);
+        DynamicWallpaper.GetAccentTime(CycleStage.Night, 10).Should().Be(AccentTime.Night);
+        DynamicWallpaper.GetAccentTime(CycleStage.Evening, -20).Should().Be(AccentTime.GoldenHour);
+        DynamicWallpaper.GetAccentTime(CycleStage.Day, 2).Should().Be(AccentTime.GoldenHour);
+        DynamicWallpaper.GetAccentTime(CycleStage.Day, -3).Should().Be(AccentTime.GoldenHour);
+        DynamicWallpaper.GetAccentTime(CycleStage.Day, 25).Should().Be(AccentTime.Day);
     }
 
     [Fact]
-    public void I_get_a_handful_of_clearly_visible_accent_steps_from_day_to_night()
+    public void I_get_an_accent_color_from_the_sky_for_each_part_of_the_day()
     {
-        // Arrange (the default day and night, with the lights following the screen as is)
-        static WallpaperColor At(double t) =>
-            DynamicWallpaper.GetAccentColor(6600 + (3900 - 6600) * t, 1 + (0.85 - 1) * t, 2, 1);
+        // Act
+        var day = DynamicWallpaper.GetAccentColor(AccentTime.Day);
+        var goldenHour = DynamicWallpaper.GetAccentColor(AccentTime.GoldenHour);
+        var night = DynamicWallpaper.GetAccentColor(AccentTime.Night);
 
-        // Act (following it closely, but only changing once it looks clearly different)
-        var applied = At(0);
-        var steps = 0;
-        for (var i = 1; i <= 1000; i++)
-        {
-            var color = At(i / 1000.0);
-            if (WallpaperColor.GetPerceptualDifference(applied, color) >= 0.04)
-            {
-                applied = color;
-                steps++;
-            }
-        }
-
-        // Assert
-        steps.Should().BeInRange(3, 12);
-        WallpaperColor.GetPerceptualDifference(applied, At(1)).Should().BeLessThan(0.04);
+        // Assert (a blue day, a warm golden hour, and a dark, muted night)
+        day.Blue.Should().BeGreaterThan(day.Red);
+        goldenHour.Red.Should().BeGreaterThan(goldenHour.Blue);
+        (night.Red + night.Green + night.Blue).Should().BeLessThan(200);
+        new[] { day, goldenHour, night }.Should().OnlyHaveUniqueItems();
     }
 }

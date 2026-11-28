@@ -135,17 +135,15 @@ public partial class App : Application, IDisposable
             )
         );
 
-        // Draw the desktop wallpaper as the sky, and set the accent color to the screen's colors
-        // (neutral while Afterglow is off or paused), if that's turned on, but not while the
-        // cycle preview plays through the day (other than when stepping through it)
+        // Draw the desktop wallpaper as the sky, and set the accent color to a color of the sky
+        // for the part of the day, if that's turned on, but not while the cycle preview plays
+        // through the day (other than when stepping through it)
         var wallpaperService = _services.GetRequiredService<WallpaperService>();
         wallpaperService.SetTargetSource(() =>
             dashboard.IsCyclePreviewEnabled && !dashboard.IsSteppingThroughDay
                 ? null
                 : new WallpaperTarget(
-                    dashboard.IsActive
-                        ? dashboard.LightConfiguration
-                        : dashboard.TargetConfiguration,
+                    dashboard.Phase.Stage,
                     dashboard.SunElevation,
                     dashboard.IsSteppingThroughDay
                 )
@@ -170,7 +168,6 @@ public partial class App : Application, IDisposable
                 or nameof(DashboardViewModel.BrightnessOffset):
                     hueService.NotifyUserChange();
                     hueService.NotifyTargetChanged();
-                    wallpaperService.NotifyTargetChanged();
                     break;
 
                 // Whatever changes what the screen shows (the instant moves on every update)

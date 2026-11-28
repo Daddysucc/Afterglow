@@ -5,18 +5,24 @@ using Afterglow.PlatformInterop.Internal;
 
 namespace Afterglow.PlatformInterop;
 
-public partial class PowerSettingNotification(nint handle, Guid powerSettingId, Action callback)
-    : NativeResource(handle)
+public partial class PowerSettingNotification(
+    nint handle,
+    Guid powerSettingId,
+    Action<uint> callback
+) : NativeResource(handle)
 {
     private readonly IDisposable _wndProcRegistration = WndProcSponge.Default.Listen(
         0x218,
         m =>
         {
             // Filter out other power events
-            if (m.TryGetLParam<PowerBroadcastSetting>()?.PowerSettingId != powerSettingId)
+            if (m.TryGetLParam<PowerBroadcastSetting>() is not { } setting)
                 return;
 
-            callback();
+            if (setting.PowerSettingId != powerSettingId)
+                return;
+
+            callback(setting.DataLength >= sizeof(uint) ? setting.Data : 0);
         }
     );
 
@@ -37,7 +43,15 @@ public partial class PowerSettingNotification(nint handle, Guid powerSettingId, 
 
 public partial class PowerSettingNotification
 {
-    public static PowerSettingNotification? TryRegister(Guid powerSettingId, Action callback)
+    public static PowerSettingNotification? TryRegister(Guid powerSettingId, Action callback) =>
+        TryRegister(powerSettingId, _ => callback());
+
+    /// <summary>
+    /// Registers for a power setting's changes, with its new value (e.g. for
+    /// <see cref="Ids.ConsoleDisplayStateChanged" />: 0 when the display is off, 1 when it's on,
+    /// 2 when it's dimmed). Windows also reports the current value right away.
+    /// </summary>
+    public static PowerSettingNotification? TryRegister(Guid powerSettingId, Action<uint> callback)
     {
         var handle = NativeMethods.RegisterPowerSettingNotification(
             WndProcSponge.Default.Handle,

@@ -18,25 +18,23 @@ namespace Afterglow.Services;
 /// <summary>
 /// What the dynamic wallpaper follows.
 /// </summary>
-/// <param name="Configuration">The screen's color temperature and brightness (for the accent color).</param>
+/// <param name="Stage">The part of the cycle (for the accent color).</param>
 /// <param name="SunElevation">How high the sun is, in degrees (negative below the horizon).</param>
 /// <param name="IsImmediate">Whether it's shown right away (when stepping through the day).</param>
 public readonly record struct WallpaperTarget(
-    ColorConfiguration Configuration,
+    CycleStage Stage,
     double SunElevation,
     bool IsImmediate = false
 );
 
 /// <summary>
 /// Sets the desktop wallpaper to a sky for where the sun is (see <see cref="DynamicWallpaper" />),
-/// and the Windows accent color to the light's color and brightness, for Windows Dynamic
-/// Lighting.
+/// and the Windows accent color to a color of that sky for the part of the day.
 /// </summary>
 /// <remarks>
 /// <para>
 /// The images are natural skies, which only depend on how high the sun is: the screen's tint
-/// warms and dims them live, like everything else on the screen, and the accent color carries
-/// Afterglow's color and brightness. So a fixed set of skies (one for each of the stops along the
+/// warms and dims them live, like everything else on the screen. So a fixed set of skies (one for each of the stops along the
 /// sun's path, shared by the morning and the evening) is drawn once, for each display size: the
 /// one that's needed first right away, and the others one at a time in the background. After
 /// that, following the sun is just pointing Windows at another image.
@@ -48,15 +46,12 @@ public readonly record struct WallpaperTarget(
 /// <item>A display that's covered by a fullscreen application, or that the user is working on
 /// (where the mouse or the window in focus is, while there's been input in the last few seconds),
 /// keeps its sky until it isn't. The other displays carry on.</item>
-/// <item>The accent color waits until the user is away: no input (from the mouse, the keyboard,
-/// or a game controller) for half a minute, nothing fullscreen, nothing keeping the display on (a
-/// video or a game playing, wherever it is: Windows doesn't say which display), and nothing moving
-/// on the screen (the GPU barely busy, so that a game in a window, or a video that's just being
-/// watched, counts too), or the screen locked. Windows has every application re-theme at once when it changes, which stalls them all
-/// (and, through the applications that watch the mouse, the mouse too) for up to a couple of
-/// seconds, so it's never done while someone might notice. It also only changes once it looks
-/// clearly different (about a handful of times over a transition, and not at all in between),
-/// rather than following every small step. The only exceptions are turning it on and stepping
+/// <item>The accent color has three colors a day (see <see cref="DynamicWallpaper.GetAccentTime"
+/// />), and only changes while nobody can see it: while the screen is locked, the display is off,
+/// or a screensaver runs. Windows has every application re-theme at once when it changes, which
+/// stalls them all (and, through the applications that watch the mouse, the mouse too) for up to a
+/// couple of seconds, besides changing the taskbar and title bars in front of the user. If nobody
+/// steps away for a while, it just waits. The only exceptions are turning it on and stepping
 /// through the day, which show it right away.</item>
 /// <item>Changing the wallpaper itself costs next to nothing (measured at 2 to 6 ms, without
 /// stalling anything), so it doesn't wait for any of that.</item>
@@ -82,31 +77,11 @@ public class WallpaperService : IDisposable
     // How long checks stay frequent after the user changes something
     private static readonly TimeSpan FastCheckTime = TimeSpan.FromSeconds(30);
 
-    // How often the accent color follows the cycle's slow drift, at most
-    private static readonly TimeSpan AccentDriftInterval = TimeSpan.FromMinutes(2);
-
     // How long without mouse or keyboard input a display counts as not being worked on
     private static readonly TimeSpan QuietTime = TimeSpan.FromSeconds(10);
 
-    // How long without any input (including game controllers) counts as the user being away
-    private static readonly TimeSpan AwayTime = TimeSpan.FromSeconds(30);
-
-    // Game controllers and the GPU are only looked at during checks, so what happened since the
-    // previous one is only known if that one was recent (otherwise, the time starts over)
-    private static readonly TimeSpan ActivityCheckGap = SlowCheckInterval * 2;
-
-    // How busy the GPU can be (drawing and playing video, in percent, on average since the
-    // previous check) with nothing moving on the screen: a still desktop measured at 2 to 4%,
-    // while a game (even in a window, or in its menus) or a video keeps it well above this
-    private const double BusyGpuUsage = 10;
-
     // How long the background drawing waits while a video or a game is playing
     private static readonly TimeSpan BusyRetryDelay = TimeSpan.FromSeconds(30);
-
-    // Smaller changes of the accent color aren't worth it (see the remarks): about twice the
-    // smallest difference that can be seen side by side, which splits a typical transition from
-    // day to night into some 5 to 15 steps
-    private const double NoticeableAccentDifference = 0.04;
 
     // Images drawn by an earlier version (e.g. with other skies) are told apart by this
     private const string ImagePrefix = "Sky 4 ";
@@ -135,25 +110,17 @@ public class WallpaperService : IDisposable
     private Rect? _fullScreenBounds;
     private IReadOnlyList<Rect> _busyBounds = [];
     private bool _isLocked;
-    private bool _isDisplayKeptOn;
-    private bool _isAway;
+    private bool _isUnseen;
     private volatile bool _isDrawingPaused;
-    private DateTimeOffset _activityCheckedAt = DateTimeOffset.MinValue;
-    private int? _controllerState;
-    private DateTimeOffset _controllersQuietSince = DateTimeOffset.MaxValue;
-    private GpuUsage _gpuUsage = new();
-    private Task<(double? Usage, bool IsContinuous)> _gpuSample = Task.FromResult<(double?, bool)>(
-        (null, false)
-    );
-    private DateTimeOffset _gpuSampledAt = DateTimeOffset.MinValue;
+
+    // Whether the display is off (as Windows reports it, when it changes)
+    private bool _isDisplayOff;
 
     // What's shown now (null until shown on every display), and a sky only shown on the displays
     // that weren't busy (along with which ones were)
     private int? _shownStop;
     private (int Stop, string Skipped)? _partialStop;
     private WallpaperColor? _appliedAccentColor;
-    private WallpaperColor? _lastAccentTarget;
-    private DateTimeOffset _lastAccentAppliedAt = DateTimeOffset.MinValue;
 
     // Whether the accent color was just turned on (so it's shown right away, once), and whether it
     // was on before (settings are re-announced on every save, so a change is told apart this way)
@@ -175,16 +142,9 @@ public class WallpaperService : IDisposable
         _externalApplicationService = externalApplicationService;
         _dirPath = GetDirPath();
 
-        _settingsSubscription = PowerKit.Disposable.Merge(
-            settingsService.WatchProperties(
-                [o => o.IsDynamicWallpaperEnabled, o => o.IsAccentColorMatched],
-                Evaluate
-            ),
-            // The sky is checked again right away (the accent color follows once the user is away)
-            settingsService.WatchProperties(
-                [o => o.LightWarmth, o => o.LightDimming],
-                NotifyTargetChanged
-            )
+        _settingsSubscription = settingsService.WatchProperties(
+            [o => o.IsDynamicWallpaperEnabled, o => o.IsAccentColorMatched],
+            Evaluate
         );
     }
 
@@ -201,10 +161,20 @@ public class WallpaperService : IDisposable
     {
         _isStarted = true;
 
-        // Locking the screen (or waking up to the lock screen) is the best moment for the accent
-        // color, as nobody's there to notice, so it's checked right away rather than at the
+        // The screen being locked (or waking up to the lock screen), and the display turning off,
+        // are when the accent color can change, so they're checked right away rather than at the
         // regular pace (which could miss a quick unlock)
         _sessionSubscription = PowerKit.Disposable.Merge(
+            PowerSettingNotification.TryRegister(
+                PowerSettingNotification.Ids.ConsoleDisplayStateChanged,
+                state =>
+                {
+                    // (0 is off, 1 on, 2 dimmed)
+                    _isDisplayOff = state == 0;
+                    if (_isDisplayOff)
+                        NotifyTargetChanged();
+                }
+            ) ?? PowerKit.Disposable.Null,
             SessionEvents.RegisterLock(isLocked =>
             {
                 if (isLocked)
@@ -270,12 +240,8 @@ public class WallpaperService : IDisposable
             _shownStop = null;
             _partialStop = null;
             _appliedAccentColor = null;
-            _lastAccentTarget = null;
             _isAccentRequested = false;
             _wasAccentColorMatched = false;
-            _gpuUsage.Dispose();
-            _gpuUsage = new GpuUsage();
-            _gpuSample = Task.FromResult<(double?, bool)>((null, false));
 
             // Also puts back what was left over from an earlier run (e.g. after a crash)
             _ = RunLockedAsync(() =>
@@ -332,12 +298,10 @@ public class WallpaperService : IDisposable
         _isLocked = InputDesktop.IsLocked();
         if (_isLocked)
         {
-            _isAway = true;
+            _isUnseen = true;
             _isDrawingPaused = false;
             return;
         }
-
-        _isDisplayKeptOn = UserActivity.IsDisplayKeptOn();
 
         // (a system window, like the taskbar, keeps what was found before)
         if (_externalApplicationService.TryGetForegroundFullScreenMonitor(out var deviceName))
@@ -356,8 +320,7 @@ public class WallpaperService : IDisposable
                     ?.TryGetBounds();
         }
 
-        var idleTime = UserActivity.GetIdleTime();
-        var isIdle = idleTime >= QuietTime;
+        var isIdle = UserActivity.GetIdleTime() >= QuietTime;
 
         // The displays to leave alone for now: one that's covered, and the ones being worked on
         var busyBounds = new List<Rect>();
@@ -373,55 +336,12 @@ public class WallpaperService : IDisposable
         }
 
         _busyBounds = busyBounds;
-        // Changing the accent color stalls every application for a moment (see the remarks), so
-        // it waits for the user to be away. Changing the wallpaper costs next to nothing, so the
-        // displays that aren't busy carry on meanwhile. Drawing (at the lowest priority) only
-        // waits for a fullscreen application.
-        var isStill = UpdateStillness();
 
-        _isAway = idleTime >= AwayTime && isStill && _fullScreenBounds is null && !_isDisplayKeptOn;
+        // The accent color only changes while nobody can see it (see the remarks). Changing the
+        // wallpaper costs next to nothing, so the displays that aren't busy carry on meanwhile.
+        // Drawing (at the lowest priority) only waits for a fullscreen application.
+        _isUnseen = _isDisplayOff || UserActivity.IsScreenSaverRunning();
         _isDrawingPaused = _fullScreenBounds is not null;
-    }
-
-    // Whether nothing has happened that Windows doesn't count as input: no game controller used
-    // for as long as it takes to be away, and nothing on the screen moving (a game in a window,
-    // or a video that doesn't keep the display on) since the previous check. Both are only known
-    // when checked regularly, so anything else counts as not still.
-    private bool UpdateStillness()
-    {
-        var now = DateTimeOffset.Now;
-        var isContinuous = now - _activityCheckedAt <= ActivityCheckGap;
-        _activityCheckedAt = now;
-
-        var controllerState = UserActivity.TryGetControllerState();
-        if (controllerState != _controllerState || !isContinuous)
-            _controllersQuietSince = now;
-        _controllerState = controllerState;
-
-        // The GPU is read in the background, at the lowest priority (starting to measure it takes
-        // a moment, longer on slower computers), so what's known here is the reading that the
-        // previous check started: how busy it was between the two checks before. If it can't be
-        // measured at all, the other signs have to do.
-        var isGpuIdle =
-            _gpuSample.IsCompletedSuccessfully
-            && (
-                !_gpuUsage.IsAvailable
-                || (_gpuSample.Result.IsContinuous && _gpuSample.Result.Usage < BusyGpuUsage)
-            );
-
-        if (_gpuSample.IsCompleted)
-        {
-            var gpuUsage = _gpuUsage;
-            var isSampleContinuous = now - _gpuSampledAt <= ActivityCheckGap;
-            _gpuSampledAt = now;
-            _gpuSample = Task.Run(() =>
-            {
-                using var backgroundMode = BackgroundWork.EnterBackgroundMode();
-                return (gpuUsage.TryGetUsage(), isSampleContinuous);
-            });
-        }
-
-        return now - _controllersQuietSince >= AwayTime && isGpuIdle;
     }
 
     private static string GetKey(IReadOnlyList<Rect> bounds) =>
@@ -434,48 +354,24 @@ public class WallpaperService : IDisposable
 
         var stop = DynamicWallpaper.GetStopIndex(target.SunElevation);
         var accent = DynamicWallpaper.GetAccentColor(
-            target.Configuration.Temperature,
-            target.Configuration.Brightness,
-            _settingsService.LightWarmth,
-            _settingsService.LightDimming
+            DynamicWallpaper.GetAccentTime(target.Stage, target.SunElevation)
         );
-
-        // The accent color is still moving (e.g. a slider being dragged, or the day being stepped
-        // through), as opposed to the cycle's slow drift
-        var isAccentSettled =
-            _lastAccentTarget is not { } lastAccent
-            || WallpaperColor.GetDifference(lastAccent, accent) <= 1;
-        _lastAccentTarget = accent;
 
         var isSkyNeeded = _shownStop != stop;
 
         // Stepping through the day is for seeing how it all looks, so the accent color is shown
-        // right away along with everything else (in the same steps as it would be otherwise),
-        // whatever it costs, and it goes back to the time of day right away once that stops
+        // right away along with everything else, whatever it costs, and it goes back to the time
+        // of day right away once that stops
         if (_wasImmediate && !target.IsImmediate)
             _isAccentRequested = true;
         _wasImmediate = target.IsImmediate;
         var isAccentForced = _isAccentRequested || target.IsImmediate;
 
-        var accentDifference = _appliedAccentColor is { } applied
-            ? WallpaperColor.GetPerceptualDifference(applied, accent)
-            : double.MaxValue;
-        var isAccentNeeded =
-            IsAccentColorMatched
-            && accentDifference >= NoticeableAccentDifference
-            && (
-                isAccentForced
-                || (
-                    isAccentSettled
-                    && DateTimeOffset.Now - _lastAccentAppliedAt >= AccentDriftInterval
-                )
-            );
+        var isAccentNeeded = IsAccentColorMatched && _appliedAccentColor != accent;
 
-        // Checked often while anything is waiting, or still moving. An accent color waiting for
-        // the user to be away is checked at the regular pace (being away takes minutes anyway).
-        var isWaiting =
-            isSkyNeeded || !_drawing.IsCompleted || !isAccentSettled || _isAccentRequested;
-        SetCheckInterval(isWaiting);
+        // Checked often while anything is waiting. An accent color waiting for nobody to be able
+        // to see it is checked at the regular pace (that takes minutes anyway).
+        SetCheckInterval(isSkyNeeded || !_drawing.IsCompleted || _isAccentRequested);
 
         // Also keeps the background drawing informed
         if (!isSkyNeeded && !isAccentNeeded && _drawing.IsCompleted)
@@ -483,8 +379,8 @@ public class WallpaperService : IDisposable
 
         UpdateActivity();
 
-        // The accent color waits for the user to be away (unless it's forced, see above)
-        if (isAccentNeeded && !isAccentForced && !_isAway)
+        // The accent color waits for nobody to be able to see it (unless it's forced, see above)
+        if (isAccentNeeded && !isAccentForced && !_isUnseen)
             isAccentNeeded = false;
 
         IReadOnlyList<Rect> skipped = [];
@@ -567,10 +463,9 @@ public class WallpaperService : IDisposable
 
         if (accent is not null)
         {
-            // (if it didn't take, it's tried again at the cycle's pace, rather than right away)
+            // (if it didn't take, it's tried again the next time nobody can see it)
             if (isAccentApplied)
                 _appliedAccentColor = accent;
-            _lastAccentAppliedAt = DateTimeOffset.Now;
             _isAccentRequested = false;
         }
     }
@@ -1251,6 +1146,5 @@ public class WallpaperService : IDisposable
         _drawingCancellation?.Cancel();
         _settingsSubscription.Dispose();
         _sessionSubscription?.Dispose();
-        _gpuUsage.Dispose();
     }
 }

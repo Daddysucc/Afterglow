@@ -312,7 +312,7 @@ public partial class LocalizationManager
                 "Lights take on the color temperature of the cycle (as far as they can, from about 2000 K to 6500 K)",
             [nameof(LightWarmthLabel)] = "Warmth",
             [nameof(LightWarmthTooltip)] =
-                "How much warmer lights are set than the screen, to look as warm as it does. Lights that show colors turn amber and orange once they run out of warm whites. This also applies to the accent color (for the monitor's backlight), with the dynamic wallpaper.",
+                "How much warmer lights are set than the screen, to look as warm as it does. Lights that show colors turn amber and orange once they run out of warm whites.",
             [nameof(HueFollowBrightnessLabel)] = "Follow brightness",
             [nameof(HueFollowBrightnessTooltip)] =
                 "Lights take on the brightness of the cycle (Afterglow's 100% is full brightness)",
@@ -321,16 +321,16 @@ public partial class LocalizationManager
                 "Lights also go back to how they were while the screen is paused on its own (fullscreen applications, whitelisted applications, remote streaming, a locked screen)",
             [nameof(LightDimmingLabel)] = "Dimming",
             [nameof(LightDimmingTooltip)] =
-                "How strongly lights dim as the screen dims. At ×2.2 they give off as much light as the screen does (a dimmed, warm screen gives off much less light than its brightness suggests); lower values keep them brighter, higher values dim them more. Full brightness of an untinted screen always stays full. This also applies to the accent color (for the monitor's backlight), with the dynamic wallpaper.",
+                "How strongly lights dim as the screen dims. At ×2.2 they give off as much light as the screen does (a dimmed, warm screen gives off much less light than its brightness suggests); lower values keep them brighter, higher values dim them more. Full brightness of an untinted screen always stays full.",
             [nameof(DynamicWallpaperCardTitle)] = "Dynamic wallpaper",
             [nameof(DynamicWallpaperCardSubtitle)] =
-                "A sky in the screen's color temperature and brightness, through sunrise and sunset. With Windows Dynamic Lighting matching the accent color, a monitor's backlight follows it too.",
+                "A sky that follows the sun through the day, tinted by the screen like everything else.",
             [nameof(DynamicWallpaperEnabledLabel)] = "Draw the wallpaper",
             [nameof(DynamicWallpaperEnabledTooltip)] =
                 "Replaces the desktop wallpaper on every display (portrait displays get a portrait image). Your own wallpaper comes back when this is turned off (a slideshow or Windows Spotlight comes back as its current picture, so turn it back on in Settings › Personalization › Background).",
             [nameof(AccentColorMatchedLabel)] = "Set the accent color to match",
             [nameof(AccentColorMatchedTooltip)] =
-                "Sets the Windows accent color to the light's exact color and brightness, for Dynamic Lighting (turn on \"Match my Windows accent color\" in Settings › Personalization › Dynamic Lighting). An automatic accent color picked from the wallpaper would leave out the dimming. Your own accent color comes back when this is turned off. It only changes while you're away (no input for 30 seconds, and nothing playing), as Windows briefly freezes every app, and the mouse, whenever the accent color changes.",
+                "Sets the Windows accent color to the sky's: blue by day, golden around sunrise and sunset and through the evening, and deep blue at night. It only changes while nobody can see it (the screen locked, the display off, or a screensaver running), as Windows briefly stalls every app when it changes. Your own accent color comes back when this is turned off.",
             [nameof(DynamicWallpaperStepButton)] = "Next time of day",
             [nameof(DynamicWallpaperStepTooltip)] =
                 "For trying it out: jumps ahead 90 minutes at a time, setting the screen, the lights, the wallpaper and the accent color to that time of day",
@@ -492,8 +492,6 @@ public partial class LocalizationManager
             [nameof(AdvancedCardTitle)] = "Advanced",
             [nameof(BedtimeSummaryTooltip)] =
                 "Bedtime is set along with the evening colors, on the Cycle & Colors tab.",
-            [nameof(AccentUsesLightSettingsHint)] =
-                "The accent color uses the lights' Warmth and Dimming above.",
             [nameof(StartMinimizedLabel)] = "Start minimized",
             [nameof(StartMinimizedTooltip)] =
                 "Hide Afterglow to the system tray when it starts, even when launched manually",
