@@ -1,14 +1,14 @@
 # Afterglow
 
 <p align="center">
-    <img src="favicon.png" alt="Afterglow Icon" width="256" />
+    <img src="favicon.png" alt="Afterglow Icon" width="220" />
 </p>
 
 **Afterglow** is a lightweight Windows tray utility that reduces eye strain by smoothly shifting your screens from cool daylight to warm amber as the day goes on. Built as an expanded fork of [Tyrrrz's LightBulb](https://github.com/Tyrrrz/LightBulb), it adds a three-stage circadian cycle, perceptual multi-monitor color matching, per-display auto-pause for games and streaming, optional Philips Hue sync, and a sun-driven dynamic wallpaper.
 
-<p align="center">
-    <img src=".assets/screenshot-dashboard-icon.png" width="680" alt="Afterglow Dashboard" />
-</p>
+**Dashboard** — Live 24-hour temperature curve across Day, Evening, and Night, with a plain-language status readout.
+
+<img src=".assets/screenshot-dashboard-icon.png" width="680" alt="Afterglow Dashboard" />
 
 ## Features
 
@@ -43,9 +43,6 @@ Use the `win-arm64` builds on ARM devices (such as Snapdragon laptops) or `win-x
 
 <img src=".assets/screenshot-settings-icon.png" width="680" alt="Settings" />
 
-<details>
-<summary><strong>View all five settings tabs</strong></summary>
-
 **Cycle & Colors** — Stage temperatures and brightness, transition durations, grayscale scheduling, and per-display offsets.
 
 <img src=".assets/screenshot-tab-cycle.png" width="648" alt="Cycle & Colors settings" />
@@ -66,8 +63,6 @@ Use the `win-arm64` builds on ARM devices (such as Snapdragon laptops) or `win-x
 
 <img src=".assets/screenshot-tab-lights.png" width="648" alt="Lights & Wallpaper settings" />
 
-</details>
-
 ## Philips Hue
 
 Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly over your local network while your PC is on, with no extra software or cloud setup.
@@ -80,17 +75,11 @@ Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly ov
 - **Your changes take priority.** Changing a light from the Hue app, a wall switch, a scene, or a voice assistant tells Afterglow to leave that light alone (for 1 hour by default, configurable from 5 minutes to 6 hours or until power-cycled).
 - **Clean restoration.** Disabling Hue sync, disconnecting, deselecting a room, or closing Afterglow puts lights back how they were—lights that were off stay off, and lights you changed manually keep your settings.
 - **Perceptual warmth & dimming.** Because a screen tint looks warmer than a bulb at the same Kelvin value, Afterglow scales bulb warmth and dimming curves (configurable via the **Warmth** and **Dimming** sliders) to match the room.
-
-<details>
-<summary><strong>Detailed Hue behavior & Home Assistant coexistence</strong></summary>
-
-- **Turning lights on:** Lights that are already on follow the cycle automatically. Use **Turn on lights** in the tray menu (or enable **Turn on lights when Afterglow starts**) to turn selected rooms straight on to the current cycle; Afterglow turns those lights back off when it releases control.
-- **Pausing & shutdown:** Pausing lights (via the tray or a hotkey) restores their prior state by default, or keeps Afterglow-activated lights in neutral white—configurable to turn off or apply a custom color/brightness preset. Shutting down or sleeping leaves lights warm by default so the room stays ready for bedtime, and can also be customized.
-- **Fullscreen independence:** Fullscreen auto-pause only affects your displays unless **Pause with the screen** is checked. Use **Pause lights** in the tray or a hotkey to pause lights independently.
-- **Home Assistant Adaptive Lighting:** To keep lights on a similar schedule while your PC is off, assign [Adaptive Lighting](https://github.com/basnijholt/adaptive-lighting) to separate rooms, or enable its `take_over_control` and `detect_non_ha_changes` options so it yields automatically whenever Afterglow updates bulbs via the Hue bridge.
-- **Security & reliability:** Your bridge API key is encrypted for your Windows user account, Afterglow only talks to the paired bridge, and unreachable bulbs at the edge of Zigbee range are retried automatically and flagged in the light list.
-
-</details>
+- **Turning lights on.** Lights that are already on follow the cycle automatically. Use **Turn on lights** in the tray menu (or enable **Turn on lights when Afterglow starts**) to turn selected rooms straight on to the current cycle; Afterglow turns those lights back off when it releases control.
+- **Pausing & shutdown.** Pausing lights (via the tray or a hotkey) restores their prior state by default, or keeps Afterglow-activated lights in neutral white—configurable to turn off or apply a custom color/brightness preset. Shutting down or sleeping leaves lights warm by default so the room stays ready for bedtime, and can also be customized.
+- **Fullscreen independence.** Fullscreen auto-pause only affects your displays unless **Pause with the screen** is checked. Use **Pause lights** in the tray or a hotkey to pause lights independently.
+- **Home Assistant Adaptive Lighting.** To keep lights on a similar schedule while your PC is off, assign [Adaptive Lighting](https://github.com/basnijholt/adaptive-lighting) to separate rooms, or enable its `take_over_control` and `detect_non_ha_changes` options so it yields automatically whenever Afterglow updates bulbs via the Hue bridge.
+- **Security & reliability.** Your bridge API key is encrypted for your Windows user account, Afterglow only talks to the paired bridge, and unreachable bulbs at the edge of Zigbee range are retried automatically and flagged in the light list.
 
 ## Building from Source
 
