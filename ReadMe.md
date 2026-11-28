@@ -1,14 +1,16 @@
-# Afterglow
-
 <p align="center">
-    <img src="favicon.png" alt="Afterglow Icon" width="220" />
+    <img src="favicon.png" alt="Afterglow Icon" width="160" />
 </p>
 
-**Afterglow** is a lightweight Windows tray utility that reduces eye strain by smoothly shifting your screens from cool daylight to warm amber as the day goes on. Built as an expanded fork of [Tyrrrz's LightBulb](https://github.com/Tyrrrz/LightBulb), it adds a three-stage circadian cycle, perceptual multi-monitor color matching, per-display auto-pause for games and streaming, optional Philips Hue sync, and a sun-driven dynamic wallpaper.
+<h1 align="center">Afterglow</h1>
 
-**Dashboard** — Live 24-hour temperature curve across Day, Evening, and Night, with a plain-language status readout.
+<p align="center">
+    A lightweight Windows tray utility that reduces eye strain by smoothly shifting your screens from cool daylight to warm amber—built as an expanded fork of <a href="https://github.com/Tyrrrz/LightBulb">Tyrrrz's LightBulb</a> with a three-stage cycle, perceptual multi-monitor matching, per-display auto-pause, optional Philips Hue sync, and a sun-driven dynamic wallpaper.
+</p>
 
-<img src=".assets/screenshot-dashboard-icon.png" width="680" alt="Afterglow Dashboard" />
+---
+
+![Afterglow Dashboard](.assets/screenshot-dashboard-icon.png)
 
 ## Features
 
@@ -41,27 +43,27 @@ Use the `win-arm64` builds on ARM devices (such as Snapdragon laptops) or `win-x
 
 **Settings** — Everything lives on one tabbed page where any number next to a slider can also be typed in directly.
 
-<img src=".assets/screenshot-settings-icon.png" width="680" alt="Settings" />
+![Settings](.assets/screenshot-settings-icon.png)
 
 **Cycle & Colors** — Stage temperatures and brightness, transition durations, grayscale scheduling, and per-display offsets.
 
-<img src=".assets/screenshot-tab-cycle.png" width="648" alt="Cycle & Colors settings" />
+![Cycle & Colors settings](.assets/screenshot-tab-cycle.png)
 
 **Schedule & Location** — Sunrise/sunset from place search, coordinates, automatic detection, or manual times.
 
-<img src=".assets/screenshot-tab-schedule.png" width="648" alt="Schedule & Location settings" />
+![Schedule & Location settings](.assets/screenshot-tab-schedule.png)
 
 **Pausing** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
 
-<img src=".assets/screenshot-tab-rules.png" width="648" alt="Pausing settings" />
+![Pausing settings](.assets/screenshot-tab-rules.png)
 
 **App & Controls** — Language, startup, update checks, advanced gamma options, and global hotkeys.
 
-<img src=".assets/screenshot-tab-app.png" width="648" alt="App & Controls settings" />
+![App & Controls settings](.assets/screenshot-tab-app.png)
 
 **Lights & Wallpaper** — Hue bridge connection, room/light selection, override rules, and dynamic sky wallpaper controls.
 
-<img src=".assets/screenshot-tab-lights.png" width="648" alt="Lights & Wallpaper settings" />
+![Lights & Wallpaper settings](.assets/screenshot-tab-lights.png)
 
 ## Philips Hue
 
