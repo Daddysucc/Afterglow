@@ -37,13 +37,11 @@ Use the `win-arm64` builds on ARM devices (such as Snapdragon laptops) or `win-x
 
 ## Screenshots
 
+Everything lives in the tray menu and a single tabbed settings window where any number next to a slider can also be typed in directly.
+
 **System Tray** — Quick-snooze Afterglow, grayscale, or Hue lights without opening the main window.
 
 ![Tray menu](.assets/screenshot-tray.png)
-
-**Settings** — Everything lives on one tabbed page where any number next to a slider can also be typed in directly.
-
-![Settings](.assets/screenshot-settings-icon.png)
 
 **Cycle & Colors** — Stage temperatures and brightness, transition durations, grayscale scheduling, and per-display offsets.
 
@@ -53,23 +51,23 @@ Use the `win-arm64` builds on ARM devices (such as Snapdragon laptops) or `win-x
 
 ![Schedule & Location settings](.assets/screenshot-tab-schedule.png)
 
-**Pausing** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
+**Rules & Whitelist** — Automatic pause rules for fullscreen apps, lock screen, remote streaming, and custom app/window title whitelists.
 
-![Pausing settings](.assets/screenshot-tab-rules.png)
+![Rules & Whitelist settings](.assets/screenshot-tab-rules.png)
 
 **App & Controls** — Language, startup, update checks, advanced gamma options, and global hotkeys.
 
 ![App & Controls settings](.assets/screenshot-tab-app.png)
 
-**Lights & Wallpaper** — Hue bridge connection, room/light selection, override rules, and dynamic sky wallpaper controls.
+**Smart Lights** — Hue bridge connection, room/light selection, override rules, and dynamic sky wallpaper controls.
 
-![Lights & Wallpaper settings](.assets/screenshot-tab-lights.png)
+![Smart Lights settings](.assets/screenshot-tab-lights.png)
 
 ## Philips Hue
 
 Afterglow can drive Philips Hue lights (square Bridge or Bridge Pro) directly over your local network while your PC is on, with no extra software or cloud setup.
 
-1. Open **Settings** → **Lights & Wallpaper** and enable **Control Hue lights**.
+1. Open **Settings** → **Smart Lights** and enable **Control Hue lights**.
 2. Click **Connect**, then press the button on top of your Hue bridge within 30 seconds (or enter the bridge's IP address first if auto-discovery doesn't find it).
 3. Select the rooms or zones to follow the cycle, choose whether they follow color temperature, brightness, or both, and optionally exclude individual bulbs.
 
